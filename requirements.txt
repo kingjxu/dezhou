@@ -1,0 +1,60 @@
+# ═════════════════════════════════════════════════════════════════
+#  Linux 服务端部署依赖（Ubuntu/Debian/CentOS）
+#  安装: pip install -r requirements-linux.txt
+#
+#  主要差异 vs Windows 版：
+#    1. opencv-python-headless：不依赖 X11/GTK，体积小，纯服务器无 GUI
+#    2. 启用 uvloop（uvicorn[standard] 自带，Linux 上吞吐更高）
+#    3. 额外推荐 gunicorn 做多进程守护（可选）
+# ═════════════════════════════════════════════════════════════════
+
+# ── 核心服务 ──────────────────────────────────────────────────
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0          # Linux 上自动用 uvloop + httptools
+pydantic>=2.7.0
+
+# ── 图像处理（headless！不需要 X11/libGL）────────────────────
+# 注意：不要同时装 opencv-python 和 opencv-python-headless，会冲突！
+opencv-python-headless>=4.10.0.0
+numpy>=2.0.0,<3.0
+pillow>=10.4.0
+
+# ── OCR + ONNX 推理（CPU 专用） ─────────────────────────────
+# 必须用 1.4.x：旧 1.2.x 检测模型对卡牌角标小花色明显变差。
+# 1.4.x wheel 上限 Python 3.12，所以必须用 Python 3.10-3.12。
+rapidocr-onnxruntime>=1.4.4
+onnxruntime>=1.18.0                # CPU 版（要 GPU 请用 dezhou_v20_linux_gpu 包）
+
+# ── HTTP 客户端（诊断脚本用）─────────────────────────────────
+requests>=2.32.0
+
+# ── 配置 ────────────────────────────────────────────────────
+python-dotenv>=1.0.1
+
+
+# ═════════════════════════════════════════════════════════════════
+#  生产部署可选：gunicorn 做多进程守护 + ASGI worker
+# ═════════════════════════════════════════════════════════════════
+#   pip install gunicorn
+#   gunicorn app.main:app -w 2 -k uvicorn.workers.UvicornWorker \
+#            --bind 0.0.0.0:5555 --timeout 120 \
+#            --access-logfile /var/log/dezhou-access.log \
+#            --error-logfile  /var/log/dezhou-error.log
+#
+# （如果只是内部用，单 uvicorn 进程也够了）
+
+# ═════════════════════════════════════════════════════════════════
+#  可选依赖
+# ═════════════════════════════════════════════════════════════════
+#
+# 训练 CNN（离线一次，见 docs/poler_retrain_guide.md）:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install onnx
+#
+# GPU 推理加速:
+#   本包不含 GPU 路径。要 GPU 请改用 dezhou_v20_linux_gpu 包，
+#   它带 onnxruntime-gpu 依赖 + CUDA 切换代码 + 完整部署文档。
+#
+# 切换到 PaddleOCR CPU（不推荐：比 RapidOCR 慢 3x）:
+#   pip install paddlepaddle paddleocr
+#   export DEZHOU_OCR=paddle

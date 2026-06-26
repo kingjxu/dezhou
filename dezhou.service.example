@@ -1,0 +1,40 @@
+[Unit]
+Description=Dezhou Poker Recognition Service
+Documentation=https://github.com/yourrepo/dezhou
+After=network.target
+
+[Service]
+Type=simple
+# ↓ 改成实际跑服务的 user/group
+User=ubuntu
+Group=ubuntu
+
+# ↓ 改成实际代码目录
+WorkingDirectory=/opt/dezhou_v19_cc_filter/dezhou
+
+# PATH 要包含 venv 的 bin
+Environment="PATH=/opt/dezhou_v19_cc_filter/dezhou/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+# 可选：强制 OCR 引擎
+# Environment="DEZHOU_OCR=rapid"
+
+# 启动命令
+ExecStart=/opt/dezhou_v19_cc_filter/dezhou/.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 5555 --workers 1
+
+# 崩了自动重启
+Restart=on-failure
+RestartSec=5
+
+# 首次启动允许 2 分钟加载模型
+TimeoutStartSec=120
+
+# 日志写 journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=dezhou
+
+# 资源限制（可选，防止内存泄漏拖垮系统）
+# MemoryMax=2G
+# CPUQuota=200%
+
+[Install]
+WantedBy=multi-user.target
