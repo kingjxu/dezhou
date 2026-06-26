@@ -26,6 +26,7 @@ class TableInfo(BaseModel):
     button_seat:     int | None  = Field(default=None, description="庄家座位号")
     blind_size:      str | None  = Field(default=None, description="盲注结构，如 '50/100' 或 '50/100(25)'")
     current_bet:     int | None  = Field(default=None, description="全桌跟注线（本轮最大下注额）")
+    mushroom_count:  int | None  = Field(default=None, description="蘑菇数量（保险图标旁的数字）")
 
 
 class PlayerInfo(BaseModel):

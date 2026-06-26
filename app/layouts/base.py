@@ -23,6 +23,9 @@ class LayoutBase:
     # ── 盲注 ──
     blind_roi: tuple = (0.25, 0.55, 0.75, 0.62)
 
+    # ── 蘑菇数量（保险图标）──
+    mushroom_roi: tuple = ()  # (x1, y1, x2, y2) 蘑菇图标旁数字区域
+
     # ── Hero ──
     hero_stack_anchor: Anchor = field(default_factory=lambda: Anchor(0.50, 0.85, 0.10))
     hero_stack_roi:    tuple  = (0.30, 0.83, 0.70, 0.90)

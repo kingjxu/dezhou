@@ -1160,11 +1160,15 @@ class TableRecognizer:
                 seat_bets.append(hero_current_bet)
             table_current_bet = max(seat_bets) if seat_bets else None
 
+        # 蘑菇数量识别
+        mushroom_count = self._find_mushroom_count(items)
+
         return {
             "table_info": {
                 "stage": stage, "community_cards": community_cards,
                 "main_pot": pot, "current_bet": table_current_bet,
                 "button_seat": button_seat, "blind_size": blind_size,
+                "mushroom_count": mushroom_count,
             },
             "hero_info": {
                 "seat": 1, "status": hero_status, "stack": hero_stack,
@@ -1261,6 +1265,51 @@ class TableRecognizer:
                 sb, bb, ante = m.group(1), m.group(2), m.group(3)
                 return f"{sb}/{bb}({ante})" if ante else f"{sb}/{bb}"
         return None
+
+    # ==================================================================
+    # 蘑菇数量（保险图标）
+    # ==================================================================
+    def _find_mushroom_count(self, items: list[OcrItem]) -> int | None:
+        """从 OCR 结果中提取蘑菇数量（左上角保险图标旁的数字）。
+
+        蘑菇图标在左上角区域，数字紧跟其后。通过 ROI 过滤定位，
+        提取其中的纯数字。
+        """
+        roi = getattr(self._layout, 'mushroom_roi', None)
+        if not roi:
+            return None
+        x1, y1, x2, y2 = roi
+        candidates = [it for it in items if x1 <= it.cx <= x2 and y1 <= it.cy <= y2]
+        if not candidates:
+            return None
+
+        # 优先选择纯数字或数字占比高的文本
+        best_val = None
+        best_score = 0
+        for it in candidates:
+            text = it.text.strip()
+            if not text:
+                continue
+            # 过滤噪声关键词
+            if any(kw in text for kw in self._layout.noise_keywords):
+                continue
+            # 过滤中文和UI符号（避免误读广告文字）
+            if _CHINESE_RE.search(text) or _UI_NOISE_RE.search(text):
+                continue
+            # 提取数字
+            val = _parse_int(text)
+            if val is None:
+                continue
+            # 数字占比评分
+            digit_ratio = sum(c.isdigit() for c in text) / len(text)
+            if digit_ratio > best_score:
+                best_score = digit_ratio
+                best_val = val
+            elif digit_ratio == best_score and best_val is not None:
+                # 同评分时取较大值（蘑菇数量通常不是很小）
+                if val > best_val:
+                    best_val = val
+        return best_val
 
     # ==================================================================
     # current_bet
