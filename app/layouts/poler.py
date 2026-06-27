@@ -41,7 +41,7 @@ class LayoutPoler(LayoutBase):
 
     # ── 蘑菇数量（保险图标，左上角）──
     # 蘑菇图标在左上角，数字紧跟其后
-    mushroom_roi: tuple = (0.02, 0.02, 0.18, 0.08)
+    mushroom_roi: tuple = (0.139, 0.121, 0.185, 0.142)
 
     # ── Hero ──
     # Hero 筹码在头像正下方，实测 cy≈0.925（"197" 等数字）
