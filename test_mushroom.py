@@ -58,7 +58,7 @@ def test_mushroom(image_path: str, app: str = "poler"):
 
 if __name__ == "__main__":
     # 默认测试 16.jpg
-    test_image = "/Users/bytedance/go/src/kingjxu/dezhou/16.jpg"
+    test_image = "/home/ubuntu/poker/dezhou/16.jpg"
     
     # 如果命令行传入了图片路径，则使用传入的路径
     if len(sys.argv) > 1:
