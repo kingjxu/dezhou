@@ -507,17 +507,20 @@ from app.layouts.dpzx import LayoutDpzx
 from app.layouts.poler import LayoutPoler
 
 
-_ocr_engine = None
+_ocr_engines: dict[str, object] = {}
 # 探测一次后缓存：rapid 调用时的最佳 kwargs（如 {"use_cls": False}）。
 # None = 还没探测；{} = 探测了但默认 OK / 任何 kwarg 都不接受。
 _RAPID_CALL_KWARGS: dict | None = None
 
-def _get_ocr():
+def _get_ocr(model_kind: str | None = None,
+             disable_angle_cls: bool = False):
     """返回 OCR 引擎对象（封装 PaddleOCR 或 RapidOCR，API 不同）。
     _OCR_BACKEND 会被设置为 'paddle' 或 'rapid'。"""
     global _ocr_engine, _OCR_BACKEND
-    if _ocr_engine is not None:
-        return _ocr_engine
+    model_kind = (model_kind or os.environ.get("DEZHOU_OCR_MODEL", "")).lower().strip()
+    cache_key = f"{_FORCED_OCR or 'rapid'}:{model_kind}:cls={not disable_angle_cls}"
+    if cache_key in _ocr_engines:
+        return _ocr_engines[cache_key]
 
     # 默认 RapidOCR；DEZHOU_OCR=paddle 走 CPU，DEZHOU_OCR=paddle_gpu 走 GPU
     want_paddle = _FORCED_OCR in ("paddle", "paddle_gpu")
@@ -575,6 +578,7 @@ def _get_ocr():
             _OCR_BACKEND = "paddle"
             gpu_tag = " (GPU)" if use_gpu else " (CPU)"
             print(f"[OCR] 使用 PaddleOCR PP-OCRv4{gpu_tag}")
+            _ocr_engines[cache_key] = _ocr_engine
             return _ocr_engine
         except Exception as e:
             if _FORCED_OCR in ("paddle", "paddle_gpu"):
@@ -597,7 +601,6 @@ def _get_ocr():
         # 设 DEZHOU_OCR_MODEL=mobile → 加载 PP-OCRv3 mobile（约 2-3x 快，
         # 准确率低 1-2%；适合渲染截图）。
         # 模型放在 app/ocr_models/ 下；先用 tools/download_ocr_mobile.py 拉好。
-        model_kind = os.environ.get("DEZHOU_OCR_MODEL", "").lower().strip()
         custom_kwargs: dict = {}
         if model_kind in ("mobile", "v3", "ppocrv3"):
             here = os.path.dirname(os.path.abspath(__file__))
@@ -614,6 +617,8 @@ def _get_ocr():
                 # rapidocr 1.4.x 接受这两个 kwarg；不同小版本 key 名可能略不同，
                 # 这里给出多种兼容候选。
                 custom_kwargs = dict(det_model_path=det, rec_model_path=rec)
+        if disable_angle_cls:
+            custom_kwargs["use_angle_cls"] = False
 
         # GPU 支持（v0.7+）：DEZHOU_GPU=1 时让 OCR 走 CUDA。
         # rapidocr-onnxruntime 1.4.x 接受 det_use_cuda / rec_use_cuda / cls_use_cuda 三个 kwarg；
@@ -654,6 +659,7 @@ def _get_ocr():
             print("[OCR] 使用 RapidOCR (默认 server, PP-OCRv4)")
 
         _OCR_BACKEND = "rapid"
+        _ocr_engines[cache_key] = _ocr_engine
         return _ocr_engine
 
     raise RuntimeError("没有可用的 OCR 引擎")
@@ -796,8 +802,10 @@ def _template_match_ranks(patch_bgr: np.ndarray,
 
 class TableRecognizer:
     def __init__(self, layout: LayoutBase | None = None) -> None:
-        self._ocr       = _get_ocr()
         self._layout    = layout or LayoutDpzx()
+        self._ocr       = _get_ocr(
+            disable_angle_cls=self._layout.app_name == "poler",
+        )
         self._clahe     = cv2.createCLAHE(clipLimit=4.0, tileGridSize=(4, 4))
         self._templates = _load_rank_templates()
 

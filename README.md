@@ -104,3 +104,6 @@ sudo systemctl status dezhou
 v0.7-cpu（CPU only）— 包含 poler dim 弃牌牌识别、白底反转 OCR、hero 下注位置修正、
 留座/补盲/过庄状态、table.current_bet 取 max(seat bet)、以及全部 v0.5/v0.6 修复。
 **dpzx 行为与 v0.5 byte-identical**。
+
+`poler` 截图方向固定，默认关闭 OCR 方向分类步骤；`dpzx` 保持原有 OCR 配置。
+需要强制模型档位时可显式设置 `DEZHOU_OCR_MODEL`。
