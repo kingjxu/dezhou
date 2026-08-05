@@ -505,6 +505,29 @@ class OcrItem:
     score: float
 
 
+def _confirmed_marker_bets(marker_bets: dict[int, int],
+                           minimum_matches: int = 3) -> dict[int, int]:
+    """Keep only a single corroborated V2 marker value.
+
+    A marker is a visual hint rather than an OCR result. If one value does not
+    have enough matching seats, or multiple values do, callers must retain the
+    existing OCR result instead of applying an ambiguous marker override.
+    """
+    counts: dict[int, int] = {}
+    for value in marker_bets.values():
+        counts[value] = counts.get(value, 0) + 1
+    majority_values = {
+        value for value, count in counts.items() if count >= minimum_matches
+    }
+    if len(majority_values) != 1:
+        return {}
+    majority_value = next(iter(majority_values))
+    return {
+        seat: value for seat, value in marker_bets.items()
+        if value == majority_value
+    }
+
+
 # 导入布局基类
 from app.layouts.base import Anchor, LayoutBase
 from app.layouts.dpzx import LayoutDpzx
@@ -1026,11 +1049,7 @@ class TableRecognizer:
                     _fb_chip_map.get(seat, ("red", "green")))
                 if v2_bet is not None:
                     v2_chip_bets[seat] = v2_bet
-            matching_markers = sum(
-                1 for value in v2_chip_bets.values()
-                if list(v2_chip_bets.values()).count(value) >= 3)
-            if matching_markers < 3:
-                v2_chip_bets.clear()
+            v2_chip_bets = _confirmed_marker_bets(v2_chip_bets)
 
         villains = []
         seat_anchor_map = dict(self._layout.seat_anchors)
@@ -1249,9 +1268,9 @@ class TableRecognizer:
         h, w = img.shape[:2]
 
         # Screenshots may be fitted into a taller/wider canvas with solid black
-        # bars. Always remove those bars for V2; only resize when the cropped
-        # content matches the calibrated reference aspect. This preserves
-        # coordinate ratios for valid screenshots such as 1176x2400.
+        # bars. Crop only when the detected content bounds touch neither edge
+        # on an axis. This avoids treating intentional black UI borders or
+        # dark table regions inside a normal screenshot as letterboxing.
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         non_black = gray > 12
         columns = np.count_nonzero(non_black, axis=0) >= h * 0.03
@@ -1259,11 +1278,14 @@ class TableRecognizer:
         if np.any(columns) and np.any(rows):
             x0, x1 = np.flatnonzero(columns)[[0, -1]]
             y0, y1 = np.flatnonzero(rows)[[0, -1]]
-            candidate = img[y0:y1 + 1, x0:x1 + 1]
-            if candidate.size > 0:
-                candidate_h, candidate_w = candidate.shape[:2]
-                img = candidate
-                h, w = candidate_h, candidate_w
+            has_horizontal_bars = x0 > 0 and x1 < w - 1
+            has_vertical_bars = y0 > 0 and y1 < h - 1
+            if has_horizontal_bars or has_vertical_bars:
+                candidate = img[y0:y1 + 1, x0:x1 + 1]
+                if candidate.size > 0:
+                    candidate_h, candidate_w = candidate.shape[:2]
+                    img = candidate
+                    h, w = candidate_h, candidate_w
 
         if abs(w / h - target_ratio) > tolerance:
             return img
