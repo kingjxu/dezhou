@@ -15,6 +15,8 @@ class Anchor:
 class LayoutBase:
     """所有 app 布局的公共接口。子类必须覆盖全部字段。"""
     app_name: str = "base"
+    reference_canvas: tuple = ()  # (width, height)，为空表示不做画布归一化
+    reference_aspect_tolerance: float = 0.03
 
     # ── 底池 ──
     pot_anchor: Anchor = field(default_factory=lambda: Anchor(0.50, 0.30, 0.14))

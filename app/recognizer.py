@@ -516,7 +516,7 @@ def _get_ocr(model_kind: str | None = None,
              disable_angle_cls: bool = False):
     """返回 OCR 引擎对象（封装 PaddleOCR 或 RapidOCR，API 不同）。
     _OCR_BACKEND 会被设置为 'paddle' 或 'rapid'。"""
-    global _ocr_engine, _OCR_BACKEND
+    global _OCR_BACKEND
     model_kind = (model_kind or os.environ.get("DEZHOU_OCR_MODEL", "")).lower().strip()
     cache_key = f"{_FORCED_OCR or 'rapid'}:{model_kind}:cls={not disable_angle_cls}"
     if cache_key in _ocr_engines:
@@ -536,7 +536,7 @@ def _get_ocr(model_kind: str | None = None,
             os.environ.setdefault("FLAGS_use_mkldnn", "0")
             from paddleocr import PaddleOCR
             # PaddleOCR 3.x / 2.x 参数不同，依次尝试
-            _ocr_engine = None
+            ocr_engine = None
             _last_err = None
             # 关键：enable_mkldnn=False 规避 Paddle 3.x Windows 上 oneDNN 新 PIR 执行器崩溃
             for kwargs in (
@@ -568,18 +568,18 @@ def _get_ocr(model_kind: str | None = None,
                 dict(lang="ch", use_gpu=use_gpu),
             ):
                 try:
-                    _ocr_engine = PaddleOCR(**kwargs)
+                    ocr_engine = PaddleOCR(**kwargs)
                     break
                 except (TypeError, ValueError) as e:
                     _last_err = e
                     continue
-            if _ocr_engine is None:
+            if ocr_engine is None:
                 raise _last_err or RuntimeError("PaddleOCR 初始化失败")
             _OCR_BACKEND = "paddle"
             gpu_tag = " (GPU)" if use_gpu else " (CPU)"
             print(f"[OCR] 使用 PaddleOCR PP-OCRv4{gpu_tag}")
-            _ocr_engines[cache_key] = _ocr_engine
-            return _ocr_engine
+            _ocr_engines[cache_key] = ocr_engine
+            return ocr_engine
         except Exception as e:
             if _FORCED_OCR in ("paddle", "paddle_gpu"):
                 raise RuntimeError(f"强制使用 paddle 但加载失败: {e}")
@@ -632,6 +632,7 @@ def _get_ocr(model_kind: str | None = None,
 
         # 多档兼容：1.4.x 用 *_model_path；旧版本可能用 det/rec 模型路径不同 kwarg
         _last_err: Exception | None = None
+        ocr_engine = None
         if custom_kwargs:
             # 兜底链：原 kwargs → 不带 cuda 标志 → 全小写 → 空 dict
             kwargs_no_cuda = {k: v for k, v in custom_kwargs.items() if not k.endswith("_use_cuda")}
@@ -642,7 +643,7 @@ def _get_ocr(model_kind: str | None = None,
                 {},
             ):
                 try:
-                    _ocr_engine = RapidOCR(**kwargs)
+                    ocr_engine = RapidOCR(**kwargs)
                     gpu_tag = " (GPU)" if any(k.endswith("_use_cuda") for k in kwargs) else ""
                     if "det_model_path" in kwargs or "det_model_path" in {k.lower() for k in kwargs}:
                         print(f"[OCR] 使用 RapidOCR (mobile, PP-OCRv3){gpu_tag}")
@@ -652,15 +653,15 @@ def _get_ocr(model_kind: str | None = None,
                 except (TypeError, FileNotFoundError) as e:
                     _last_err = e
                     continue
-            if _ocr_engine is None:
+            if ocr_engine is None:
                 raise RuntimeError(f"RapidOCR 初始化失败: {_last_err}")
         else:
-            _ocr_engine = RapidOCR()
+            ocr_engine = RapidOCR()
             print("[OCR] 使用 RapidOCR (默认 server, PP-OCRv4)")
 
         _OCR_BACKEND = "rapid"
-        _ocr_engines[cache_key] = _ocr_engine
-        return _ocr_engine
+        _ocr_engines[cache_key] = ocr_engine
+        return ocr_engine
 
     raise RuntimeError("没有可用的 OCR 引擎")
 
@@ -813,7 +814,7 @@ class TableRecognizer:
     # 主入口
     # ==================================================================
     def recognize(self, image_base64: str, parse_all: bool = False) -> dict:
-        img  = _b64_to_bgr(image_base64)
+        img = self._normalize_canvas(_b64_to_bgr(image_base64))
         h, w = img.shape[:2]
 
         # ── 轮次门控（由请求参数 parse_all 控制）──
@@ -1185,6 +1186,38 @@ class TableRecognizer:
             },
             "villains_info": villains,
         }
+
+    def _normalize_canvas(self, img: np.ndarray) -> np.ndarray:
+        target = getattr(self._layout, "reference_canvas", ())
+        if len(target) != 2 or img.size == 0:
+            return img
+
+        target_w, target_h = target
+        target_ratio = target_w / target_h
+        tolerance = getattr(self._layout, "reference_aspect_tolerance", 0.03)
+        h, w = img.shape[:2]
+
+        # Screenshots may be fitted into a taller/wider canvas with solid black bars.
+        # Crop them only when the detected content matches the known table aspect.
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        non_black = gray > 12
+        columns = np.count_nonzero(non_black, axis=0) >= h * 0.03
+        rows = np.count_nonzero(non_black, axis=1) >= w * 0.03
+        if np.any(columns) and np.any(rows):
+            x0, x1 = np.flatnonzero(columns)[[0, -1]]
+            y0, y1 = np.flatnonzero(rows)[[0, -1]]
+            candidate = img[y0:y1 + 1, x0:x1 + 1]
+            if candidate.size > 0:
+                candidate_h, candidate_w = candidate.shape[:2]
+                if abs(candidate_w / candidate_h - target_ratio) <= tolerance:
+                    img = candidate
+                    h, w = candidate_h, candidate_w
+
+        if abs(w / h - target_ratio) > tolerance:
+            return img
+        if (w, h) == (target_w, target_h):
+            return img
+        return cv2.resize(img, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
 
     # ==================================================================
     # 庄家按钮（纯色检测）
