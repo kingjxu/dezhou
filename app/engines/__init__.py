@@ -9,14 +9,16 @@ from __future__ import annotations
 
 from app.layouts.dpzx import LayoutDpzx
 from app.layouts.poler import LayoutPoler
+from app.layouts.polerv2 import LayoutPolerV2
 from app.recognizer import TableRecognizer
 
 # 已创建的识别器缓存（每个 app 只创建一次，线程安全靠 GIL）
 _cache: dict[str, TableRecognizer] = {}
 
 _LAYOUTS = {
-    "dpzx":  LayoutDpzx,
-    "poler": LayoutPoler,
+    "dpzx":    LayoutDpzx,
+    "poler":   LayoutPoler,
+    "polerv2": LayoutPolerV2,
 }
 
 
@@ -24,7 +26,7 @@ def get_recognizer(app_name: str) -> TableRecognizer:
     """根据 app 名称返回对应的识别器实例（带缓存）。
 
     Args:
-        app_name: 支持 "dpzx"、"poler"
+        app_name: 支持 "dpzx"、"poler"、"polerv2"
     Raises:
         ValueError: 未知的 app 名称
     """

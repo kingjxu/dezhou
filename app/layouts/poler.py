@@ -28,7 +28,6 @@ class LayoutPoler(LayoutBase):
     """AA Poker app 的座位/ROI 布局（绿色桌面）。"""
 
     app_name: str = "poler"
-    reference_canvas: tuple = (1080, 2400)
 
     # ── 底池 ──
     # "底池:XX" 文字在 y≈0.33; 绿色指示器在 y≈0.26

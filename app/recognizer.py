@@ -48,9 +48,13 @@ _rank_sess_cache: dict[str, object] = {}   # app_name -> session | False
 _suit_sess_cache: dict[str, object] = {}
 
 def _rank_model_path(app: str = "dpzx") -> str:
+    if app == "polerv2":
+        app = "poler"
     return os.path.join(_MODEL_DIR, f"rank_classifier_{app}.onnx")
 
 def _suit_model_path(app: str = "dpzx") -> str:
+    if app == "polerv2":
+        app = "poler"
     return os.path.join(_MODEL_DIR, f"suit_classifier_{app}.onnx")
 
 # ── GPU/CPU provider 选择 ─────────────────────────────────────────
@@ -505,6 +509,7 @@ class OcrItem:
 from app.layouts.base import Anchor, LayoutBase
 from app.layouts.dpzx import LayoutDpzx
 from app.layouts.poler import LayoutPoler
+from app.layouts.polerv2 import LayoutPolerV2
 
 
 _ocr_engines: dict[str, object] = {}
@@ -516,12 +521,16 @@ _RAPID_CALL_KWARGS: dict[int, dict] = {}
 _RAPID_PREFERRED_KWARGS: dict[int, dict] = {}
 
 def _get_ocr(model_kind: str | None = None,
-             disable_angle_cls: bool = False):
+             disable_angle_cls: bool = False,
+             prefer_disable_angle_cls: bool = False):
     """返回 OCR 引擎对象（封装 PaddleOCR 或 RapidOCR，API 不同）。
     _OCR_BACKEND 会被设置为 'paddle' 或 'rapid'。"""
     global _OCR_BACKEND
     model_kind = (model_kind or os.environ.get("DEZHOU_OCR_MODEL", "")).lower().strip()
-    cache_key = f"{_FORCED_OCR or 'rapid'}:{model_kind}:cls={not disable_angle_cls}"
+    cache_key = (
+        f"{_FORCED_OCR or 'rapid'}:{model_kind}:"
+        f"init-cls={not disable_angle_cls}:call-cls={not prefer_disable_angle_cls}"
+    )
     if cache_key in _ocr_engines:
         return _ocr_engines[cache_key]
 
@@ -667,7 +676,9 @@ def _get_ocr(model_kind: str | None = None,
         _ocr_engines[cache_key] = ocr_engine
         _OCR_ENGINE_BACKENDS[id(ocr_engine)] = "rapid"
         _RAPID_PREFERRED_KWARGS[id(ocr_engine)] = (
-            {"use_cls": False} if disable_angle_cls else {}
+            {"use_cls": False}
+            if disable_angle_cls or prefer_disable_angle_cls
+            else {}
         )
         return ocr_engine
 
@@ -816,7 +827,8 @@ class TableRecognizer:
     def __init__(self, layout: LayoutBase | None = None) -> None:
         self._layout    = layout or LayoutDpzx()
         self._ocr       = _get_ocr(
-            disable_angle_cls=self._layout.app_name == "poler",
+            disable_angle_cls=self._layout.app_name == "polerv2",
+            prefer_disable_angle_cls=self._layout.app_name == "poler",
         )
         self._clahe     = cv2.createCLAHE(clipLimit=4.0, tileGridSize=(4, 4))
         self._templates = _load_rank_templates()
@@ -997,6 +1009,29 @@ class TableRecognizer:
                 exclude_values=({hero_stack} if hero_stack else set()), pot_value=pot,
                 has_board_cards=_has_board_cards, chip_colors=("red", "green"))
 
+        # The V2 table can render every live player's wager as a small red
+        # marker card. Switch to that interpretation only with corroboration
+        # from at least three matching markers; otherwise preserve the legacy
+        # OCR fallback for older Poler screenshots with visually similar UI.
+        v2_chip_bets: dict[int, int] = {}
+        if self._layout.app_name == "polerv2":
+            for seat, status, _ in seat_info:
+                if status in ("folded", "empty", "waiting"):
+                    continue
+                v2_roi = _seat_fb_rois.get(seat)
+                if not v2_roi:
+                    continue
+                v2_bet = self._detect_bet_chip_digit(
+                    img, v2_roi,
+                    _fb_chip_map.get(seat, ("red", "green")))
+                if v2_bet is not None:
+                    v2_chip_bets[seat] = v2_bet
+            matching_markers = sum(
+                1 for value in v2_chip_bets.values()
+                if list(v2_chip_bets.values()).count(value) >= 3)
+            if matching_markers < 3:
+                v2_chip_bets.clear()
+
         villains = []
         seat_anchor_map = dict(self._layout.seat_anchors)
         for seat, status, stack in seat_info:
@@ -1055,6 +1090,11 @@ class TableRecognizer:
                             current_bet = fb_bet
                     else:
                         current_bet = fb_bet
+                # Poler V2 has a separate chip-marker layout. Its compact
+                # single-digit marker is more reliable than full-image OCR,
+                # and is intentionally not enabled for legacy Poler.
+                if seat in v2_chip_bets:
+                    current_bet = v2_chip_bets[seat]
             villains.append({
                 "seat": seat, "status": status,
                 "stack": stack, "current_bet": current_bet,
@@ -1208,8 +1248,10 @@ class TableRecognizer:
         tolerance = getattr(self._layout, "reference_aspect_tolerance", 0.03)
         h, w = img.shape[:2]
 
-        # Screenshots may be fitted into a taller/wider canvas with solid black bars.
-        # Crop them only when the detected content matches the known table aspect.
+        # Screenshots may be fitted into a taller/wider canvas with solid black
+        # bars. Always remove those bars for V2; only resize when the cropped
+        # content matches the calibrated reference aspect. This preserves
+        # coordinate ratios for valid screenshots such as 1176x2400.
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         non_black = gray > 12
         columns = np.count_nonzero(non_black, axis=0) >= h * 0.03
@@ -1220,9 +1262,8 @@ class TableRecognizer:
             candidate = img[y0:y1 + 1, x0:x1 + 1]
             if candidate.size > 0:
                 candidate_h, candidate_w = candidate.shape[:2]
-                if abs(candidate_w / candidate_h - target_ratio) <= tolerance:
-                    img = candidate
-                    h, w = candidate_h, candidate_w
+                img = candidate
+                h, w = candidate_h, candidate_w
 
         if abs(w / h - target_ratio) > tolerance:
             return img
@@ -1678,6 +1719,85 @@ class TableRecognizer:
                 best_score = score_f
                 best_val = val
         return best_val
+
+    def _detect_bet_chip_digit(self, img: np.ndarray, roi: tuple,
+                                chip_colors: tuple = ("red", "green")) -> int | None:
+        """Read a single small chip value for the V2 Poler layout.
+
+        Newer Poler screenshots render the small blind/call markers as isolated
+        1/2/4 chips. General OCR can miss them or read the nearby table artwork;
+        this path finds the saturated chip inside a deliberately tight V2 ROI and
+        classifies the centered white digit with simple geometry.
+        """
+        if self._layout.app_name != "polerv2":
+            return None
+        H, W = img.shape[:2]
+        x0, y0, x1, y1 = roi
+        xa, ya = max(0, int(x0 * W)), max(0, int(y0 * H))
+        xb, yb = min(W, int(x1 * W)), min(H, int(y1 * H))
+        if xb <= xa or yb <= ya:
+            return None
+        crop = img[ya:yb, xa:xb]
+        hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+        masks = []
+        if "red" in chip_colors:
+            masks.append(cv2.bitwise_or(
+                cv2.inRange(hsv, (0, 45, 45), (14, 255, 255)),
+                cv2.inRange(hsv, (150, 45, 45), (180, 255, 255)),
+            ))
+        if "green" in chip_colors:
+            masks.append(cv2.inRange(hsv, (65, 110, 70), (105, 255, 255)))
+        if not masks:
+            return None
+        mask = masks[0]
+        for extra in masks[1:]:
+            mask = cv2.bitwise_or(mask, extra)
+        contours, _ = cv2.findContours(
+            mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        candidates = []
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area < 80:
+                continue
+            x, y, w, h = cv2.boundingRect(contour)
+            # The marker is a tilted red card in the current V2 UI. It is
+            # taller than wide, while chips and unrelated red UI controls are
+            # generally flatter or substantially larger.
+            if not 0.45 <= w / max(h, 1) <= 1.25:
+                continue
+            if h < crop.shape[0] * 0.30:
+                continue
+            candidates.append((area, x, y, w, h))
+        if not candidates:
+            return None
+        _, x, y, w, h = max(candidates)
+        pad = max(3, int(max(w, h) * 0.25))
+        chip = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
+                    max(0, x-pad):min(crop.shape[1], x+w+pad)]
+        if chip.size == 0:
+            return None
+        chip_hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
+        white = cv2.inRange(chip_hsv, (0, 0, 175), (180, 110, 255))
+        white = cv2.morphologyEx(
+            white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+        cnts, _ = cv2.findContours(
+            white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        digits = []
+        for contour in cnts:
+            area = cv2.contourArea(contour)
+            x, y, w, h = cv2.boundingRect(contour)
+            if (area >= 120
+                    and h >= chip.shape[0] * 0.22
+                    and w <= chip.shape[1] * 0.35
+                    and x + w <= chip.shape[1] * 0.85):
+                digits.append((area, x, y, w, h, contour))
+        if not digits:
+            return None
+        _, x, y, w, h, contour = max(digits)
+        aspect = w / max(h, 1)
+        if aspect < 0.28:
+            return 1
+        return 4
 
     # ==================================================================
     # 白色文字下注检测（DPZX 用）
@@ -2624,6 +2744,14 @@ class TableRecognizer:
                       rank: str | None = None) -> str:
         """花色识别：CNN + 形态学多信号投票。"""
         if card_crop.size == 0: return "?"
+
+        # V2 uses the visible, colored hero corner as the source of truth.
+        # The legacy Poler suit model was trained on a different corner crop,
+        # and can confidently confuse heart/diamond after screenshot scaling.
+        if self._layout.app_name == "polerv2" and is_hero:
+            corner_suit = self._classify_hero_suit_by_corner(card_crop)
+            if corner_suit != "?":
+                return corner_suit
 
         # 0) Poler 彩色花色（仅特定版本，当前绿桌版使用标准黑/红花色）
         # 跳过，由 CNN + 形态学识别
