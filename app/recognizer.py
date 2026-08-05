@@ -508,9 +508,12 @@ from app.layouts.poler import LayoutPoler
 
 
 _ocr_engines: dict[str, object] = {}
-# 探测一次后缓存：rapid 调用时的最佳 kwargs（如 {"use_cls": False}）。
-# None = 还没探测；{} = 探测了但默认 OK / 任何 kwarg 都不接受。
-_RAPID_CALL_KWARGS: dict | None = None
+# OCR runtime metadata must follow the engine instance. Poler disables angle
+# classification while dpzx keeps the backend default, so a global cache would
+# let the first initialized app affect every later recognizer.
+_OCR_ENGINE_BACKENDS: dict[int, str] = {}
+_RAPID_CALL_KWARGS: dict[int, dict] = {}
+_RAPID_PREFERRED_KWARGS: dict[int, dict] = {}
 
 def _get_ocr(model_kind: str | None = None,
              disable_angle_cls: bool = False):
@@ -579,6 +582,7 @@ def _get_ocr(model_kind: str | None = None,
             gpu_tag = " (GPU)" if use_gpu else " (CPU)"
             print(f"[OCR] 使用 PaddleOCR PP-OCRv4{gpu_tag}")
             _ocr_engines[cache_key] = ocr_engine
+            _OCR_ENGINE_BACKENDS[id(ocr_engine)] = "paddle"
             return ocr_engine
         except Exception as e:
             if _FORCED_OCR in ("paddle", "paddle_gpu"):
@@ -661,6 +665,10 @@ def _get_ocr(model_kind: str | None = None,
 
         _OCR_BACKEND = "rapid"
         _ocr_engines[cache_key] = ocr_engine
+        _OCR_ENGINE_BACKENDS[id(ocr_engine)] = "rapid"
+        _RAPID_PREFERRED_KWARGS[id(ocr_engine)] = (
+            {"use_cls": False} if disable_angle_cls else {}
+        )
         return ocr_engine
 
     raise RuntimeError("没有可用的 OCR 引擎")
@@ -668,7 +676,8 @@ def _get_ocr(model_kind: str | None = None,
 
 def _ocr_run(engine, bgr: np.ndarray):
     """跨引擎的统一调用接口，返回 list[(box, text, score)]。"""
-    if _OCR_BACKEND == "paddle":
+    backend = _OCR_ENGINE_BACKENDS.get(id(engine), _OCR_BACKEND)
+    if backend == "paddle":
         # PaddleOCR 3.x: 优先 .predict()，返回 list[OCRResult(dict-like)]；
         # 2.x: .ocr(img, cls=False)，返回 [[[box,(text,score)], ...]]。
         res = None
@@ -709,25 +718,27 @@ def _ocr_run(engine, bgr: np.ndarray):
                 continue
         return out
     else:  # rapid
-        # SPEED: rapidocr 1.4.x 的 __call__ 接受 use_cls/use_det/use_rec 关键字。
-        # 截图永远是正向，关掉 cls 可省 20-30%。一次性探测，结果缓存到全局，
-        # 后续直接用最佳路径，避免每次 try/except 抖动。
-        global _RAPID_CALL_KWARGS
-        if _RAPID_CALL_KWARGS is None:
-            for kw in ({"use_cls": False}, {}):
+        # RapidOCR versions accept different call kwargs. Cache the compatible
+        # set per engine so poler/dpzx initialization order cannot leak config.
+        engine_id = id(engine)
+        call_kwargs = _RAPID_CALL_KWARGS.get(engine_id)
+        if call_kwargs is None:
+            preferred = _RAPID_PREFERRED_KWARGS.get(engine_id, {})
+            candidates = (preferred, {}) if preferred else ({},)
+            for kw in candidates:
                 try:
                     res, _ = engine(bgr, **kw)
-                    _RAPID_CALL_KWARGS = kw
+                    _RAPID_CALL_KWARGS[engine_id] = kw
                     if kw:
                         print(f"[OCR] RapidOCR 调用参数生效: {kw}")
                     break
                 except TypeError:
                     continue
             else:
-                _RAPID_CALL_KWARGS = {}
+                _RAPID_CALL_KWARGS[engine_id] = {}
                 res, _ = engine(bgr)
         else:
-            res, _ = engine(bgr, **_RAPID_CALL_KWARGS)
+            res, _ = engine(bgr, **call_kwargs)
         if not res:
             return []
         # FIX: rapidocr-onnxruntime 1.2.x（Python 3.13/3.14 上唯一能装的版本）
