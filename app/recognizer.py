@@ -1284,8 +1284,10 @@ class TableRecognizer:
                 candidate = img[y0:y1 + 1, x0:x1 + 1]
                 if candidate.size > 0:
                     candidate_h, candidate_w = candidate.shape[:2]
-                    img = candidate
-                    h, w = candidate_h, candidate_w
+                    candidate_ratio = candidate_w / candidate_h
+                    if abs(candidate_ratio - target_ratio) <= tolerance:
+                        img = candidate
+                        h, w = candidate_h, candidate_w
 
         if abs(w / h - target_ratio) > tolerance:
             return img

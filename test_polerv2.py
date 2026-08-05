@@ -28,14 +28,20 @@ class PolerV2Test(unittest.TestCase):
 
     def test_normalize_canvas_crops_black_letterbox(self):
         image = np.zeros((2160, 1080, 3), dtype=np.uint8)
-        image[88:2072, 54:1026] = 20
+        image[80:2080, 90:990] = 20
         normalized = self._normalizer()._normalize_canvas(image)
-        self.assertEqual(normalized.shape, (1984, 972, 3))
+        self.assertEqual(normalized.shape, (2400, 1080, 3))
 
     def test_normalize_canvas_keeps_black_ui_regions_inside_screenshot(self):
         image = np.full((2400, 1176, 3), 20, dtype=np.uint8)
         image[300:1000, 300:900] = 0
         image[1800:2200, 100:1100] = 0
+        normalized = self._normalizer()._normalize_canvas(image)
+        self.assertEqual(normalized.shape, image.shape)
+
+    def test_normalize_canvas_keeps_non_reference_single_axis_black_border(self):
+        image = np.full((2400, 1176, 3), 20, dtype=np.uint8)
+        image[:80] = 0
         normalized = self._normalizer()._normalize_canvas(image)
         self.assertEqual(normalized.shape, image.shape)
 
