@@ -901,6 +901,8 @@ class TableRecognizer:
         hero_stack = self._pick_stack(items, self._layout.hero_stack_anchor)
         if hero_stack is None:
             hero_stack = self._pick_stack(items, self._layout.hero_stack_anchor, min_value=0)
+        if hero_stack is None and self._layout.app_name == "polerv2":
+            hero_stack = self._detect_v2_hero_stack(img)
         # hero 筹码兜底：在座但读不到 → 0
         if hero_stack is None:
             hero_stack = 0
@@ -1905,6 +1907,21 @@ class TableRecognizer:
             return None, False
         return chip, True
 
+    def _detect_v2_hero_stack(self, img: np.ndarray) -> int | None:
+        """Use a local enlarged read only when full-image hero stack OCR misses."""
+        crop = self._roi(img, self._layout.hero_stack_roi)
+        if crop.size == 0:
+            return None
+        enlarged = cv2.resize(crop, None, fx=4.0, fy=4.0,
+                              interpolation=cv2.INTER_CUBIC)
+        candidates = []
+        for _, text, score in _ocr_run(self._ocr, enlarged) or []:
+            value_text = (text or "").strip()
+            if not re.fullmatch(r"\d{1,4}", value_text):
+                continue
+            candidates.append((float(score), int(value_text)))
+        return max(candidates)[1] if candidates else None
+
     # ==================================================================
     # 白色文字下注检测（DPZX 用）
     # ==================================================================
@@ -2855,7 +2872,7 @@ class TableRecognizer:
         # The legacy Poler suit model was trained on a different corner crop,
         # and can confidently confuse heart/diamond after screenshot scaling.
         if self._layout.app_name == "polerv2" and is_hero:
-            corner_suit = self._classify_hero_suit_by_corner(card_crop)
+            corner_suit = self._classify_hero_suit_by_corner(card_crop, rank)
             if corner_suit != "?":
                 return corner_suit
 
@@ -2925,7 +2942,8 @@ class TableRecognizer:
     #   公共牌: 最大轮廓solidity>=0.88 -> 黑桃
     #   手牌:   多特征投票
     # ==================================================================
-    def _classify_hero_suit_by_corner(self, card_crop: np.ndarray) -> str:
+    def _classify_hero_suit_by_corner(self, card_crop: np.ndarray,
+                                      rank: str | None = None) -> str:
         """手牌花色：在**真实白色卡牌**内部、点数字母正下方的小花色图。
         采样位置：y 33%-62%，x 0%-42% of 真卡（点数字母占 0-33%，花色在其正下方）。
         调用方必须保证 card_crop 是 _hero_card_crop 返回的真卡裁剪（不带绿背景）。
@@ -2941,8 +2959,14 @@ class TableRecognizer:
         ch, cw = card_crop.shape[:2]
         if ch < 10 or cw < 10: return "?"
         # 用 layout 里放宽后的 suit ROI（不再硬编码 0.33-0.62 / 0-0.42）
-        ry_lo, ry_hi = self._layout.hero_card_suit_ry
-        rx_lo, rx_hi = self._layout.hero_card_suit_rx
+        if rank in ("J", "Q", "K"):
+            # Face-card artwork occupies the old broad region. The actual
+            # suit is the compact glyph under the rank in the upper-left.
+            ry_lo, ry_hi = 0.50, 0.78
+            rx_lo, rx_hi = 0.02, 0.32
+        else:
+            ry_lo, ry_hi = self._layout.hero_card_suit_ry
+            rx_lo, rx_hi = self._layout.hero_card_suit_rx
         region = card_crop[int(ch*ry_lo):int(ch*ry_hi),
                            int(cw*rx_lo):int(cw*rx_hi)]
         if region.size == 0: return "?"
