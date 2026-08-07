@@ -3,18 +3,14 @@ import unittest
 import numpy as np
 
 from app.layouts.polerv2 import LayoutPolerV2
-from app.recognizer import TableRecognizer, _confirmed_marker_bets
+from app.recognizer import TableRecognizer, _classify_v2_marker_digit
 
 
 class PolerV2Test(unittest.TestCase):
-    def test_marker_majority_discards_isolated_value(self):
-        self.assertEqual(
-            _confirmed_marker_bets({2: 4, 5: 4, 7: 4, 8: 1}),
-            {2: 4, 5: 4, 7: 4},
-        )
-
-    def test_marker_majority_requires_single_value(self):
-        self.assertEqual(_confirmed_marker_bets({2: 4, 5: 1}), {})
+    def test_v2_marker_digit_supports_distinct_blind_values(self):
+        self.assertEqual(_classify_v2_marker_digit(4, 20), 1)
+        self.assertEqual(_classify_v2_marker_digit(14, 28), 2)
+        self.assertEqual(_classify_v2_marker_digit(22, 28), 4)
 
     def test_v2_rank_crop_keeps_two_character_rank(self):
         self.assertEqual(LayoutPolerV2().hero_card_rank_rx, (0.00, 0.80))

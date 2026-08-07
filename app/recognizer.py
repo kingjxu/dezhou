@@ -505,27 +505,16 @@ class OcrItem:
     score: float
 
 
-def _confirmed_marker_bets(marker_bets: dict[int, int],
-                           minimum_matches: int = 3) -> dict[int, int]:
-    """Keep only a single corroborated V2 marker value.
-
-    A marker is a visual hint rather than an OCR result. If one value does not
-    have enough matching seats, or multiple values do, callers must retain the
-    existing OCR result instead of applying an ambiguous marker override.
-    """
-    counts: dict[int, int] = {}
-    for value in marker_bets.values():
-        counts[value] = counts.get(value, 0) + 1
-    majority_values = {
-        value for value, count in counts.items() if count >= minimum_matches
-    }
-    if len(majority_values) != 1:
-        return {}
-    majority_value = next(iter(majority_values))
-    return {
-        seat: value for seat, value in marker_bets.items()
-        if value == majority_value
-    }
+def _classify_v2_marker_digit(width: int, height: int) -> int | None:
+    """Classify the isolated white `1`/`2`/`4` marker digit by its aspect."""
+    if width <= 0 or height <= 0:
+        return None
+    aspect = width / height
+    if aspect < 0.45:
+        return 1
+    if aspect < 0.72:
+        return 2
+    return 4
 
 
 # 导入布局基类
@@ -1032,10 +1021,9 @@ class TableRecognizer:
                 exclude_values=({hero_stack} if hero_stack else set()), pot_value=pot,
                 has_board_cards=_has_board_cards, chip_colors=("red", "green"))
 
-        # The V2 table can render every live player's wager as a small red
-        # marker card. Switch to that interpretation only with corroboration
-        # from at least three matching markers; otherwise preserve the legacy
-        # OCR fallback for older Poler screenshots with visually similar UI.
+        # The V2 table renders every live player's wager as an independent red
+        # marker card. Marker values can legitimately differ across seats, such
+        # as the preflop 1/2/4 blind and straddle sequence.
         v2_chip_bets: dict[int, int] = {}
         if self._layout.app_name == "polerv2":
             for seat, status, _ in seat_info:
@@ -1049,7 +1037,6 @@ class TableRecognizer:
                     _fb_chip_map.get(seat, ("red", "green")))
                 if v2_bet is not None:
                     v2_chip_bets[seat] = v2_bet
-            v2_chip_bets = _confirmed_marker_bets(v2_chip_bets)
 
         villains = []
         seat_anchor_map = dict(self._layout.seat_anchors)
@@ -1785,9 +1772,9 @@ class TableRecognizer:
                 continue
             x, y, w, h = cv2.boundingRect(contour)
             # The marker is a tilted red card in the current V2 UI. It is
-            # taller than wide, while chips and unrelated red UI controls are
-            # generally flatter or substantially larger.
-            if not 0.45 <= w / max(h, 1) <= 1.25:
+            # usually taller than wide, but the top-seat marker is partially
+            # outside its tight ROI and appears wider than tall.
+            if not 0.40 <= w / max(h, 1) <= 1.60:
                 continue
             if h < crop.shape[0] * 0.30:
                 continue
@@ -1810,7 +1797,7 @@ class TableRecognizer:
         for contour in cnts:
             area = cv2.contourArea(contour)
             x, y, w, h = cv2.boundingRect(contour)
-            if (area >= 120
+            if (area >= 80
                     and h >= chip.shape[0] * 0.22
                     and w <= chip.shape[1] * 0.35
                     and x + w <= chip.shape[1] * 0.85):
@@ -1818,10 +1805,7 @@ class TableRecognizer:
         if not digits:
             return None
         _, x, y, w, h, contour = max(digits)
-        aspect = w / max(h, 1)
-        if aspect < 0.28:
-            return 1
-        return 4
+        return _classify_v2_marker_digit(w, h)
 
     # ==================================================================
     # 白色文字下注检测（DPZX 用）
