@@ -16,6 +16,10 @@ from app.layouts.poler import LayoutPoler
 class LayoutPolerV2(LayoutPoler):
     app_name: str = "polerv2"
     reference_canvas: tuple = (1080, 2400)
+    # V2 hero cards are wider than the legacy crop. Keep enough of the
+    # top-left corner for two-character ranks such as "10".
+    hero_card_rank_rx: tuple = (0.00, 0.80)
+    hero_card_rank_ry: tuple = (0.02, 0.60)
 
     # The newer UI places the in-table chip stack farther toward the center and
     # slightly above the original Poler anchors. Keep these coordinates local to

@@ -2887,7 +2887,15 @@ class TableRecognizer:
                 max_depth = max(d[0][3] for d in defects) / 256.0 if defects is not None else 0.0
             except Exception:
                 max_depth = 0.0
-            # 心形：典型两耸起使 w > h（aspect≈1.1~1.4）；凹口深度>6 是另一条强信号
+            # The V2 UI renders both red symbols wider than tall at small
+            # sizes. Its diamond remains less solid because of four sharp
+            # corners, while the heart contour is nearly convex.
+            if self._layout.app_name == "polerv2":
+                hull_area = cv2.contourArea(cv2.convexHull(c))
+                solidity = cv2.contourArea(c) / hull_area if hull_area > 0 else 0.0
+                if solidity >= 0.90 or max_depth > 6.0:
+                    return "红桃"
+                return "方块"
             if aspect > 0.95 or max_depth > 6.0:
                 return "红桃"
             return "方块"

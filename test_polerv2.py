@@ -16,6 +16,10 @@ class PolerV2Test(unittest.TestCase):
     def test_marker_majority_requires_single_value(self):
         self.assertEqual(_confirmed_marker_bets({2: 4, 5: 1}), {})
 
+    def test_v2_rank_crop_keeps_two_character_rank(self):
+        self.assertEqual(LayoutPolerV2().hero_card_rank_rx, (0.00, 0.80))
+        self.assertEqual(LayoutPolerV2().hero_card_rank_ry, (0.02, 0.60))
+
     def _normalizer(self):
         recognizer = TableRecognizer.__new__(TableRecognizer)
         recognizer._layout = LayoutPolerV2()
