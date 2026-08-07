@@ -1001,7 +1001,9 @@ class TableRecognizer:
         # 不用全局所有座位的 stack。原因：下注 ROI(cx≈0.2~0.78) 不含任何座位的筹码 pill
         # (筹码在画面两侧 cx≈0.05/0.92)，全局排除基本无用却会误伤——例如某座筹码被 CLAHE
         # 误读成 16，会把另一座真实下注 16 也排除掉（实测 20260625 图座7/8 加注/跟注16 全丢）。
-        if _seat_fb_rois and not use_white_bet:
+        if (_seat_fb_rois
+                and not use_white_bet
+                and self._layout.app_name != "polerv2"):
             for seat, status, stack in seat_info:
                 if status in ("folded", "empty", "waiting"):
                     continue
@@ -1017,7 +1019,9 @@ class TableRecognizer:
         # hero 自己的下注 fallback 也并发提交（仅 1 次，但同样在串行关键路径上）
         _hero_fb_roi = getattr(self._layout, 'hero_bet_fallback_roi', None)
         hero_enh_future: Future | None = None
-        if _hero_fb_roi and not use_white_bet:
+        if (_hero_fb_roi
+                and not use_white_bet
+                and self._layout.app_name != "polerv2"):
             hero_enh_future = _executor.submit(
                 self._detect_bet_roi_enhanced, img, _hero_fb_roi,
                 exclude_values=({hero_stack} if hero_stack else set()), pot_value=pot,
