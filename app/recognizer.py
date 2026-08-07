@@ -1025,6 +1025,7 @@ class TableRecognizer:
         # marker card. Marker values can legitimately differ across seats, such
         # as the preflop 1/2/4 blind and straddle sequence.
         v2_chip_bets: dict[int, int] = {}
+        v2_marker_seats: set[int] = set()
         if self._layout.app_name == "polerv2":
             for seat, status, _ in seat_info:
                 if status in ("folded", "empty", "waiting"):
@@ -1032,9 +1033,12 @@ class TableRecognizer:
                 v2_roi = _seat_fb_rois.get(seat)
                 if not v2_roi:
                     continue
+                marker_crop, has_marker = self._v2_marker_card_crop(
+                    img, v2_roi, _fb_chip_map.get(seat, ("red", "green")))
+                if has_marker:
+                    v2_marker_seats.add(seat)
                 v2_bet = self._detect_bet_chip_digit(
-                    img, v2_roi,
-                    _fb_chip_map.get(seat, ("red", "green")))
+                    img, v2_roi, _fb_chip_map.get(seat, ("red", "green")))
                 if v2_bet is not None:
                     v2_chip_bets[seat] = v2_bet
 
@@ -1101,6 +1105,10 @@ class TableRecognizer:
                 # and is intentionally not enabled for legacy Poler.
                 if seat in v2_chip_bets:
                     current_bet = v2_chip_bets[seat]
+                elif seat in v2_marker_seats:
+                    # A red card with no readable wager is a face-down card,
+                    # not evidence for inheriting a nearby pot/button value.
+                    current_bet = None
             villains.append({
                 "seat": seat, "status": status,
                 "stack": stack, "current_bet": current_bet,
@@ -1144,9 +1152,15 @@ class TableRecognizer:
             hero_current_bet = self._detect_bet_white_text(
                 img, self._layout.hero_bet_roi)
         else:
-            hero_current_bet = self._pick_current_bet(
-                items, self._layout.hero_bet_anchor,
-                exclude_values=stack_values)
+            # V2 action buttons render values such as "跟注 26" directly next
+            # to the legacy hero bet anchor. Hero wagers must come from the
+            # dedicated marker path, so do not treat action-button OCR as a bet.
+            if self._layout.app_name == "polerv2":
+                hero_current_bet = None
+            else:
+                hero_current_bet = self._pick_current_bet(
+                    items, self._layout.hero_bet_anchor,
+                    exclude_values=stack_values)
             # FIX(v0.7)：hero 自己的小芯（SB/BB/STR=1/2/4）在 640px OCR 下经常漏读。
             # 用 hero_bet_fallback_roi 紧裁剪 + 5x 放大 OCR 兜底。
             if hero_enh_future is not None:
@@ -1289,6 +1303,22 @@ class TableRecognizer:
 
     def _detect_button_seat(self, img: np.ndarray) -> int | None:
         h, w = img.shape[:2]
+        if self._layout.app_name == "polerv2":
+            # A hero-side D can merge with the nearby hole-card white border.
+            # Its dark letter remains an isolated, near-square component in
+            # this narrow window, unlike the same-position action button art.
+            hero_badge = img[int(h * 0.80):int(h * 0.845),
+                             int(w * 0.59):int(w * 0.66)]
+            if hero_badge.size > 0:
+                gray_badge = cv2.cvtColor(hero_badge, cv2.COLOR_BGR2GRAY)
+                dark_badge = cv2.inRange(gray_badge, 0, 100)
+                labels, _, stats, _ = cv2.connectedComponentsWithStats(dark_badge)
+                for index in range(1, labels):
+                    x, y, bw, bh, area = stats[index]
+                    if (200 <= area <= 700
+                            and y >= hero_badge.shape[0] * 0.30
+                            and 0.65 <= bw / max(bh, 1) <= 1.10):
+                        return 1
         hsv    = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         lo = getattr(self._layout, 'button_hsv_lower', (15, 120, 100))
         hi = getattr(self._layout, 'button_hsv_upper', (40, 255, 255))
@@ -1299,11 +1329,20 @@ class TableRecognizer:
         candidates = []
         for c in contours:
             area = cv2.contourArea(c)
-            if not (min_area < area < 3000): continue
             M = cv2.moments(c)
             if M["m00"] == 0: continue
             cx = M["m10"] / M["m00"] / w
             cy = M["m01"] / M["m00"] / h
+            bx, by, bw, bh = cv2.boundingRect(c)
+            is_v2_hero_button = (
+                self._layout.app_name == "polerv2"
+                and 0.60 <= cx <= 0.69
+                and 0.80 <= cy <= 0.85
+                and 0.75 <= bw / max(bh, 1) <= 1.50
+                and 2500 < area < 5000
+            )
+            if not (min_area < area < 3000) and not is_v2_hero_button:
+                continue
             if cy >= 0.90: continue           # 排除底部UI
             # 排除中央区域（加分按钮等UI元素），但允许靠近已知 button_position 的候选
             if 0.35 < cx < 0.65 and cy > 0.55:
@@ -1319,7 +1358,23 @@ class TableRecognizer:
             if peri == 0: continue
             if 4 * np.pi * area / (peri * peri) < 0.40: continue
             candidates.append((cx, cy, area))
-        if not candidates: return None
+        if not candidates:
+            if self._layout.app_name == "polerv2":
+                # Some V2 hero-side D badges are split by the black letter, so
+                # they fail the global contour circularity gate. Restrict this
+                # fallback to the known badge window and require a near-square,
+                # tall white component to avoid confusing a nearby card rank.
+                for c in contours:
+                    area = cv2.contourArea(c)
+                    x, y, bw, bh = cv2.boundingRect(c)
+                    cx = (x + bw / 2) / w
+                    cy = (y + bh / 2) / h
+                    if (2500 < area < 5000
+                            and 0.60 <= cx <= 0.69
+                            and 0.80 <= cy <= 0.85
+                            and 0.75 <= bw / max(bh, 1) <= 1.50):
+                        return 1
+            return None
         # 在所有候选中找最接近某个 button_position 的
         best_dist, best_seat = 999.0, None
         for bcx, bcy, _ in candidates:
@@ -1328,7 +1383,20 @@ class TableRecognizer:
                     d = ((bcx-px)**2+(bcy-py)**2)**0.5
                     if d < best_dist:
                         best_dist = d; best_seat = seat
-        return best_seat if best_dist < 0.15 else None
+        if best_dist < 0.15:
+            return best_seat
+        if self._layout.app_name == "polerv2":
+            for c in contours:
+                area = cv2.contourArea(c)
+                x, y, bw, bh = cv2.boundingRect(c)
+                cx = (x + bw / 2) / w
+                cy = (y + bh / 2) / h
+                if (2500 < area < 5000
+                        and 0.60 <= cx <= 0.69
+                        and 0.80 <= cy <= 0.85
+                        and 0.75 <= bw / max(bh, 1) <= 1.50):
+                    return 1
+        return None
 
     # ==================================================================
     # 盲注（支持全角括号）
@@ -1742,12 +1810,60 @@ class TableRecognizer:
         """
         if self._layout.app_name != "polerv2":
             return None
+        chip, _ = self._v2_marker_card_crop(img, roi, chip_colors)
+        if chip is None:
+            return None
+        chip_hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
+        white = cv2.inRange(chip_hsv, (0, 0, 175), (180, 110, 255))
+        white = cv2.morphologyEx(
+            white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+        # Two-character V2 wagers such as 27/33 are not safely distinguishable
+        # by a single component's aspect ratio. The red-card gate above keeps
+        # this OCR pass local to the wager marker instead of table UI text.
+        # Right-side wager cards can be overlapped by the green "跟注" label.
+        # The marker digits live on the left half of the red card, while the
+        # overlap is on the right, so keep the stable left-side text region.
+        text_region = white[:, :max(1, int(white.shape[1] * 0.75))]
+        white_big = cv2.resize(
+            text_region, None, fx=4.0, fy=4.0, interpolation=cv2.INTER_CUBIC)
+        marker_ocr = _ocr_run(
+            self._ocr, cv2.cvtColor(white_big, cv2.COLOR_GRAY2BGR)) or []
+        numeric_reads = []
+        for _, text, score in marker_ocr:
+            value_text = (text or "").strip()
+            if re.fullmatch(r"\d{1,3}", value_text):
+                numeric_reads.append((float(score), int(value_text)))
+        if numeric_reads:
+            return max(numeric_reads)[1]
+
+        cnts, _ = cv2.findContours(
+            white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        digits = []
+        for contour in cnts:
+            area = cv2.contourArea(contour)
+            x, y, w, h = cv2.boundingRect(contour)
+            if (area >= 80
+                    and h >= chip.shape[0] * 0.22
+                    and h <= chip.shape[0] * 0.35
+                    and w <= chip.shape[1] * 0.35
+                    and x + w <= chip.shape[1] * 0.85):
+                digits.append((area, x, y, w, h, contour))
+        if not digits:
+            return None
+        _, x, y, w, h, contour = max(digits)
+        return _classify_v2_marker_digit(w, h)
+
+    def _v2_marker_card_crop(self, img: np.ndarray, roi: tuple,
+                              chip_colors: tuple = ("red", "green")) -> tuple[np.ndarray | None, bool]:
+        """Return the V2 marker-card crop and whether a marker card was found."""
+        if self._layout.app_name != "polerv2":
+            return None, False
         H, W = img.shape[:2]
         x0, y0, x1, y1 = roi
         xa, ya = max(0, int(x0 * W)), max(0, int(y0 * H))
         xb, yb = min(W, int(x1 * W)), min(H, int(y1 * H))
         if xb <= xa or yb <= ya:
-            return None
+            return None, False
         crop = img[ya:yb, xa:xb]
         hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
         masks = []
@@ -1780,32 +1896,14 @@ class TableRecognizer:
                 continue
             candidates.append((area, x, y, w, h))
         if not candidates:
-            return None
+            return None, False
         _, x, y, w, h = max(candidates)
         pad = max(3, int(max(w, h) * 0.25))
         chip = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
                     max(0, x-pad):min(crop.shape[1], x+w+pad)]
         if chip.size == 0:
-            return None
-        chip_hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
-        white = cv2.inRange(chip_hsv, (0, 0, 175), (180, 110, 255))
-        white = cv2.morphologyEx(
-            white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
-        cnts, _ = cv2.findContours(
-            white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        digits = []
-        for contour in cnts:
-            area = cv2.contourArea(contour)
-            x, y, w, h = cv2.boundingRect(contour)
-            if (area >= 80
-                    and h >= chip.shape[0] * 0.22
-                    and w <= chip.shape[1] * 0.35
-                    and x + w <= chip.shape[1] * 0.85):
-                digits.append((area, x, y, w, h, contour))
-        if not digits:
-            return None
-        _, x, y, w, h, contour = max(digits)
-        return _classify_v2_marker_digit(w, h)
+            return None, False
+        return chip, True
 
     # ==================================================================
     # 白色文字下注检测（DPZX 用）

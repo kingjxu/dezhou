@@ -12,6 +12,15 @@ class PolerV2Test(unittest.TestCase):
         self.assertEqual(_classify_v2_marker_digit(14, 28), 2)
         self.assertEqual(_classify_v2_marker_digit(22, 28), 4)
 
+    def test_v2_button_positions_include_hero_side_marker(self):
+        self.assertIn((0.65, 0.78), LayoutPolerV2().button_positions[1])
+
+    def test_v2_marker_roi_covers_left_upper_seat(self):
+        self.assertEqual(
+            LayoutPolerV2().seat_bet_fallback_rois[4],
+            (0.120, 0.270, 0.280, 0.380),
+        )
+
     def test_v2_rank_crop_keeps_two_character_rank(self):
         self.assertEqual(LayoutPolerV2().hero_card_rank_rx, (0.00, 0.80))
         self.assertEqual(LayoutPolerV2().hero_card_rank_ry, (0.02, 0.60))

@@ -20,6 +20,10 @@ class LayoutPolerV2(LayoutPoler):
     # top-left corner for two-character ranks such as "10".
     hero_card_rank_rx: tuple = (0.00, 0.80)
     hero_card_rank_ry: tuple = (0.02, 0.60)
+    button_positions: dict = field(default_factory=lambda: {
+        **LayoutPoler().button_positions,
+        1: [(0.32, 0.87), (0.60, 0.87), (0.61, 0.80), (0.65, 0.78)],
+    })
 
     # The newer UI places the in-table chip stack farther toward the center and
     # slightly above the original Poler anchors. Keep these coordinates local to
@@ -36,7 +40,7 @@ class LayoutPolerV2(LayoutPoler):
     seat_bet_fallback_rois: dict = field(default_factory=lambda: {
         2: (0.205, 0.575, 0.305, 0.645),
         3: (0.205, 0.460, 0.305, 0.530),
-        4: (0.205, 0.345, 0.305, 0.415),
+        4: (0.120, 0.270, 0.280, 0.380),
         5: (0.500, 0.210, 0.570, 0.285),
         6: (0.710, 0.270, 0.810, 0.370),
         7: (0.710, 0.400, 0.810, 0.500),
