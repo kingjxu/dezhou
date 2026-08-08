@@ -2547,14 +2547,16 @@ class TableRecognizer:
                         d27 = _disambiguate_7_vs_2(rp)
                         if d27 == "2":
                             cnn_rank = "2"
-                    # 6/8 消歧（poler 专属）：CNN 对小号字 6/8 上半闭合判别不稳。
-                    # 仅在 cnn_rank=="8" 且 CNN conf 偏低 (<0.70) 时校验。
-                    if (cnn_rank == "8"
-                            and cnn_conf < 0.70
+                    # V2 hero cards can also confuse 8 as a high-confidence 5.
+                    # The topology check is only allowed to override 5 when it
+                    # positively finds an 8/6 closed-loop shape.
+                    if ((cnn_rank == "5"
+                         or (cnn_rank == "8" and cnn_conf < 0.70))
+                            and self._layout.app_name == "polerv2"
                             and getattr(self._layout, 'enable_disambiguate_6_vs_8', False)):
                         d68 = _disambiguate_6_vs_8(rp)
-                        if d68 == "6":
-                            cnn_rank = "6"
+                        if d68 in ("6", "8"):
+                            cnn_rank = d68
                     rank_map[idx] = cnn_rank
                     ocr_score[idx] = cnn_conf
                     continue
