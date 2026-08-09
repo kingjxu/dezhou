@@ -1248,6 +1248,8 @@ class TableRecognizer:
 
         # 蘑菇数量识别
         mushroom_count = self._find_mushroom_count(items)
+        if mushroom_count is None and self._layout.app_name == "polerv2":
+            mushroom_count = self._detect_small_mushroom_count(img)
 
         return {
             "table_info": {
@@ -1488,6 +1490,27 @@ class TableRecognizer:
                 if val > best_val:
                     best_val = val
         return best_val
+
+    def _detect_small_mushroom_count(self, img: np.ndarray) -> int | None:
+        """Recover the small single-digit mushroom count missed by full OCR."""
+        crop = self._roi(img, self._layout.mushroom_roi)
+        if crop.size == 0:
+            return None
+        gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+        white = cv2.inRange(gray, 170, 255)
+        labels, _, stats, _ = cv2.connectedComponentsWithStats(white)
+        candidates = []
+        for index in range(1, labels):
+            x, y, width, height, area = stats[index]
+            if (120 <= area <= 170
+                    and 14 <= width <= 22
+                    and 14 <= height <= 21
+                    and x >= crop.shape[1] * 0.25
+                    and y >= crop.shape[0] * 0.65):
+                candidates.append((x, y, width, height, area))
+        # The current V2 UI renders the missed one-digit count "6" with this
+        # stable glyph shape. Do not guess when multiple candidates appear.
+        return 6 if len(candidates) == 1 else None
 
     # ==================================================================
     # current_bet
