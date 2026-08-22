@@ -155,6 +155,25 @@ def _classify_rank_cnn(patch_bgr: np.ndarray, app: str = "dpzx") -> tuple[str, f
     return _RANKS_ALL[idx], float(probs[idx])
 
 
+def _should_use_v2_tight_hero_rank(
+    broad_rank: str,
+    tight_rank: str,
+    tight_conf: float,
+) -> bool:
+    if tight_conf < 0.98 or tight_rank == broad_rank:
+        return False
+
+    # The broad V2 hero patch deliberately keeps a large area so "10" remains
+    # readable. On some cards that also includes the large suit / face artwork:
+    # it most often collapses face ranks into 2/5/9, or a black 7 into Q. Only
+    # let a very confident corner glyph override those shape-conflict families.
+    if broad_rank in {"2", "5", "9"} and tight_rank in {"A", "K", "J", "5"}:
+        return True
+    if broad_rank in {"J", "Q", "K", "A"} and tight_rank in {"2", "3", "4", "5", "6", "7", "8", "9"}:
+        return True
+    return False
+
+
 def _classify_v2_hero_rank_with_corner_fallback(card_crop: np.ndarray,
                                                 broad_patch: np.ndarray,
                                                 app: str) -> tuple[str, float, bool] | None:
@@ -178,12 +197,7 @@ def _classify_v2_hero_rank_with_corner_fallback(card_crop: np.ndarray,
         return broad_rank, broad_conf, False
 
     tight_rank, tight_conf = tight_res
-    polluted_broad_ranks = {"2", "5", "9"}
-    if (
-        broad_rank in polluted_broad_ranks
-        and tight_rank != broad_rank
-        and tight_conf >= 0.95
-    ):
+    if _should_use_v2_tight_hero_rank(broad_rank, tight_rank, tight_conf):
         return tight_rank, tight_conf, True
 
     return broad_rank, broad_conf, False

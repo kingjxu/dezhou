@@ -3,7 +3,11 @@ import unittest
 import numpy as np
 
 from app.layouts.polerv2 import LayoutPolerV2
-from app.recognizer import TableRecognizer, _classify_v2_marker_digit
+from app.recognizer import (
+    TableRecognizer,
+    _classify_v2_marker_digit,
+    _should_use_v2_tight_hero_rank,
+)
 
 
 class PolerV2Test(unittest.TestCase):
@@ -24,6 +28,16 @@ class PolerV2Test(unittest.TestCase):
     def test_v2_rank_crop_keeps_two_character_rank(self):
         self.assertEqual(LayoutPolerV2().hero_card_rank_rx, (0.00, 0.80))
         self.assertEqual(LayoutPolerV2().hero_card_rank_ry, (0.02, 0.60))
+
+    def test_v2_tight_rank_overrides_artwork_polluted_face_or_suit(self):
+        self.assertTrue(_should_use_v2_tight_hero_rank("Q", "7", 1.0))
+        self.assertTrue(_should_use_v2_tight_hero_rank("2", "J", 0.999))
+        self.assertTrue(_should_use_v2_tight_hero_rank("9", "K", 0.999))
+
+    def test_v2_tight_rank_does_not_override_similar_numeral_noise(self):
+        self.assertFalse(_should_use_v2_tight_hero_rank("5", "6", 0.999))
+        self.assertFalse(_should_use_v2_tight_hero_rank("8", "A", 0.999))
+        self.assertFalse(_should_use_v2_tight_hero_rank("Q", "7", 0.97))
 
     def _normalizer(self):
         recognizer = TableRecognizer.__new__(TableRecognizer)
