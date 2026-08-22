@@ -26,6 +26,7 @@ class LayoutPolerV2(LayoutPoler):
     # larger patch than legacy poler so K♠ is not split into club-like blobs.
     face_hero_suit_ry: tuple = (0.35, 0.70)
     face_hero_suit_rx: tuple = (0.02, 0.50)
+    mushroom_roi: tuple = (0.130, 0.115, 0.200, 0.165)
     button_positions: dict = field(default_factory=lambda: {
         **LayoutPoler().button_positions,
         1: [(0.32, 0.87), (0.60, 0.87), (0.61, 0.80), (0.65, 0.78)],

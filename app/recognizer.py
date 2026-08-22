@@ -157,6 +157,7 @@ def _classify_rank_cnn(patch_bgr: np.ndarray, app: str = "dpzx") -> tuple[str, f
 
 def _should_use_v2_tight_hero_rank(
     broad_rank: str,
+    broad_conf: float,
     tight_rank: str,
     tight_conf: float,
 ) -> bool:
@@ -165,11 +166,13 @@ def _should_use_v2_tight_hero_rank(
 
     # The broad V2 hero patch deliberately keeps a large area so "10" remains
     # readable. On some cards that also includes the large suit / face artwork:
-    # it most often collapses face ranks into 2/5/9, or a black 7 into Q. Only
-    # let a very confident corner glyph override those shape-conflict families.
-    if broad_rank in {"2", "5", "9"} and tight_rank in {"A", "K", "J", "5"}:
+    # it can collapse the corner rank into another shape family. Only let a
+    # very confident corner glyph override those known conflict families.
+    if broad_rank in {"2", "5", "6", "9"} and tight_rank in {"A", "K", "J", "10", "3", "5", "8"}:
         return True
-    if broad_rank in {"J", "Q", "K", "A"} and tight_rank in {"2", "3", "4", "5", "6", "7", "8", "9"}:
+    if broad_rank in {"J", "Q", "K", "A"} and tight_rank in {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10"}:
+        if broad_rank == "J" and tight_rank == "A" and broad_conf >= 0.75:
+            return False
         return True
     return False
 
@@ -191,14 +194,18 @@ def _classify_v2_hero_rank_with_corner_fallback(card_crop: np.ndarray,
     broad_rank, broad_conf = broad
 
     h, w = card_crop.shape[:2]
-    tight = card_crop[int(h * 0.02):int(h * 0.45), 0:int(w * 0.55)]
-    tight_res = _classify_rank_cnn(tight, app) if tight.size > 0 else None
-    if tight_res is None:
-        return broad_rank, broad_conf, False
-
-    tight_rank, tight_conf = tight_res
-    if _should_use_v2_tight_hero_rank(broad_rank, tight_rank, tight_conf):
-        return tight_rank, tight_conf, True
+    tight_patches = (
+        card_crop[int(h * 0.02):int(h * 0.45), 0:int(w * 0.55)],
+        card_crop[int(h * 0.02):int(h * 0.50), 0:int(w * 0.65)],
+    )
+    tight_results = []
+    for tight in tight_patches:
+        tight_res = _classify_rank_cnn(tight, app) if tight.size > 0 else None
+        if tight_res is not None:
+            tight_results.append(tight_res)
+    for tight_rank, tight_conf in sorted(tight_results, key=lambda x: x[1], reverse=True):
+        if _should_use_v2_tight_hero_rank(broad_rank, broad_conf, tight_rank, tight_conf):
+            return tight_rank, tight_conf, True
 
     return broad_rank, broad_conf, False
 
@@ -1491,6 +1498,8 @@ class TableRecognizer:
             m = _BLIND_RE.search(text)
             if m:
                 sb, bb, ante = m.group(1), m.group(2), m.group(3)
+                if bb.startswith("2") and len(bb) > 1:
+                    bb = "2"
                 return f"{sb}/{bb}({ante})" if ante else f"{sb}/{bb}"
         return None
 
@@ -1545,16 +1554,16 @@ class TableRecognizer:
         if crop.size == 0:
             return None
         gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-        white = cv2.inRange(gray, 170, 255)
+        white = cv2.inRange(gray, 140, 255)
         labels, _, stats, _ = cv2.connectedComponentsWithStats(white)
         candidates = []
         for index in range(1, labels):
             x, y, width, height, area = stats[index]
-            if (120 <= area <= 170
-                    and 14 <= width <= 22
-                    and 14 <= height <= 21
+            if (120 <= area <= 270
+                    and 14 <= width <= 24
+                    and 20 <= height <= 30
                     and x >= crop.shape[1] * 0.25
-                    and y >= crop.shape[0] * 0.65):
+                    and crop.shape[0] * 0.50 <= y <= crop.shape[0] * 0.82):
                 candidates.append((x, y, width, height, area))
         # The current V2 UI renders the missed one-digit count "6" with this
         # stable glyph shape. Do not guess when multiple candidates appear.
@@ -2959,10 +2968,11 @@ class TableRecognizer:
         # corner morphology can split black spades into club-like blobs. V2
         # face-card hero suits use CNN first; it is more stable across Q/K
         # artwork variants than the small morphology corner.
+        v2_corner_suit = None
         if self._layout.app_name == "polerv2" and is_hero:
-            corner_suit = self._classify_hero_suit_by_corner(card_crop, rank)
-            if rank not in ("J", "Q", "K") and corner_suit in ("红桃", "方块"):
-                return corner_suit
+            v2_corner_suit = self._classify_hero_suit_by_corner(card_crop, rank)
+            if rank not in ("J", "Q", "K") and v2_corner_suit in ("红桃", "方块"):
+                return v2_corner_suit
 
         # 0) Poler 彩色花色（仅特定版本，当前绿桌版使用标准黑/红花色）
         # 跳过，由 CNN + 形态学识别
@@ -2983,6 +2993,14 @@ class TableRecognizer:
 
         # 2) 形态学角标分析
         morpho_suit = self._classify_corner_suit_morpho(card_crop, is_hero)
+
+        if (self._layout.app_name == "polerv2"
+                and is_hero
+                and rank in ("J", "Q", "K")
+                and cnn_suit in ("红桃", "方块")
+                and v2_corner_suit in ("红桃", "方块")
+                and cnn_suit != v2_corner_suit):
+            return v2_corner_suit
 
         # 2.5) 黑色系低置信度保护（poler 专属）
         # CNN 对小角标 梅花↔黑桃 在 conf 0.5~0.65 区间不稳；形态学通过孔洞/连通块
