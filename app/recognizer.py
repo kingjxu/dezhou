@@ -2528,6 +2528,23 @@ class TableRecognizer:
                 _rank_min_conf = getattr(self._layout, 'rank_cnn_min_conf', 0.40)
                 if res is not None and res[1] >= _rank_min_conf:
                     cnn_rank, cnn_conf = res
+                    tight_rank_override = False
+                    # V2 hero face cards can be polluted by the center artwork
+                    # when using the broad patch kept for two-character ranks:
+                    # K♠ may look like 9, and A♣ may look like 5. Only let a
+                    # tight upper-left glyph patch override these two suspicious
+                    # numeric predictions when it is highly confident A/K.
+                    if is_hero and self._layout.app_name == "polerv2" and cnn_rank in ("5", "9"):
+                        tight = crop[
+                            int(crop.shape[0] * 0.02):int(crop.shape[0] * 0.45),
+                            0:int(crop.shape[1] * 0.55),
+                        ]
+                        tight_res = _classify_rank_cnn(tight, _app) if tight.size > 0 else None
+                        if tight_res is not None:
+                            tight_rank, tight_conf = tight_res
+                            if tight_rank in ("A", "K") and tight_conf >= 0.95:
+                                cnn_rank, cnn_conf = tight_rank, tight_conf
+                                tight_rank_override = True
                     # OCR 交叉验证阈值从 layout 读取。
                     # dpzx 默认 0.70；poler 设 0.0 → 完全跳过 OCR 校验
                     # （OCR 对 AA Poker 小角标识别不稳，实测反而降准确度）。
@@ -2550,11 +2567,11 @@ class TableRecognizer:
                     # 用拓扑特征（孔洞大小 + 形状）做最终判断。
                     _akq_ht = self._layout.akq_hero_thresholds
                     _akq_bt = self._layout.akq_board_thresholds
-                    if cnn_rank in ("A", "K"):
+                    if cnn_rank in ("A", "K") and not tight_rank_override:
                         akq = _disambiguate_AKQ(rp, _akq_ht, _akq_bt)
                         if akq is not None:
                             cnn_rank = akq
-                    elif cnn_rank == "Q":
+                    elif cnn_rank == "Q" and not tight_rank_override:
                         akq = _disambiguate_AKQ(rp, _akq_ht, _akq_bt)
                         if akq == "A":
                             cnn_rank = akq
@@ -2871,6 +2888,8 @@ class TableRecognizer:
         仅当对应 layout 定义了 face_suit_ry 时启用 face 分支（poler/dpzx 各自独立）。"""
         if rank in ("J", "Q", "K"):
             if is_hero:
+                if self._layout.app_name == "polerv2":
+                    return self._crop_suit_patch(card_crop, is_hero)
                 ry = getattr(self._layout, "face_hero_suit_ry", None)
                 rx = getattr(self._layout, "face_hero_suit_rx", None)
             else:
@@ -2897,12 +2916,14 @@ class TableRecognizer:
         """花色识别：CNN + 形态学多信号投票。"""
         if card_crop.size == 0: return "?"
 
-        # V2 uses the visible, colored hero corner as the source of truth.
-        # The legacy Poler suit model was trained on a different corner crop,
-        # and can confidently confuse heart/diamond after screenshot scaling.
+        # V2 non-face hero cards: trust the corner only when it gives a red
+        # suit. The suit CNN can confuse red heart/diamond after scaling, while
+        # corner morphology can split black spades into club-like blobs. V2
+        # face-card hero suits use CNN first; it is more stable across Q/K
+        # artwork variants than the small morphology corner.
         if self._layout.app_name == "polerv2" and is_hero:
             corner_suit = self._classify_hero_suit_by_corner(card_crop, rank)
-            if corner_suit != "?":
+            if rank not in ("J", "Q", "K") and corner_suit in ("红桃", "方块"):
                 return corner_suit
 
         # 0) Poler 彩色花色（仅特定版本，当前绿桌版使用标准黑/红花色）
@@ -2987,12 +3008,11 @@ class TableRecognizer:
         """
         ch, cw = card_crop.shape[:2]
         if ch < 10 or cw < 10: return "?"
-        # 用 layout 里放宽后的 suit ROI（不再硬编码 0.33-0.62 / 0-0.42）
         if rank in ("J", "Q", "K"):
             # Face-card artwork occupies the old broad region. The actual
             # suit is the compact glyph under the rank in the upper-left.
-            ry_lo, ry_hi = 0.50, 0.78
-            rx_lo, rx_hi = 0.02, 0.32
+            ry_lo, ry_hi = getattr(self._layout, "face_hero_suit_ry", (0.50, 0.78))
+            rx_lo, rx_hi = getattr(self._layout, "face_hero_suit_rx", (0.02, 0.32))
         else:
             ry_lo, ry_hi = self._layout.hero_card_suit_ry
             rx_lo, rx_hi = self._layout.hero_card_suit_rx
@@ -3050,7 +3070,19 @@ class TableRecognizer:
         nl2, _, st2, _ = cv2.connectedComponentsWithStats(dk_er)
         n_comp_e = sum(1 for i in range(1, nl2) if st2[i, cv2.CC_STAT_AREA] > 15)
 
-        if n_comp >= 3 or n_comp_e >= 3:
+        is_clubs_by_comp = False
+        if n_comp >= 2:
+            areas = sorted([stats[i, cv2.CC_STAT_AREA] for i in range(1, n_lab)
+                            if stats[i, cv2.CC_STAT_AREA] > 30], reverse=True)
+            dominant_ratio = areas[0] / sum(areas) if areas else 0
+            is_clubs_by_comp = dominant_ratio < 0.80
+        if not is_clubs_by_comp and n_comp_e >= 2:
+            areas_e = sorted([st2[i, cv2.CC_STAT_AREA] for i in range(1, nl2)
+                              if st2[i, cv2.CC_STAT_AREA] > 15], reverse=True)
+            dominant_ratio_e = areas_e[0] / sum(areas_e) if areas_e else 0
+            is_clubs_by_comp = dominant_ratio_e < 0.80
+
+        if is_clubs_by_comp:
             return "梅花"
 
         # 主轮廓 solidity：♠ 一般 ≥ 0.9（整体凸），♣ 单瓣包络后也凸但整体三瓣合起来不凸

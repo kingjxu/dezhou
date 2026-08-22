@@ -17,9 +17,15 @@ class LayoutPolerV2(LayoutPoler):
     app_name: str = "polerv2"
     reference_canvas: tuple = (1080, 2400)
     # V2 hero cards are wider than the legacy crop. Keep enough of the
-    # top-left corner for two-character ranks such as "10".
+    # top-left corner for two-character ranks such as "10". The recognizer may
+    # run an additional tight-corner check for K/A when this broad patch is
+    # polluted by face art.
     hero_card_rank_rx: tuple = (0.00, 0.80)
     hero_card_rank_ry: tuple = (0.02, 0.60)
+    # Face-card suit glyph is below the rank in the upper-left corner; use a
+    # larger patch than legacy poler so K♠ is not split into club-like blobs.
+    face_hero_suit_ry: tuple = (0.35, 0.70)
+    face_hero_suit_rx: tuple = (0.02, 0.50)
     button_positions: dict = field(default_factory=lambda: {
         **LayoutPoler().button_positions,
         1: [(0.32, 0.87), (0.60, 0.87), (0.61, 0.80), (0.65, 0.78)],
