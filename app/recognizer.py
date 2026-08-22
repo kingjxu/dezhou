@@ -155,6 +155,40 @@ def _classify_rank_cnn(patch_bgr: np.ndarray, app: str = "dpzx") -> tuple[str, f
     return _RANKS_ALL[idx], float(probs[idx])
 
 
+def _classify_v2_hero_rank_with_corner_fallback(card_crop: np.ndarray,
+                                                broad_patch: np.ndarray,
+                                                app: str) -> tuple[str, float, bool] | None:
+    """Classify a V2 hero rank with a tight-corner fallback.
+
+    The broad patch is kept for normal numeral cards and two-character ranks,
+    but on face-heavy hero cards it can include the center artwork / large suit
+    glyph and turn J/K/A into small numerals. The tight patch only covers the
+    upper-left rank glyph, so use it when it strongly disagrees with a common
+    polluted numeral result.
+    """
+    broad = _classify_rank_cnn(broad_patch, app)
+    if broad is None:
+        return None
+    broad_rank, broad_conf = broad
+
+    h, w = card_crop.shape[:2]
+    tight = card_crop[int(h * 0.02):int(h * 0.45), 0:int(w * 0.55)]
+    tight_res = _classify_rank_cnn(tight, app) if tight.size > 0 else None
+    if tight_res is None:
+        return broad_rank, broad_conf, False
+
+    tight_rank, tight_conf = tight_res
+    polluted_broad_ranks = {"2", "5", "9"}
+    if (
+        broad_rank in polluted_broad_ranks
+        and tight_rank != broad_rank
+        and tight_conf >= 0.95
+    ):
+        return tight_rank, tight_conf, True
+
+    return broad_rank, broad_conf, False
+
+
 def _binarize_rank_upper(patch_bgr: np.ndarray):
     """rank patch 上部二值化，返回 (bw, is_hero) 或 (None, False)。"""
     if patch_bgr is None or patch_bgr.size == 0:
@@ -2523,28 +2557,18 @@ class TableRecognizer:
 
             # 1) 如果有 CNN 分类器：跑 CNN，再用 OCR 交叉验证
             if cnn_sess is not None and rp.size > 0:
-                res = _classify_rank_cnn(rp, _app)
+                if is_hero and self._layout.app_name == "polerv2":
+                    res = _classify_v2_hero_rank_with_corner_fallback(crop, rp, _app)
+                else:
+                    res = _classify_rank_cnn(rp, _app)
                 # 阈值从 layout 读取：dpzx 默认 0.40，poler 降到 0.25
                 _rank_min_conf = getattr(self._layout, 'rank_cnn_min_conf', 0.40)
                 if res is not None and res[1] >= _rank_min_conf:
-                    cnn_rank, cnn_conf = res
-                    tight_rank_override = False
-                    # V2 hero face cards can be polluted by the center artwork
-                    # when using the broad patch kept for two-character ranks:
-                    # K♠ may look like 9, and A♣ may look like 5. Only let a
-                    # tight upper-left glyph patch override these two suspicious
-                    # numeric predictions when it is highly confident A/K.
-                    if is_hero and self._layout.app_name == "polerv2" and cnn_rank in ("5", "9"):
-                        tight = crop[
-                            int(crop.shape[0] * 0.02):int(crop.shape[0] * 0.45),
-                            0:int(crop.shape[1] * 0.55),
-                        ]
-                        tight_res = _classify_rank_cnn(tight, _app) if tight.size > 0 else None
-                        if tight_res is not None:
-                            tight_rank, tight_conf = tight_res
-                            if tight_rank in ("A", "K") and tight_conf >= 0.95:
-                                cnn_rank, cnn_conf = tight_rank, tight_conf
-                                tight_rank_override = True
+                    if len(res) == 3:
+                        cnn_rank, cnn_conf, tight_rank_override = res
+                    else:
+                        cnn_rank, cnn_conf = res
+                        tight_rank_override = False
                     # OCR 交叉验证阈值从 layout 读取。
                     # dpzx 默认 0.70；poler 设 0.0 → 完全跳过 OCR 校验
                     # （OCR 对 AA Poker 小角标识别不稳，实测反而降准确度）。
