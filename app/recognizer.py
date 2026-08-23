@@ -3001,6 +3001,7 @@ class TableRecognizer:
                 and rank in ("J", "Q", "K")
                 and cnn_suit in ("红桃", "方块")
                 and v2_corner_suit in ("红桃", "方块")
+                and cnn_conf < 0.99
                 and cnn_suit != v2_corner_suit):
             return v2_corner_suit
 
