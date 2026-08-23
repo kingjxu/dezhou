@@ -1919,6 +1919,8 @@ class TableRecognizer:
         numeric_reads = []
         for _, text, score in marker_ocr:
             value_text = (text or "").strip()
+            if re.fullmatch(r"\d", value_text) and value_text not in {"1", "2", "4"}:
+                continue
             if re.fullmatch(r"\d{1,3}", value_text):
                 numeric_reads.append((float(score), int(value_text)))
         if numeric_reads:
