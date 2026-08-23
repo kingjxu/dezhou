@@ -196,20 +196,53 @@ def _classify_v2_hero_rank_with_corner_fallback(card_crop: np.ndarray,
     broad_rank, broad_conf = broad
 
     h, w = card_crop.shape[:2]
-    tight_patches = (
-        card_crop[int(h * 0.02):int(h * 0.45), 0:int(w * 0.55)],
-        card_crop[int(h * 0.02):int(h * 0.50), 0:int(w * 0.65)],
-    )
+    tight_narrow = card_crop[int(h * 0.02):int(h * 0.45), 0:int(w * 0.55)]
+    tight_wide = card_crop[int(h * 0.02):int(h * 0.50), 0:int(w * 0.65)]
     tight_results = []
-    for tight in tight_patches:
-        tight_res = _classify_rank_cnn(tight, app) if tight.size > 0 else None
-        if tight_res is not None:
-            tight_results.append(tight_res)
+    wide_res = _classify_rank_cnn(tight_wide, app) if tight_wide.size > 0 else None
+    if wide_res is not None:
+        wide_rank, wide_conf = wide_res
+        if wide_rank == broad_rank and broad_conf >= 0.99 and wide_conf >= 0.99:
+            return broad_rank, broad_conf, False
+        tight_results.append(wide_res)
+    narrow_res = _classify_rank_cnn(tight_narrow, app) if tight_narrow.size > 0 else None
+    if narrow_res is not None:
+        tight_results.append(narrow_res)
     for tight_rank, tight_conf in sorted(tight_results, key=lambda x: x[1], reverse=True):
         if _should_use_v2_tight_hero_rank(broad_rank, broad_conf, tight_rank, tight_conf):
             return tight_rank, tight_conf, True
 
     return broad_rank, broad_conf, False
+
+
+def _classify_v2_red_face_hero_suit(card_crop: np.ndarray) -> str:
+    """Classify red J/Q/K hero corner suits when CNN disagrees with morphology."""
+    ch, cw = card_crop.shape[:2]
+    if ch < 10 or cw < 10:
+        return "?"
+    region = card_crop[int(ch * 0.40):int(ch * 0.78), int(cw * 0.02):int(cw * 0.58)]
+    if region.size == 0:
+        return "?"
+    region = cv2.resize(region, (128, 128), interpolation=cv2.INTER_CUBIC)
+    hsv = cv2.cvtColor(region, cv2.COLOR_BGR2HSV)
+    red = (cv2.inRange(hsv, (0, 70, 70), (12, 255, 255))
+           | cv2.inRange(hsv, (155, 70, 70), (179, 255, 255)))
+    red = cv2.morphologyEx(red, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+    cnts, _ = cv2.findContours(red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = [c for c in cnts if cv2.contourArea(c) > 50]
+    if not cnts:
+        return "?"
+    c = max(cnts, key=cv2.contourArea)
+    x, y, width, height = cv2.boundingRect(c)
+    area = cv2.contourArea(c)
+    hull_area = cv2.contourArea(cv2.convexHull(c))
+    solidity = area / hull_area if hull_area > 0 else 0.0
+    aspect = width / max(height, 1)
+    if y > 8 and solidity >= 0.93 and aspect >= 1.05:
+        return "红桃"
+    if solidity < 0.90:
+        return "方块"
+    return "?"
 
 
 def _binarize_rank_upper(patch_bgr: np.ndarray):
@@ -3001,11 +3034,15 @@ class TableRecognizer:
         if (self._layout.app_name == "polerv2"
                 and is_hero
                 and rank in ("J", "Q", "K")
-                and cnn_suit in ("红桃", "方块")
-                and v2_corner_suit in ("红桃", "方块")
-                and cnn_conf < 0.99
-                and cnn_suit != v2_corner_suit):
-            return v2_corner_suit
+                and cnn_suit in ("红桃", "方块")):
+            red_face_suit = _classify_v2_red_face_hero_suit(card_crop)
+            if red_face_suit in ("红桃", "方块") and red_face_suit != cnn_suit:
+                return red_face_suit
+            if (red_face_suit == "?"
+                    and v2_corner_suit in ("红桃", "方块")
+                    and cnn_conf < 0.99
+                    and cnn_suit != v2_corner_suit):
+                return v2_corner_suit
 
         # 2.5) 黑色系低置信度保护（poler 专属）
         # CNN 对小角标 梅花↔黑桃 在 conf 0.5~0.65 区间不稳；形态学通过孔洞/连通块
