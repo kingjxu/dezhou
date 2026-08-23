@@ -168,7 +168,9 @@ def _should_use_v2_tight_hero_rank(
     # readable. On some cards that also includes the large suit / face artwork:
     # it can collapse the corner rank into another shape family. Only let a
     # very confident corner glyph override those known conflict families.
-    if broad_rank in {"2", "5", "6", "9"} and tight_rank in {"A", "K", "J", "10", "3", "5", "8"}:
+    if broad_rank == "2" and tight_rank == "3":
+        return broad_conf < 0.99 or tight_conf >= 0.995
+    if broad_rank in {"2", "5", "6", "9"} and tight_rank in {"A", "K", "J", "10", "5", "8"}:
         return True
     if broad_rank in {"J", "Q", "K", "A"} and tight_rank in {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10"}:
         if broad_rank == "J" and tight_rank == "A" and broad_conf >= 0.75:

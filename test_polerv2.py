@@ -37,13 +37,14 @@ class PolerV2Test(unittest.TestCase):
         self.assertTrue(_should_use_v2_tight_hero_rank("2", 0.99, "J", 0.999))
         self.assertTrue(_should_use_v2_tight_hero_rank("9", 0.99, "K", 0.999))
         self.assertTrue(_should_use_v2_tight_hero_rank("J", 0.55, "A", 0.999))
-        self.assertTrue(_should_use_v2_tight_hero_rank("2", 0.99, "3", 0.999))
+        self.assertTrue(_should_use_v2_tight_hero_rank("2", 0.98, "3", 0.999))
 
     def test_v2_tight_rank_does_not_override_similar_numeral_noise(self):
         self.assertFalse(_should_use_v2_tight_hero_rank("5", 1.0, "6", 0.999))
         self.assertFalse(_should_use_v2_tight_hero_rank("8", 1.0, "A", 0.999))
         self.assertFalse(_should_use_v2_tight_hero_rank("Q", 0.84, "7", 0.97))
         self.assertFalse(_should_use_v2_tight_hero_rank("J", 0.90, "A", 0.999))
+        self.assertFalse(_should_use_v2_tight_hero_rank("2", 1.0, "3", 0.986))
 
     def _normalizer(self):
         recognizer = TableRecognizer.__new__(TableRecognizer)
@@ -87,6 +88,32 @@ class PolerV2Test(unittest.TestCase):
         ]
         if not image_dir.exists():
             self.skipTest("seven-image regression fixtures are not available")
+        recognizer = get_recognizer("polerv2")
+        import base64
+        for filename, hero_cards, mushroom, stage, pot, community in cases:
+            with self.subTest(filename=filename):
+                image_path = image_dir / filename
+                result = recognizer.recognize(
+                    base64.b64encode(image_path.read_bytes()).decode(),
+                    parse_all=True,
+                )
+                table_info = result["table_info"]
+                self.assertEqual(result["hero_info"]["hero_cards"], hero_cards)
+                self.assertEqual(table_info["mushroom_count"], mushroom)
+                self.assertEqual(table_info["stage"], stage)
+                self.assertEqual(table_info["main_pot"], pot)
+                self.assertEqual(table_info["community_cards"], community)
+                self.assertEqual(table_info["blind_size"], "1/2(2)")
+
+    def test_v2_remote_hero_image_regression(self):
+        image_dir = Path(__file__).parent / "reports" / "images-remote-hero"
+        cases = [
+            ("154714-hero.jpg", ["Q 方块", "2 方块"], None, "preflop", 21, []),
+            ("155317-hero.jpg", ["7 梅花", "2 梅花"], None, "preflop", 25, []),
+            ("155457-hero.jpg", ["J 方块", "8 梅花"], None, "preflop", 23, []),
+        ]
+        if not image_dir.exists():
+            self.skipTest("remote hero regression fixtures are not available")
         recognizer = get_recognizer("polerv2")
         import base64
         for filename, hero_cards, mushroom, stage, pot, community in cases:
