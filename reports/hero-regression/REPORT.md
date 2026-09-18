@@ -36,7 +36,7 @@
 | hero 当前下注 | 62/95 | 95/95 |
 | 七字段逐图同时通过 | 19/95 | 95/95 |
 
-全部 95 个用例（包含指定关键座位/轮次断言）通过；19 个测试通过（原有 14 项及新增 5 项）。
+全部 95 个用例（包含指定关键座位/轮次断言）通过；24 个测试通过（原有 14 项、下注回归 1 项、HTTP 日志 6 项、观察器 3 项）。
 另对真轮次 #1、非轮次 #34/#86 的原图、半尺寸及黑边图验证轮次门控，共 9 项通过；非轮次请求经过 FastAPI handler/schema 校验后正确返回空结构。
 
 修复版均值 **1.577 秒**、中位数 **1.589 秒**、P95 **2.291 秒**、最大 **2.706 秒**、初始化 **0.315 秒**。对比旧版，均值降低 **21.7%**，P95 降低 **16.3%**。
@@ -52,6 +52,7 @@
 ## 复现与边界
 
 ```bash
+pip install -r requirements-test.txt
 python -m unittest discover
 python scripts/check_turn_gate.py --images /home/ubuntu/poker/dezhou-audit-20260918/images
 python scripts/check_hero_images.py \
@@ -69,8 +70,19 @@ python scripts/check_hero_images.py \
 - 范围：`_detect_bet_chip_digit` 多位数字降级，`/recognize` 结构化日志及实时观察脚本。
 - 缺陷分析：cr 指出的多位 OCR 不确定时取最大单个轮廓问题已复现：33→4、156→2。保留 `multidigit-before.log` 原始失败证据；只有确定一个数字组件才允许几何兜底，多个组件保持未知。
 - 生成用例：下注函数新增 7 个场景，包含高置信 33/156、低置信 33/156、OCR API 异常、单个 4 和空牌背。复现阶段 4/7 通过、3/7 确认缺陷；修复后 7/7 通过。按原图补充 #3 seat8=24、#26/#27 seat8=33、#67 seat7=156、#83 seat3=30 的人工断言。
-- 验证结果：19 个单测通过；95 图全部已标注断言通过；9 项轮次门控通过。覆盖率统计按 skill 无 CI 卡口规则跳过，未宣称覆盖率达标；`utree flush` 已执行。
-- 日志补测：成功、400、500、图片及异常原文不落日志；实际 HTTP 200/400 与 source=validation 标记验证通过。HTTP 检查还发现空 base64 被 OpenCV 当作 500，现于解码后判空返回 400，补充 3 个空载荷输入回归。单次 HTTP 冷启动样本 3668ms，包含模型初始化，与上方串行核心分布口径不同。
+- 验证结果：24 个单测通过；95 图全部已标注断言通过；9 项轮次门控通过。覆盖率统计按 skill 无 CI 卡口规则跳过，未宣称覆盖率达标；`utree flush` 已执行。
+- 日志补测：成功、400、500、图片及异常原文不落日志；实际 HTTP 200/400 与 source=validation 标记验证通过。HTTP 检查还发现空 base64 被 OpenCV 当作 500，现于解码后判空返回 400，补充 3 个空载荷输入回归。单次 HTTP 冷启动样本 3653ms，包含模型初始化，与上方串行核心分布口径不同。
 - 监控演练：dry-run 正确排除验证流量，通知首笔/错误/慢请求；真实 SSH 跟踪临时日志并轮转后捕获 6 条真实标记样本，计数、错误及耗时汇总正确，没有向群发送演练通知。见 `watch-dry-run.log`、`watch-rotation.log`。
 
 日志与 30 分钟默认监控的运行说明见 `docs/recognition-monitoring.md`。新增日志代码仍需完成本轮 cr 复审后一起部署。
+
+
+## 第二轮 CR 补改（基于 5caf130）
+
+- 验证身份：仅 source header 不再生效。必须配置非空服务端 DEZHOU_VALIDATION_TOKEN 并匹配请求 token，否则 source=live；默认不配置 token。TestClient 六种配置/头组合覆盖未配置、缺失、错误及有效身份，日志不保存 token。
+- 响应状态：在 handler 内显式构造 RecognizeResponse，校验完成后才记录 200；ValidationError 单独记为 500。TestClient 验证缺少必填字段、非法 stage、非法 status 的实际 HTTP 500 与日志一致，失败日志不含 result。
+- 通知故障：每条最多 3 次、单次 5 秒重试；发送失败记录本地错误及丢弃消息，继续消费 SSH 日志。退出通知也走同一有界、不抛异常的发送路径。没有无限补发，长时间通道故障时部分提醒可能丢失，恢复后的汇总仍包含这些请求。
+- 观察器集成回归：独立进程运行 CLI，SSH/botmux 使用临时可执行替身。首次返回 7 后重试成功；首次连续三次失败后后续消息恢复；持续失败全部限次退出。三个场景均处理 3 条 live、排除 1 条 validation、记录 1 个错误/1 个慢请求，平均 1383ms；不发实际群通知。
+- 本轮全量单测 24/24（20.891s）、轮次门控 9/9、隔离实际 HTTP200/400 + 随机内部 token 日志检查通过。HTTP 冷启动 3653ms，仅为单次样本。
+- 本轮未修改识别算法和 manifest；95 图及核心性能沿用前一提交的原始结果（mean 1.577s/P95 2.291s），未将本轮 HTTP 模型校验或日志开销计入该分布。部署后仍需做实际请求验证。
+- HTTP TestClient 新依赖列在 requirements-test.txt；远端本轮用 /tmp/dezhou-test-httpx 隔离安装并通过 PYTHONPATH 使用，未修改线上依赖。

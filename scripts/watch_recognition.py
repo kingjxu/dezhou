@@ -59,9 +59,19 @@ def main():
 
     def notify(message):
         print(json.dumps({'notification': message}, ensure_ascii=False), flush=True)
-        if not args.dry_run:
-            subprocess.run(['botmux', 'send', '--session-id', args.session_id,
-                            '--no-mention', '--text', message], check=True, timeout=30)
+        if args.dry_run:
+            return
+        # Notification delivery is independent of the SSH reader. A failed
+        # channel must not kill monitoring or recursively notify its own failure.
+        for attempt in range(1, 4):
+            try:
+                subprocess.run(['botmux', 'send', '--session-id', args.session_id,
+                                '--no-mention', '--text', message], check=True, timeout=5)
+                return
+            except (OSError, subprocess.SubprocessError) as error:
+                print(json.dumps({'notification_error': type(error).__name__,
+                                  'attempt': attempt}, ensure_ascii=False), flush=True)
+        print(json.dumps({'notification_dropped': message}, ensure_ascii=False), flush=True)
 
     process = None
     started = time.monotonic()
