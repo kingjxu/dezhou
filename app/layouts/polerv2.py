@@ -22,10 +22,15 @@ class LayoutPolerV2(LayoutPoler):
     # polluted by face art.
     hero_card_rank_rx: tuple = (0.00, 0.80)
     hero_card_rank_ry: tuple = (0.02, 0.60)
+    hero_stack_anchor: Anchor = field(default_factory=lambda: Anchor(0.50, 0.888, 0.035))
+    hero_stack_roi: tuple = (0.42, 0.875, 0.58, 0.905)
+    hero_bet_fallback_roi: tuple = (0.755, 0.765, 0.86, 0.795)
     # Face-card suit glyph is below the rank in the upper-left corner; use a
     # larger patch than legacy poler so K♠ is not split into club-like blobs.
     face_hero_suit_ry: tuple = (0.35, 0.70)
-    face_hero_suit_rx: tuple = (0.02, 0.50)
+    face_hero_suit_rx: tuple = (0.00, 0.50)
+    face_board_suit_ry: tuple = (0.35, 0.70)
+    face_board_suit_rx: tuple = (0.00, 0.40)
     mushroom_roi: tuple = (0.130, 0.115, 0.200, 0.165)
     button_positions: dict = field(default_factory=lambda: {
         **LayoutPoler().button_positions,

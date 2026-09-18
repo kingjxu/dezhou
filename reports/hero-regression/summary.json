@@ -1,0 +1,10 @@
+{
+  "images": 95,
+  "passed": 95,
+  "initialization_seconds": 0.3193150516599417,
+  "mean_seconds": 1.6113149384134695,
+  "median_seconds": 1.6311469208449125,
+  "p95_seconds": 2.213834222406149,
+  "max_seconds": 2.966774122789502,
+  "failures": []
+}

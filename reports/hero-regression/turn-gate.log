@@ -1,0 +1,58 @@
+[OCR] RapidOCR 后端包: rapidocr_onnxruntime
+[OCR] 使用 RapidOCR (默认 server, PP-OCRv4)
+[
+  {
+    "index": 1,
+    "variant": "original",
+    "seconds": 0.00564047135412693,
+    "passed": true
+  },
+  {
+    "index": 1,
+    "variant": "half",
+    "seconds": 0.0053933653980493546,
+    "passed": true
+  },
+  {
+    "index": 1,
+    "variant": "letterbox",
+    "seconds": 0.00424734503030777,
+    "passed": true
+  },
+  {
+    "index": 34,
+    "variant": "original",
+    "seconds": 0.05735650099813938,
+    "passed": true
+  },
+  {
+    "index": 34,
+    "variant": "half",
+    "seconds": 0.018835967406630516,
+    "passed": true
+  },
+  {
+    "index": 34,
+    "variant": "letterbox",
+    "seconds": 0.019914327189326286,
+    "passed": true
+  },
+  {
+    "index": 86,
+    "variant": "original",
+    "seconds": 0.05730935372412205,
+    "passed": true
+  },
+  {
+    "index": 86,
+    "variant": "half",
+    "seconds": 0.018216772004961967,
+    "passed": true
+  },
+  {
+    "index": 86,
+    "variant": "letterbox",
+    "seconds": 0.01912957802414894,
+    "passed": true
+  }
+]

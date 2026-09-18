@@ -116,3 +116,15 @@ v0.7-cpu（CPU only）— 包含 poler dim 弃牌牌识别、白底反转 OCR、
 不支持无损承诺：低分辨率缩放图可能丢失下注或庄位等小元素；不同宽高比的裁切截图、
 系统状态栏/悬浮窗遮挡、横屏布局、或游戏 UI 本身改版后的截图不能保证识别正确，
 需要新增对应布局或锚点校准。建议输入不低于 `1080x2400`。
+
+## Poler V2 回归验证
+
+`app=polerv2` 使用独立布局。2026-09-18 修复与测量口径见
+[修复报告](reports/hero-regression/REPORT.md)。
+
+```bash
+python -m unittest discover
+python scripts/check_hero_images.py --images /path/to/hero-images --output /tmp/hero-results
+```
+
+95 张原图采用外置审计数据集，脚本校验 manifest 中的 SHA256；缺图会失败。

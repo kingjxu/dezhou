@@ -190,6 +190,14 @@ def _classify_v2_hero_rank_with_corner_fallback(card_crop: np.ndarray,
     upper-left rank glyph, so use it when it strongly disagrees with a common
     polluted numeral result.
     """
+    # Keep the complete corner rank, but exclude the suit/artwork below it.
+    # Older wide/short crops truncate the card: preserve their broad fallback.
+    h, w = card_crop.shape[:2]
+    rank_patch = card_crop[int(h * 0.02):int(h * 0.42), :int(w * 0.80)]
+    calibrated = _classify_rank_cnn(rank_patch, app) if w / h <= 0.70 else None
+    if calibrated is not None and calibrated[1] >= 0.80:
+        return calibrated[0], calibrated[1], True
+
     broad = _classify_rank_cnn(broad_patch, app)
     if broad is None:
         return None
@@ -1007,8 +1015,13 @@ class TableRecognizer:
             stack_values.add(hero_stack)
         for seat, anchor in self._layout.seat_anchors:
             status = self._seat_status(items, seat)
-            if status == "empty":
-                stack = None        # 空座无筹码
+            if (self._layout.app_name == "polerv2" and status == "active"
+                    and self._pick_stack(items, anchor, min_value=0, max_value=max_stk) is None):
+                visual = self._seat_visual_inactivity(img, seat)
+                if visual == "empty":
+                    status = "empty"
+            if status == "empty" or (self._layout.app_name == "polerv2" and status == "waiting"):
+                stack = None        # 空座/等待买入不把倒计时当筹码
             elif status == "all_in":
                 stack = 0
             else:
@@ -1252,7 +1265,7 @@ class TableRecognizer:
             # to the legacy hero bet anchor. Hero wagers must come from the
             # dedicated marker path, so do not treat action-button OCR as a bet.
             if self._layout.app_name == "polerv2":
-                hero_current_bet = None
+                hero_current_bet = self._read_v2_hero_bet(img)
             else:
                 hero_current_bet = self._pick_current_bet(
                     items, self._layout.hero_bet_anchor,
@@ -1401,22 +1414,6 @@ class TableRecognizer:
 
     def _detect_button_seat(self, img: np.ndarray) -> int | None:
         h, w = img.shape[:2]
-        if self._layout.app_name == "polerv2":
-            # A hero-side D can merge with the nearby hole-card white border.
-            # Its dark letter remains an isolated, near-square component in
-            # this narrow window, unlike the same-position action button art.
-            hero_badge = img[int(h * 0.80):int(h * 0.845),
-                             int(w * 0.59):int(w * 0.66)]
-            if hero_badge.size > 0:
-                gray_badge = cv2.cvtColor(hero_badge, cv2.COLOR_BGR2GRAY)
-                dark_badge = cv2.inRange(gray_badge, 0, 100)
-                labels, _, stats, _ = cv2.connectedComponentsWithStats(dark_badge)
-                for index in range(1, labels):
-                    x, y, bw, bh, area = stats[index]
-                    if (200 <= area <= 700
-                            and y >= hero_badge.shape[0] * 0.30
-                            and 0.65 <= bw / max(bh, 1) <= 1.10):
-                        return 1
         hsv    = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         lo = getattr(self._layout, 'button_hsv_lower', (15, 120, 100))
         hi = getattr(self._layout, 'button_hsv_upper', (40, 255, 255))
@@ -1432,6 +1429,8 @@ class TableRecognizer:
             cx = M["m10"] / M["m00"] / w
             cy = M["m01"] / M["m00"] / h
             bx, by, bw, bh = cv2.boundingRect(c)
+            if self._layout.app_name == "polerv2" and not 0.75 <= bw / max(bh, 1) <= 1.50:
+                continue
             is_v2_hero_button = (
                 self._layout.app_name == "polerv2"
                 and 0.60 <= cx <= 0.69
@@ -1938,6 +1937,36 @@ class TableRecognizer:
         white = cv2.inRange(chip_hsv, (0, 0, 175), (180, 110, 255))
         white = cv2.morphologyEx(
             white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+        contours, _ = cv2.findContours(white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Digit-sized strokes exclude the thin card border and tiny back logo.
+        # Keep all adjacent digits, so 27/33 cannot be reduced to a single digit.
+        digit_boxes = []
+        for contour in contours:
+            x, y, w, h = cv2.boundingRect(contour)
+            area = cv2.contourArea(contour)
+            if (area >= 20 and area / (w * h) >= 0.12
+                    and chip.shape[0] * 0.15 <= h <= chip.shape[0] * 0.50
+                    and x + w <= chip.shape[1] * 0.85):
+                digit_boxes.append((x, y, w, h))
+        if not digit_boxes:
+            return None
+        # RapidOCR's recognizer can read an already isolated line directly.
+        # Other backends and uncertain reads retain the normal detector path.
+        text_rec = getattr(self._ocr, "text_rec", None)
+        if _OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid" and callable(text_rec):
+            x0 = min(b[0] for b in digit_boxes)
+            y0 = min(b[1] for b in digit_boxes)
+            x1 = max(b[0] + b[2] for b in digit_boxes)
+            y1 = max(b[1] + b[3] for b in digit_boxes)
+            line = white[max(0, y0-2):y1+2, max(0, x0-2):x1+2]
+            try:
+                reads, _ = text_rec([cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)])
+                if len(reads) == 1:
+                    text, score = reads[0][:2]
+                    if re.fullmatch(r"\d{1,3}", str(text)) and float(score) >= 0.90:
+                        return int(text)
+            except (TypeError, ValueError, AttributeError):
+                pass  # Older/newer RapidOCR APIs can still use _ocr_run below.
         # Two-character V2 wagers such as 27/33 are not safely distinguishable
         # by a single component's aspect ratio. The red-card gate above keeps
         # this OCR pass local to the wager marker instead of table UI text.
@@ -1998,7 +2027,7 @@ class TableRecognizer:
         if "green" in chip_colors:
             masks.append(cv2.inRange(hsv, (65, 110, 70), (105, 255, 255)))
         if not masks:
-            return None
+            return None, False
         mask = masks[0]
         for extra in masks[1:]:
             mask = cv2.bitwise_or(mask, extra)
@@ -2015,7 +2044,7 @@ class TableRecognizer:
             # outside its tight ROI and appears wider than tall.
             if not 0.40 <= w / max(h, 1) <= 1.60:
                 continue
-            if h < crop.shape[0] * 0.30:
+            if h < crop.shape[0] * 0.20:
                 continue
             candidates.append((area, x, y, w, h))
         if not candidates:
@@ -2027,6 +2056,23 @@ class TableRecognizer:
         if chip.size == 0:
             return None, False
         return chip, True
+
+    def _read_v2_hero_bet(self, img: np.ndarray) -> int | None:
+        """Read the already-placed wager below the action buttons, not call cost."""
+        crop = self._roi(img, self._layout.hero_bet_fallback_roi)
+        if crop.size == 0:
+            return None
+        hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+        # A wager has a small colored chip to the left of its white number.
+        chip = cv2.inRange(hsv, (15, 60, 90), (100, 255, 255))
+        if cv2.countNonZero(chip) < crop.shape[0] * crop.shape[1] * 0.005:
+            return None
+        enlarged = cv2.resize(crop, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+        values = []
+        for _, text, score in _ocr_run(self._ocr, enlarged):
+            if re.fullmatch(r"\d{1,6}", text.strip()) and score >= 0.7:
+                values.append((score, int(text)))
+        return max(values)[1] if values else None
 
     def _detect_v2_hero_stack(self, img: np.ndarray) -> int | None:
         """Use a local enlarged read only when full-image hero stack OCR misses."""
@@ -2206,6 +2252,9 @@ class TableRecognizer:
         white_ratio = float(white.mean())
         if green_ratio > 0.60 and color_ratio < 0.15:
             return "empty"
+        if (self._layout.app_name == "polerv2" and green_ratio > 0.35
+                and color_ratio < 0.08 and white_ratio < 0.10):
+            return "empty"
         # 整圈白色 pill（断线/电话图标 / 留座占位）：白色 > 50%，
         # 同时 green 和 colorful 都很低（不是真实玩家、也不是绿桌）。
         if white_ratio > 0.50 and color_ratio < 0.18 and green_ratio < 0.10:
@@ -2279,6 +2328,16 @@ class TableRecognizer:
             hero 卡片红心干扰。
           - hue 收紧到 0-8 + 172-180 (深红)，刚好跨过 X 弃牌按钮但跳过橙色标签。
         """
+        if self._layout.app_name == "polerv2":
+            right = self._roi(img, (0.61, 0.70, 0.76, 0.78))
+            if right.size == 0:
+                return False
+            hsv_right = cv2.cvtColor(right, cv2.COLOR_BGR2HSV)
+            colorful = (hsv_right[:, :, 1] > 140) & (hsv_right[:, :, 2] > 130)
+            # Exclude the teal table: action face is bright blue, green or red.
+            hue = hsv_right[:, :, 0]
+            colorful &= ((hue < 75) | (hue > 95))
+            return bool(np.mean(colorful) > 0.06)
         h, w   = img.shape[:2]
         y1, y2 = self._layout.action_btn_y
         x1, x2 = getattr(self._layout, 'action_btn_x', (0.0, 1.0))
@@ -2597,6 +2656,11 @@ class TableRecognizer:
                 crop = self._roi(img, roi)
                 search_roi = roi
             if crop.size == 0: continue
+            if not is_hero and self._layout.app_name == "polerv2":
+                hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+                white = cv2.inRange(hsv, (0, 0, 170), (180, 90, 255))
+                if cv2.countNonZero(white) / white.size < 0.30:
+                    continue
             # 亮度二次检查（crop 后的精细检查）；dim 正面牌已通过专门门控，跳过此检查
             bright_thr = self._layout.hero_card_brightness_threshold if is_hero \
                          else self._layout.card_brightness_threshold
@@ -2667,7 +2731,7 @@ class TableRecognizer:
                             if d_q8 == "8":
                                 cnn_rank = "8"
                     # 2/7 消歧：CNN 容易混淆 2↔7
-                    if cnn_rank == "7":
+                    if cnn_rank == "7" and not tight_rank_override:
                         d27 = _disambiguate_7_vs_2(rp)
                         if d27 == "2":
                             cnn_rank = "2"
@@ -2677,6 +2741,7 @@ class TableRecognizer:
                     if ((cnn_rank == "5"
                          or (cnn_rank == "8" and cnn_conf < 0.70))
                             and self._layout.app_name == "polerv2"
+                            and not tight_rank_override
                             and getattr(self._layout, 'enable_disambiguate_6_vs_8', False)):
                         d68 = _disambiguate_6_vs_8(rp)
                         if d68 in ("6", "8"):
@@ -2972,7 +3037,9 @@ class TableRecognizer:
         仅当对应 layout 定义了 face_suit_ry 时启用 face 分支（poler/dpzx 各自独立）。"""
         if rank in ("J", "Q", "K"):
             if is_hero:
-                if self._layout.app_name == "polerv2":
+                # Short card crops from older screenshots need the broad suit patch.
+                if (self._layout.app_name == "polerv2"
+                        and card_crop.shape[1] / card_crop.shape[0] > 0.70):
                     return self._crop_suit_patch(card_crop, is_hero)
                 ry = getattr(self._layout, "face_hero_suit_ry", None)
                 rx = getattr(self._layout, "face_hero_suit_rx", None)
@@ -3027,6 +3094,11 @@ class TableRecognizer:
                 res = _classify_suit_cnn(suit_patch, _app)
                 if res is not None:
                     cnn_suit, cnn_conf = res
+
+        if (self._layout.app_name == "polerv2" and is_hero
+                and rank in ("J", "Q", "K") and cnn_suit and cnn_conf >= 0.80
+                and card_crop.shape[1] / card_crop.shape[0] <= 0.70):
+            return cnn_suit
 
         # 2) 形态学角标分析
         morpho_suit = self._classify_corner_suit_morpho(card_crop, is_hero)
@@ -3392,6 +3464,8 @@ class TableRecognizer:
                 continue
             all_texts.append(it.text)
             t = it.text
+            if self._layout.app_name == "polerv2" and "确认买入" in t:
+                return "waiting"
             lower_t = t.lower()
             # 检查 all-in（特殊处理，两个单词）
             if "all" in lower_t and "in" in lower_t:
