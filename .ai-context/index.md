@@ -12,6 +12,7 @@ last_updated: "2026-09-18"
 |---|---|
 | 识别逻辑/布局修复 | `architecture.md`, `business-glossary.md` |
 | 测试/性能验证 | `testing-rules.md` |
+| 识别日志/实时监控 | `architecture.md`, `../docs/recognition-monitoring.md` |
 ## Context Version
 v1.0，2026-09-18；初始化基线 7ca0be8。
 ## Pending Files

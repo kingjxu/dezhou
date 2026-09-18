@@ -128,3 +128,5 @@ python scripts/check_hero_images.py --images /path/to/hero-images --output /tmp/
 ```
 
 95 张原图采用外置审计数据集，脚本校验 manifest 中的 SHA256；缺图会失败。
+
+识别结果、耗时日志和有界实时监控配置见 [监控说明](docs/recognition-monitoring.md)。

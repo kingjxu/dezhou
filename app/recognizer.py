@@ -577,6 +577,8 @@ _executor  = ThreadPoolExecutor(max_workers=8)
 def _b64_to_bgr(image_base64: str) -> np.ndarray:
     b64 = _DATA_URL_RE.sub("", image_base64.strip())
     raw = base64.b64decode(b64, validate=False)
+    if not raw:
+        raise ValueError("Invalid image data")
     arr = np.frombuffer(raw, dtype=np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if img is None:
@@ -1988,6 +1990,11 @@ class TableRecognizer:
         if numeric_reads:
             return max(numeric_reads)[1]
 
+        # Unreadable multi-digit wagers must stay unknown, never collapse to
+        # the largest glyph's 1/2/4 geometry. The broad component set also
+        # catches extra digits that fail the stricter single-digit shape gate.
+        if len(digit_boxes) != 1:
+            return None
         cnts, _ = cv2.findContours(
             white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         digits = []
@@ -2000,9 +2007,9 @@ class TableRecognizer:
                     and w <= chip.shape[1] * 0.35
                     and x + w <= chip.shape[1] * 0.85):
                 digits.append((area, x, y, w, h, contour))
-        if not digits:
+        if len(digits) != 1:
             return None
-        _, x, y, w, h, contour = max(digits)
+        _, x, y, w, h, contour = digits[0]
         return _classify_v2_marker_digit(w, h)
 
     def _v2_marker_card_crop(self, img: np.ndarray, roi: tuple,

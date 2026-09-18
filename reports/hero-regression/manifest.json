@@ -76,6 +76,11 @@
           "main_pot": 60,
           "button_seat": 5,
           "stage": "turn"
+        },
+        "villains_info": {
+          "8": {
+            "current_bet": 24
+          }
         }
       }
     },
@@ -606,6 +611,11 @@
           "main_pot": 58,
           "button_seat": 1,
           "stage": "preflop"
+        },
+        "villains_info": {
+          "8": {
+            "current_bet": 33
+          }
         }
       }
     },
@@ -627,6 +637,11 @@
           "main_pot": 58,
           "button_seat": 2,
           "stage": "preflop"
+        },
+        "villains_info": {
+          "8": {
+            "current_bet": 33
+          }
         }
       }
     },
@@ -1567,6 +1582,9 @@
             "status": "empty",
             "stack": null,
             "current_bet": null
+          },
+          "7": {
+            "current_bet": 156
           }
         }
       }
@@ -1926,6 +1944,9 @@
           "5": {
             "status": "folded",
             "stack": 365
+          },
+          "3": {
+            "current_bet": 30
           }
         }
       }

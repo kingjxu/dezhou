@@ -1,0 +1,29 @@
+FFF
+======================================================================
+FAIL: test_v2_marker_ocr_uncertainty_preserves_digit_count (test_polerv2.PolerV2Test.test_v2_marker_ocr_uncertainty_preserves_digit_count) (text='33', mode='uncertain')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/poker/dezhou-fix-20260918/test_polerv2.py", line 59, in test_v2_marker_ocr_uncertainty_preserves_digit_count
+    self.assertEqual(actual, expected)
+AssertionError: 4 != None
+
+======================================================================
+FAIL: test_v2_marker_ocr_uncertainty_preserves_digit_count (test_polerv2.PolerV2Test.test_v2_marker_ocr_uncertainty_preserves_digit_count) (text='156', mode='uncertain')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/poker/dezhou-fix-20260918/test_polerv2.py", line 59, in test_v2_marker_ocr_uncertainty_preserves_digit_count
+    self.assertEqual(actual, expected)
+AssertionError: 2 != None
+
+======================================================================
+FAIL: test_v2_marker_ocr_uncertainty_preserves_digit_count (test_polerv2.PolerV2Test.test_v2_marker_ocr_uncertainty_preserves_digit_count) (text='33', mode='exception')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/poker/dezhou-fix-20260918/test_polerv2.py", line 59, in test_v2_marker_ocr_uncertainty_preserves_digit_count
+    self.assertEqual(actual, expected)
+AssertionError: 4 != None
+
+----------------------------------------------------------------------
+Ran 1 test in 0.014s
+
+FAILED (failures=3)

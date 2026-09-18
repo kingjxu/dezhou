@@ -1,0 +1,4 @@
+{"notification": "dezhou 收到首笔真实识别流量：1200ms，HTTP 200，app=polerv2。手牌=['A 黑桃', 'K 红桃']，公共牌=[]，筹码=17，下注=2。request_id=test-1"}
+{"notification": "dezhou 识别错误：50ms，HTTP 500，app=polerv2。手牌=None，公共牌=None，筹码=None，下注=None。request_id=test-2"}
+{"notification": "dezhou 慢请求：4000ms，HTTP 200，app=polerv2。手牌=None，公共牌=None，筹码=None，下注=None。request_id=test-3"}
+{"notification": "dezhou 监控结束：真实请求 3，错误 1，耗时≥3000ms 的请求 1；平均 1750ms，最近 3 条 P95 4000ms。"}

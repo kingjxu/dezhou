@@ -1,7 +1,11 @@
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
+import cv2
 import numpy as np
+
+import app.recognizer as recognizer_module
 
 from app.engines import get_recognizer
 from app.layouts.polerv2 import LayoutPolerV2
@@ -17,6 +21,42 @@ class PolerV2Test(unittest.TestCase):
         self.assertEqual(_classify_v2_marker_digit(4, 20), 1)
         self.assertEqual(_classify_v2_marker_digit(14, 28), 2)
         self.assertEqual(_classify_v2_marker_digit(22, 28), 4)
+
+    def test_v2_marker_ocr_uncertainty_preserves_digit_count(self):
+        class OCRStub:
+            def __init__(self, mode, text):
+                self.mode, self.text = mode, text
+
+            def text_rec(self, images):
+                if self.mode == "exception":
+                    raise TypeError("unsupported recognizer signature")
+                return [(self.text, 0.99 if self.mode == "confident" else 0.2)], 0.0
+
+            def __call__(self, image, **kwargs):
+                return [], None
+
+        for text, mode, expected in (
+            ("33", "confident", 33),
+            ("156", "confident", 156),
+            ("33", "uncertain", None),
+            ("156", "uncertain", None),
+            ("33", "exception", None),
+            ("4", "uncertain", 4),
+            ("", "uncertain", None),
+        ):
+            with self.subTest(text=text, mode=mode):
+                # 真实颜色/轮廓路径，只替换不可控的 OCR 外部依赖。
+                image = np.full((100, 140, 3), (40, 40, 160), dtype=np.uint8)
+                cv2.putText(image, text, (20, 57), cv2.FONT_HERSHEY_SIMPLEX,
+                            1.0, (255, 255, 255), 3, cv2.LINE_8)
+                recognizer = self._normalizer()
+                recognizer._ocr = OCRStub(mode, text)
+                with patch.dict(recognizer_module._OCR_ENGINE_BACKENDS,
+                                {id(recognizer._ocr): "rapid"}):
+                    with patch.dict(recognizer_module._RAPID_CALL_KWARGS, {}, clear=True):
+                        actual = recognizer._detect_bet_chip_digit(
+                            image, (0, 0, 1, 1), ("red",))
+                self.assertEqual(actual, expected)
 
     def test_v2_button_positions_include_hero_side_marker(self):
         self.assertIn((0.65, 0.78), LayoutPolerV2().button_positions[1])
