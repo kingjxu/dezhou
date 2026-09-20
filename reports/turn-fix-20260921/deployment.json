@@ -1,0 +1,95 @@
+{
+  "commit": "e5befaea8ac7dcdd77ec6143a7283f4ad1691596",
+  "backup": "/home/ubuntu/poker/dezhou-backups/20260920T175421Z-e5befae",
+  "old_pid": 3573338,
+  "command": [
+    "python3",
+    "-m",
+    "uvicorn",
+    "app.main:app",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "5555"
+  ],
+  "executable": "/usr/bin/python3.12",
+  "cwd": "/home/ubuntu/poker/dezhou",
+  "started_at": "20260920T175421Z",
+  "checks": [
+    {
+      "index": 1,
+      "parse_all": true,
+      "http_status": 200,
+      "source": "live",
+      "elapsed_ms": 3773,
+      "passed": true
+    },
+    {
+      "index": 10,
+      "parse_all": true,
+      "http_status": 200,
+      "source": "live",
+      "elapsed_ms": 1348,
+      "passed": true
+    },
+    {
+      "index": 25,
+      "parse_all": true,
+      "http_status": 200,
+      "source": "live",
+      "elapsed_ms": 1709,
+      "passed": true
+    },
+    {
+      "index": 69,
+      "parse_all": true,
+      "http_status": 200,
+      "source": "live",
+      "elapsed_ms": 1097,
+      "passed": true
+    },
+    {
+      "index": 77,
+      "parse_all": true,
+      "http_status": 200,
+      "source": "live",
+      "elapsed_ms": 1553,
+      "passed": true
+    },
+    {
+      "index": 96,
+      "parse_all": true,
+      "http_status": 200,
+      "source": "live",
+      "elapsed_ms": 1524,
+      "passed": true
+    },
+    {
+      "index": 34,
+      "parse_all": false,
+      "http_status": 200,
+      "source": "live",
+      "elapsed_ms": 16,
+      "passed": true
+    },
+    {
+      "index": null,
+      "parse_all": true,
+      "http_status": 400,
+      "source": "live",
+      "elapsed_ms": 0,
+      "passed": true
+    }
+  ],
+  "new_pid": 188066,
+  "health": {
+    "ok": true,
+    "supported_apps": [
+      "dpzx",
+      "poler",
+      "polerv2"
+    ]
+  },
+  "status": "deployed_verified",
+  "finished_at": "2026-09-20T17:54:33.401606+00:00"
+}

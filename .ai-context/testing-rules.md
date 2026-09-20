@@ -1,6 +1,6 @@
 ---
 version: "1.0"
-last_updated: "2026-09-18"
+last_updated: "2026-09-21"
 ---
 # 测试与性能验证
 - Python 3.12 + `pip install -r requirements-test.txt`（OCR / ONNX / OpenCV 与 HTTP TestClient 依赖）执行 `python -m unittest discover`；原有 polerv2 用例包含 1080、1176、1179 宽截图与画布归一化，必须保留。
@@ -15,11 +15,11 @@ last_updated: "2026-09-18"
 
 - `test_recognition_log.py` 经 TestClient 验证真实响应状态：成功/400/500、非法模型 500、默认/缺失/错误验证 token 不可排除监控。`test_watch_recognition.py` 启动独立 CLI，用临时 SSH/botmux 替身验证首次失败、三次失败后恢复、持续失败均继续消费事件并正确汇总，不发送实际群消息。
 
-## 2026-09-21 全字段复核（尚未部署）
+## 2026-09-21 全字段复核
 - 新一轮盘点 96 张 hero 图，其中旧 95 张为八人桌，新增一张为九人桌。默认manifest已补第96图45字段；八人桌A/B仍固定eight-seat-manifest。见 `reports/turn-fix-20260921/REPORT.md`。
 - `reports/turn-fix-20260921/eight-seat-manifest.json` 补齐八人桌每图 41 项扑克字段人工断言；不能把旧的部分字段 95/95 当成整份响应准确率。
 - 用户确认 folded 的 current_bet 保持 null。九人桌座位编号已由用户确认；默认manifest第96项为重新人工核对后的最终标签，未跟踪探索manifest不用于验收。
-- 未完成九人桌验证、CR 与部署，不能宣称本轮全量修复完成。
+- 本轮96图3940项字段、36项单测、CR和部署冒烟已完成；报告 `reports/turn-fix-20260921/REPORT.md` 末节及deployment.json记录线上证据。九人桌检测仅覆盖顶部双空座十字形态，不能扩展为所有九人桌均受支持。
 
 - 性能修复必须用 `reports/turn-fix-20260921/run_ab.py` 同机顺序A/B；`check_hero_images.py --code-root`选择被测代码，固定同95图、同完整标签、同runner。不能以不同日期的部分字段耗时替代严格A/B。
 - active余额按缺失/低置信/位数不符门控并合并OCR；测试覆盖真实191截成19、多行归属、跨行/多候选拒绝，以及真实下注22/21/9/4。完整下注掩码只在快速路径不确定时重试。

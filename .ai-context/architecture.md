@@ -1,6 +1,6 @@
 ---
 version: "1.0"
-last_updated: "2026-09-18"
+last_updated: "2026-09-21"
 ---
 # 架构
 `app/main.py` 提供 /health、/recognize。Pydantic schema 在 app/schemas.py。
