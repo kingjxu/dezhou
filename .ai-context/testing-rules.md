@@ -4,7 +4,7 @@ last_updated: "2026-09-18"
 ---
 # 测试与性能验证
 - Python 3.12 + `pip install -r requirements-test.txt`（OCR / ONNX / OpenCV 与 HTTP TestClient 依赖）执行 `python -m unittest discover`；原有 polerv2 用例包含 1080、1176、1179 宽截图与画布归一化，必须保留。
-- `python scripts/check_hero_images.py --images <图片目录> --output <结果目录>`：按 `reports/hero-regression/manifest.json` 的 SHA256 校验 95 张原图；逐字段比较人工真值，保存每次响应、差异、耗时，失败退出非零。
+- `python scripts/check_hero_images.py --images <图片目录> --output <结果目录>`：按默认 `reports/hero-regression/manifest.json` 的 SHA256 校验 96 张原图（95张八人桌加1张九人桌）；逐字段比较人工真值，保存每次响应、差异、耗时，失败退出非零。
 - 图片集外置于本次审计归档；文件名、哈希和标签随代码提交。缺文件或哈希不符直接失败，不跳过。
 - 历史2026-09-18结果仅覆盖部分人工标注字段；2026-09-21的manifest扩展为95张八人桌每图41字段。新版默认manifest另含已确认编号的九人桌；全96图通过后才能报告本样本集完整字段通过。
 - 基准单进程串行执行，初始化单列，测量 `recognize(parse_all=True)` 包含解码与预处理，不包括 HTTP、网络和排队。P95 使用 nearest-rank。
