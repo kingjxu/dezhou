@@ -20,3 +20,6 @@ last_updated: "2026-09-18"
 - `reports/turn-fix-20260921/eight-seat-manifest.json` 补齐八人桌每图 41 项扑克字段人工断言；不能把旧的部分字段 95/95 当成整份响应准确率。
 - 用户确认 folded 的 current_bet 保持 null。九人桌座位编号正在确认，探索 manifest 第 96 项不是最终验收标签。
 - 未完成九人桌验证、CR 与部署，不能宣称本轮全量修复完成。
+
+- 性能修复必须用 `reports/turn-fix-20260921/run_ab.py` 同机顺序A/B；`check_hero_images.py --code-root`选择被测代码，固定同95图、同完整标签、同runner。不能以不同日期的部分字段耗时替代严格A/B。
+- active余额按缺失/低置信/位数不符门控并合并OCR；测试覆盖真实191截成19、多行归属、跨行/多候选拒绝，以及真实下注22/21/9/4。完整下注掩码只在快速路径不确定时重试。

@@ -75,6 +75,46 @@ class PolerV2Test(unittest.TestCase):
         self.assertEqual(r._find_blind_size([
             OcrItem(text="1/2/4(2)", cx=.5, cy=.58, score=.99)]), "1/2(2)")
 
+    def test_v2_wager_images_keep_edge_digits_and_ignore_overlapping_labels(self):
+        r = get_recognizer("polerv2")
+        for filename, seat, expected in (("bet-22.jpg", 4, 22),
+                                         ("bet-21.jpg", 4, 21),
+                                         ("bet-21.jpg", 6, 21),
+                                         ("bet-9.jpg", 3, 9),
+                                         ("bet-4.jpg", 6, 4)):
+            with self.subTest(filename=filename, seat=seat):
+                image = cv2.imread(str(Path(__file__).parent / "fixtures/field-regression" / filename))
+                image = r._normalize_canvas(image)
+                self.assertEqual(r._detect_bet_chip_digit(
+                    image, r._layout.seat_bet_fallback_rois[seat], ("red",)), expected)
+
+    def test_stack_glyph_count_detects_truncated_high_confidence_read(self):
+        r = self._normalizer()
+        image = cv2.imread(str(Path(__file__).parent / "fixtures/field-regression/balance-191.jpg"))
+        for image in (image, cv2.resize(image, None, fx=.5, fy=.5)):
+            self.assertEqual(r._v2_stack_digit_count(r._normalize_canvas(image), 2), 3)
+            self.assertNotEqual(r._v2_stack_digit_count(r._normalize_canvas(image), 2), len("19"))
+
+    def test_stack_batch_is_single_call_and_does_not_mix_rows(self):
+        r = self._normalizer()
+        r._ocr = object()
+        def box(y0, y1):
+            return [[20, y0], [60, y0], [60, y1], [20, y1]]
+        crop = np.zeros((40, 100, 3), dtype=np.uint8)
+        for reads, expected in (
+            ([(box(20, 50), "191", .99), (box(75, 105), "1156", .99)], {2: 191, 3: 1156}),
+            ([(box(50, 80), "1911156", .99)], {}),
+            ([(box(20, 50), "191", .5)], {}),
+            ([(box(20, 30), "191", .99), (box(35, 50), "92", .99)], {}),
+        ):
+            with patch.object(r, "_roi", return_value=crop), patch.object(
+                    recognizer_module, "_ocr_run", return_value=reads) as ocr:
+                self.assertEqual(r._read_v2_stacks(crop, [2, 3]), expected)
+                self.assertEqual(ocr.call_count, 1)
+        with patch.object(recognizer_module, "_ocr_run") as ocr:
+            self.assertEqual(r._read_v2_stacks(crop, []), {})
+            ocr.assert_not_called()
+
     def test_small_mushroom_uses_ocr_and_never_guesses_six(self):
         r = self._normalizer()
         r._ocr = object()

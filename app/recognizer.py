@@ -1012,6 +1012,7 @@ class TableRecognizer:
         # ── 收集所有 stack（先于 bet 检测，避免 stack 被误读为 bet） ──
         max_stk = getattr(self._layout, "max_stack", None)
         seat_info: list = []
+        v2_stack_recheck = []
         stack_values: set = set()
         if hero_stack > 0:
             stack_values.add(hero_stack)
@@ -1019,19 +1020,17 @@ class TableRecognizer:
             status = self._seat_status(items, seat)
             if (self._layout.app_name == "polerv2" and status == "active"
                     and not self._pick_stack(items, anchor, min_value=0, max_value=max_stk)):
-                # 全图缩小后容易漏掉倾斜的“留座/等待”，仅对未读到余额的座位补原图 OCR。
-                cx, cy = self._layout.seat_positions[seat]
-                status_roi = (max(0, cx-.15), max(.12, cy-.05),
-                              min(1, cx+.15), min(1, cy+.06))
-                local_items = self._ocr_strip(img, status_roi)
-                local_status = self._seat_status(local_items, seat)
-                if local_status in ("waiting", "all_in", "folded"):
-                    status = local_status
-            if (self._layout.app_name == "polerv2" and status == "active"
-                    and self._pick_stack(items, anchor, min_value=0, max_value=max_stk) is None):
-                visual = self._seat_visual_inactivity(img, seat)
-                if visual == "empty":
+                # 先用廉价视觉检查排除空座；不要为每个空座额外运行 OCR。
+                if self._seat_visual_inactivity(img, seat) == "empty":
                     status = "empty"
+                else:
+                    # 全图缩小可能漏掉倾斜的留座/等待标签。
+                    cx, cy = self._layout.seat_positions[seat]
+                    status_roi = (max(0, cx-.15), max(.12, cy-.05),
+                                  min(1, cx+.15), min(1, cy+.06))
+                    local_status = self._seat_status(self._ocr_strip(img, status_roi), seat)
+                    if local_status in ("waiting", "all_in", "folded"):
+                        status = local_status
             if status == "empty" or (self._layout.app_name == "polerv2" and status == "waiting"):
                 stack = None        # 空座/等待买入不把倒计时当筹码
             elif status == "all_in":
@@ -1044,16 +1043,25 @@ class TableRecognizer:
                     # 有玩家但读不到筹码 → 0（不再返回 None）
                     stack = 0
             if self._layout.app_name == "polerv2" and status == "active":
-                # 原始分辨率的独立余额条避免全图缩小漏掉末位（例如 191 → 19）。
-                stack_roi = self._layout.seat_stack_rois[seat]
-                stack_reads = self._ocr_strip(img, stack_roi)
-                amounts = [int(it.text) for it in stack_reads
-                           if re.fullmatch(r"\d+", it.text) and it.score >= 0.95]
-                if len(amounts) == 1 and (max_stk is None or amounts[0] <= max_stk):
-                    stack = amounts[0]
+                trusted_read = any(
+                    _parse_int(it.text) == stack and it.score >= 0.95
+                    and (it.cx-anchor.cx)**2 + (it.cy-anchor.cy)**2 <= anchor.max_dist**2
+                    for it in items)
+                if (not trusted_read or stack is None
+                        or self._v2_stack_digit_count(img, seat) != len(str(stack))):
+                    v2_stack_recheck.append(seat)
             if stack is not None and stack > 0:
                 stack_values.add(stack)
             seat_info.append((seat, status, stack))
+
+        if self._layout.app_name == "polerv2":
+            # 仅复核缺失/低置信/位数不符的余额，并合并为一次 OCR。
+            recovered = self._read_v2_stacks(img, v2_stack_recheck)
+            seat_info = [(seat, status, recovered.get(seat, stack))
+                         for seat, status, stack in seat_info]
+            stack_values = {stack for _, _, stack in seat_info if stack is not None and stack > 0}
+            if hero_stack > 0:
+                stack_values.add(hero_stack)
 
         # ── 兜底：CLAHE 可能破坏边缘文字，对 stack 异常低的在局座位用未增强全图 OCR ──
         # stack < 5 视为可疑（1/2 桌极少出现如此低的筹码，多为 OCR 误读如 "1/4"→1）
@@ -1953,7 +1961,7 @@ class TableRecognizer:
                                 chip_colors: tuple = ("red", "green")) -> int | None:
         """Read a V2 wager from its isolated marker card.
 
-        Detect the complete numeric line before tight component recognition;
+        Keep the complete numeric line, including digits near the card's edge;
         only an unambiguous single glyph may use the 1/2/4 geometry fallback.
         """
         if self._layout.app_name != "polerv2":
@@ -1965,27 +1973,25 @@ class TableRecognizer:
         white = cv2.inRange(chip_hsv, (0, 0, 175), (180, 110, 255))
         white = cv2.morphologyEx(
             white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
-        # 整张白字掩码先检测数字行，保留与卡片边框粘连的末位（22 不能截为 2）。
-        # 掩码也避免把邻近绿色“跟注”标签拼入红色卡片的数字。
-        marker_reads = _ocr_run(self._ocr, cv2.cvtColor(
-            cv2.resize(white, None, fx=4, fy=4), cv2.COLOR_GRAY2BGR)) or []
-        marker_values = []
-        for _, text, score in marker_reads:
-            text = (text or "").strip(" .")
-            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90:
-                marker_values.append(int(text))
-        if len(marker_values) == 1:
-            return marker_values[0]
         contours, _ = cv2.findContours(white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         # Digit-sized strokes exclude the thin card border and tiny back logo.
-        # Keep all adjacent digits, so 27/33 cannot be reduced to a single digit.
         digit_boxes = []
+        edge_boxes = []
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
             area = cv2.contourArea(contour)
             if (area >= 20 and area / (w * h) >= 0.12
-                    and chip.shape[0] * 0.15 <= h <= chip.shape[0] * 0.50
-                    and x + w <= chip.shape[1] * 0.85):
+                    and chip.shape[0] * 0.15 <= h <= chip.shape[0] * 0.50):
+                if x + w <= chip.shape[1] * 0.85:
+                    digit_boxes.append((x, y, w, h))
+                elif x + w <= chip.shape[1] * 0.90:
+                    edge_boxes.append((x, y, w, h))
+        # The last 2 in a left-side 22 reaches 87% of the crop. Extend an
+        # existing digit row, but do not turn isolated edge/logo strokes on a
+        # blank card back into new OCR work.
+        for x, y, w, h in edge_boxes:
+            if any(.85*bh <= h <= 1.15*bh and abs(y-by) <= .2*bh
+                   and 0 <= x-(bx+bw) <= .65*bh for bx, by, bw, bh in digit_boxes):
                 digit_boxes.append((x, y, w, h))
         if not digit_boxes:
             return None
@@ -2019,6 +2025,18 @@ class TableRecognizer:
                 partial_values.append(int(text))
         if len(partial_values) == 1:
             return partial_values[0]
+
+        # Card logos and overlapping labels can confuse the tight/partial line.
+        # Retry the complete mask only after both fast reads are uncertain.
+        marker_reads = _ocr_run(self._ocr, cv2.cvtColor(
+            cv2.resize(white, None, fx=4, fy=4), cv2.COLOR_GRAY2BGR)) or []
+        marker_values = []
+        for _, text, score in marker_reads:
+            text = (text or "").strip(" .")
+            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90:
+                marker_values.append(int(text))
+        if len(marker_values) == 1:
+            return marker_values[0]
 
         # Unreadable multi-digit wagers must stay unknown, never collapse to
         # the largest glyph's 1/2/4 geometry. The broad component set also
@@ -2492,6 +2510,64 @@ class TableRecognizer:
     # ROI-OCR：1+N 架构的"N"部分。对小 ROI 并发跑 OCR，返回全图归一化坐标。
     # 替换全图 OCR，速度通常快 5-10 倍，准确率因 CLAHE 只作用于小图而更高。
     # ------------------------------------------------------------------
+    def _v2_stack_digit_count(self, img: np.ndarray, seat: int) -> int:
+        """Count white glyphs cheaply; a mismatch asks OCR to retry, never invents a value."""
+        crop = self._roi(img, self._layout.seat_stack_rois[seat])
+        if not crop.size:
+            return 0
+        white = cv2.inRange(cv2.cvtColor(crop, cv2.COLOR_BGR2HSV),
+                            (0, 0, 160), (180, 90, 255))
+        contours, _ = cv2.findContours(white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        height = crop.shape[0]
+        count = 0
+        for contour in contours:
+            x, y, w, h = cv2.boundingRect(contour)
+            # Exclude the pill's top/bottom border fragments and avatar pixels.
+            if (.2*height <= h <= .75*height and .3*height <= y+h/2 <= .7*height
+                    and w <= h*1.2 and cv2.contourArea(contour) >= 8):
+                count += 1
+        return count
+
+    def _read_v2_stacks(self, img: np.ndarray, seats: list[int]) -> dict[int, int]:
+        """Read original-resolution balance strips in one OCR image.
+
+        Empty padding separates rows; a detected line must stay inside its own
+        strip, so joined lines cannot assign another player's balance.
+        """
+        tiles = []
+        top = 16
+        for seat in seats:
+            x0, y0, x1, y1 = self._layout.seat_stack_rois[seat]
+            # Count glyphs in the narrow band, but OCR a wider strip so large
+            # balances are not clipped to the width of the short-stack samples.
+            crop = self._roi(img, (max(0, x0-.035), max(0, y0-.02),
+                                   min(1, x1+.035), min(1, y1+.02)))
+            if crop.size:
+                tiles.append((seat, crop, top))
+                top += crop.shape[0] + 16
+        if not tiles:
+            return {}
+        width = max(crop.shape[1] for _, crop, _ in tiles) + 32
+        canvas = np.zeros((top, width, 3), dtype=np.uint8)
+        for _, crop, y in tiles:
+            canvas[y:y+crop.shape[0], 16:16+crop.shape[1]] = crop
+        reads = _ocr_run(self._ocr, canvas) or []
+        values = {seat: [] for seat, _, _ in tiles}
+        max_stack = self._layout.max_stack
+        for box, text, score in reads:
+            if box is None or not re.fullmatch(r"\d+", text or "") or float(score) < 0.95:
+                continue
+            value = int(text)
+            if max_stack is not None and value > max_stack:
+                continue
+            xs, ys = [p[0] for p in box], [p[1] for p in box]
+            for seat, crop, y in tiles:
+                if (min(xs) >= 16 and max(xs) <= 16+crop.shape[1]
+                        and min(ys) >= y and max(ys) <= y+crop.shape[0]):
+                    values[seat].append(value)
+                    break
+        return {seat: amounts[0] for seat, amounts in values.items() if len(amounts) == 1}
+
     def _ocr_strip(self, bgr: np.ndarray, frac_roi: tuple) -> list[OcrItem]:
         """OCR 一个小矩形 ROI，返回 OcrItem 列表（坐标已映射回全图 fractional）。"""
         H, W = bgr.shape[:2]

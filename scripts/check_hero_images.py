@@ -15,17 +15,19 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-from app.engines import get_recognizer
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--code-root', type=Path, default=ROOT,
+                        help='Load the recognizer from this checkout for sequential A/B runs')
     parser.add_argument('--images', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--manifest', type=Path,
                         default=ROOT / 'reports/hero-regression/manifest.json')
     args = parser.parse_args()
+    sys.path.insert(0, str(args.code_root.resolve()))
+    from app.engines import get_recognizer
     manifest = json.loads(args.manifest.read_text())
     cases = manifest['cases']
     # Fail before the run if an input is missing, changed or duplicated.
@@ -40,6 +42,7 @@ def main():
     if not cases:
         raise ValueError('Empty manifest')
     args.output.mkdir(parents=True, exist_ok=True)
+    run_started_at = time.time()
     started = time.perf_counter()
     recognizer = get_recognizer('polerv2')
     init_seconds = time.perf_counter() - started
@@ -85,7 +88,11 @@ def main():
             if errors:
                 failures.append(dict(index=case['index'], errors=errors))
             print(case['index'], round(elapsed, 3), errors, flush=True)
+    source = Path(sys.modules[type(recognizer).__module__].__file__)
     summary = dict(images=len(cases), passed=len(cases)-len(failures),
+                   code_root=str(args.code_root.resolve()),
+                   recognizer_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
+                   run_started_at=run_started_at, run_finished_at=time.time(),
                    initialization_seconds=init_seconds,
                    mean_seconds=statistics.mean(timings),
                    median_seconds=statistics.median(timings),

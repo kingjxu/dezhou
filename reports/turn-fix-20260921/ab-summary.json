@@ -1,0 +1,1098 @@
+{
+  "baseline": {
+    "images": 95,
+    "passed": 0,
+    "code_root": "/home/ubuntu/poker/dezhou",
+    "recognizer_sha256": "8bb0b3e9ec3631362e2167afe8f81f53d1aea4d9cd22360503c8ffee4ac42417",
+    "run_started_at": 1789925226.5424821,
+    "run_finished_at": 1789925377.5015926,
+    "initialization_seconds": 0.3116955142468214,
+    "mean_seconds": 1.584943822281141,
+    "median_seconds": 1.603174639865756,
+    "p95_seconds": 2.1739649027585983,
+    "max_seconds": 2.7604847606271505,
+    "failures": [
+      {
+        "index": 1,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.5.status",
+            "active",
+            "waiting"
+          ],
+          [
+            "villains_info.5.stack",
+            154,
+            null
+          ]
+        ]
+      },
+      {
+        "index": 2,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 3,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 4,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 5,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 6,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 7,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 8,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 9,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 10,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "table_info.current_bet",
+            9,
+            null
+          ],
+          [
+            "villains_info.3.current_bet",
+            9,
+            null
+          ]
+        ]
+      },
+      {
+        "index": 11,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 12,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 13,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 14,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 15,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.5.status",
+            "waiting",
+            "active"
+          ],
+          [
+            "villains_info.5.stack",
+            null,
+            0
+          ]
+        ]
+      },
+      {
+        "index": 16,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.5.status",
+            "waiting",
+            "folded"
+          ],
+          [
+            "villains_info.5.stack",
+            null,
+            0
+          ]
+        ]
+      },
+      {
+        "index": 17,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 18,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 19,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 20,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 21,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 22,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 23,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 24,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 25,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.4.current_bet",
+            21,
+            2
+          ]
+        ]
+      },
+      {
+        "index": 26,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 27,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 28,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 29,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 30,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 31,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 32,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 33,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 34,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 35,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 36,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 37,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 38,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 39,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 40,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 41,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 42,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 43,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.7.status",
+            "waiting",
+            "active"
+          ],
+          [
+            "villains_info.7.stack",
+            null,
+            0
+          ]
+        ]
+      },
+      {
+        "index": 44,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.7.status",
+            "waiting",
+            "active"
+          ],
+          [
+            "villains_info.7.stack",
+            null,
+            0
+          ]
+        ]
+      },
+      {
+        "index": 45,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 46,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 47,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 48,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 49,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 50,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 51,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 52,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 53,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 54,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 55,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 56,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 57,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.5.status",
+            "waiting",
+            "active"
+          ],
+          [
+            "villains_info.5.stack",
+            null,
+            0
+          ]
+        ]
+      },
+      {
+        "index": 58,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.5.status",
+            "waiting",
+            "active"
+          ],
+          [
+            "villains_info.5.stack",
+            null,
+            0
+          ]
+        ]
+      },
+      {
+        "index": 59,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 60,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 61,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 62,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 63,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 64,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 65,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 66,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 67,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 68,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 69,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 70,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.5.status",
+            "empty",
+            "folded"
+          ],
+          [
+            "villains_info.5.stack",
+            null,
+            0
+          ]
+        ]
+      },
+      {
+        "index": 71,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 72,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 73,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 74,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 75,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.5.status",
+            "waiting",
+            "empty"
+          ]
+        ]
+      },
+      {
+        "index": 76,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 77,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "villains_info.2.stack",
+            191,
+            19
+          ]
+        ]
+      },
+      {
+        "index": 78,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 79,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 80,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 81,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 82,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 83,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 84,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 85,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 86,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 87,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 88,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 89,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 90,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 91,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 92,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 93,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      },
+      {
+        "index": 94,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ],
+          [
+            "table_info.current_bet",
+            21,
+            4
+          ],
+          [
+            "villains_info.4.current_bet",
+            21,
+            2
+          ]
+        ]
+      },
+      {
+        "index": 95,
+        "errors": [
+          [
+            "table_info.blind_size",
+            "1/2/4(2)",
+            "1/2(2)"
+          ]
+        ]
+      }
+    ]
+  },
+  "optimized": {
+    "images": 95,
+    "passed": 95,
+    "code_root": "/home/ubuntu/poker/dezhou-turn-20260921",
+    "recognizer_sha256": "bf7dc83acc64ae74e6fc33142cff9e1f341fe2639e873f9aa8cacad0d3c593f0",
+    "run_started_at": 1789925377.8846195,
+    "run_finished_at": 1789925525.5881107,
+    "initialization_seconds": 0.31362712383270264,
+    "mean_seconds": 1.550642391764804,
+    "median_seconds": 1.456161841750145,
+    "p95_seconds": 2.3258473854511976,
+    "max_seconds": 3.447281366214156,
+    "failures": []
+  },
+  "mean_change_percent": -2.1642048149674076,
+  "p95_change_percent": 6.986427540751539
+}
