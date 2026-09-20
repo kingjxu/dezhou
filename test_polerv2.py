@@ -9,6 +9,8 @@ import app.recognizer as recognizer_module
 
 from app.engines import get_recognizer
 from app.layouts.polerv2 import LayoutPolerV2
+from app.layouts.poler import LayoutPoler
+from app.recognizer import OcrItem
 from app.recognizer import (
     TableRecognizer,
     _classify_v2_marker_digit,
@@ -37,6 +39,9 @@ class PolerV2Test(unittest.TestCase):
 
         for text, mode, expected in (
             ("33", "confident", 33),
+            (".9", "confident", 9),
+            (". 21", "confident", 21),
+            ("24.6", "confident", None),
             ("156", "confident", 156),
             ("33", "uncertain", None),
             ("156", "uncertain", None),
@@ -57,6 +62,40 @@ class PolerV2Test(unittest.TestCase):
                         actual = recognizer._detect_bet_chip_digit(
                             image, (0, 0, 1, 1), ("red",))
                 self.assertEqual(actual, expected)
+
+    def test_blinds_preserve_v2_structure_without_changing_legacy(self):
+        r = self._normalizer()
+        for text, expected in (("德州1/2/4（2）", "1/2/4(2)"),
+                               ("德州10/20/40 (20)", "10/20/40(20)"),
+                               ("德州172/4(2)", "1/2/4(2)"),
+                               ("1/2(2)", "1/2(2)")):
+            items = [OcrItem(text=text, cx=.5, cy=.58, score=.99)]
+            self.assertEqual(r._find_blind_size(items), expected)
+        r._layout = LayoutPoler()
+        self.assertEqual(r._find_blind_size([
+            OcrItem(text="1/2/4(2)", cx=.5, cy=.58, score=.99)]), "1/2(2)")
+
+    def test_small_mushroom_uses_ocr_and_never_guesses_six(self):
+        r = self._normalizer()
+        r._ocr = object()
+        image = cv2.imread(str(Path(__file__).parent / "fixtures/turn-gate/no-actions.webp"))
+        image = r._normalize_canvas(image)
+        for reads, expected in (([(None, "0", .9)], 0),
+                                ([(None, "6", .9)], 6),
+                                ([(None, "0", .4)], None),
+                                ([], None)):
+            with patch.object(recognizer_module, "_ocr_run", return_value=reads):
+                self.assertEqual(r._detect_small_mushroom_count(image), expected)
+
+    def test_top_overlay_text_is_not_a_player_status(self):
+        r = self._normalizer()
+        for text in ("等待反馈", "弃牌"):
+            items = [OcrItem(text=text, cx=.5, cy=.07, score=.99),
+                     OcrItem(text="三好姐姐", cx=.5, cy=.143, score=.99),
+                     OcrItem(text="154", cx=.5, cy=.222, score=.99)]
+            self.assertEqual(r._seat_status(items, 5), "active")
+        self.assertEqual(r._seat_status([
+            OcrItem(text="留座174秒", cx=.5, cy=.18, score=.99)], 5), "waiting")
 
     def test_v2_button_positions_include_hero_side_marker(self):
         self.assertIn((0.65, 0.78), LayoutPolerV2().button_positions[1])
@@ -143,7 +182,7 @@ class PolerV2Test(unittest.TestCase):
                 self.assertEqual(table_info["stage"], stage)
                 self.assertEqual(table_info["main_pot"], pot)
                 self.assertEqual(table_info["community_cards"], community)
-                self.assertEqual(table_info["blind_size"], "1/2(2)")
+                self.assertEqual(table_info["blind_size"], "1/2/4(2)")
 
     def test_v2_remote_hero_image_regression(self):
         image_dir = Path(__file__).parent / "reports" / "images-remote-hero"
@@ -169,7 +208,7 @@ class PolerV2Test(unittest.TestCase):
                 self.assertEqual(table_info["stage"], stage)
                 self.assertEqual(table_info["main_pot"], pot)
                 self.assertEqual(table_info["community_cards"], community)
-                self.assertEqual(table_info["blind_size"], "1/2(2)")
+                self.assertEqual(table_info["blind_size"], "1/2/4(2)")
 
 
 if __name__ == "__main__":

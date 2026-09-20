@@ -32,6 +32,19 @@ class LayoutPolerV2(LayoutPoler):
     face_board_suit_ry: tuple = (0.35, 0.70)
     face_board_suit_rx: tuple = (0.00, 0.40)
     mushroom_roi: tuple = (0.130, 0.115, 0.200, 0.165)
+    seat_stack_rois: dict = field(default_factory=lambda: {
+        2: (0.00, 0.61, 0.18, 0.67),
+        3: (0.00, 0.49, 0.18, 0.54),
+        4: (0.00, 0.36, 0.18, 0.40),
+        5: (0.40, 0.205, 0.60, 0.235),
+        6: (0.82, 0.36, 1.00, 0.40),
+        7: (0.82, 0.49, 1.00, 0.54),
+        8: (0.82, 0.61, 1.00, 0.67),
+    })
+    seat_positions: dict = field(default_factory=lambda: {
+        **LayoutPoler().seat_positions,
+        5: (0.50, 0.18),
+    })
     button_positions: dict = field(default_factory=lambda: {
         **LayoutPoler().button_positions,
         1: [(0.32, 0.87), (0.60, 0.87), (0.61, 0.80), (0.65, 0.78)],

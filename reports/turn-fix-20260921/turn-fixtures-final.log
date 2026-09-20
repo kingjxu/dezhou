@@ -1,0 +1,7 @@
+test_cyan_button_needs_fold_button_and_icon (test_turn_gate_images.TurnGateImagesTest.test_cyan_button_needs_fold_button_and_icon) ... ok
+test_real_images_at_different_sizes (test_turn_gate_images.TurnGateImagesTest.test_real_images_at_different_sizes) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.843s
+
+OK

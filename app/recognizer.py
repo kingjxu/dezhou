@@ -1018,6 +1018,16 @@ class TableRecognizer:
         for seat, anchor in self._layout.seat_anchors:
             status = self._seat_status(items, seat)
             if (self._layout.app_name == "polerv2" and status == "active"
+                    and not self._pick_stack(items, anchor, min_value=0, max_value=max_stk)):
+                # 全图缩小后容易漏掉倾斜的“留座/等待”，仅对未读到余额的座位补原图 OCR。
+                cx, cy = self._layout.seat_positions[seat]
+                status_roi = (max(0, cx-.15), max(.12, cy-.05),
+                              min(1, cx+.15), min(1, cy+.06))
+                local_items = self._ocr_strip(img, status_roi)
+                local_status = self._seat_status(local_items, seat)
+                if local_status in ("waiting", "all_in", "folded"):
+                    status = local_status
+            if (self._layout.app_name == "polerv2" and status == "active"
                     and self._pick_stack(items, anchor, min_value=0, max_value=max_stk) is None):
                 visual = self._seat_visual_inactivity(img, seat)
                 if visual == "empty":
@@ -1033,6 +1043,14 @@ class TableRecognizer:
                 if stack is None:
                     # 有玩家但读不到筹码 → 0（不再返回 None）
                     stack = 0
+            if self._layout.app_name == "polerv2" and status == "active":
+                # 原始分辨率的独立余额条避免全图缩小漏掉末位（例如 191 → 19）。
+                stack_roi = self._layout.seat_stack_rois[seat]
+                stack_reads = self._ocr_strip(img, stack_roi)
+                amounts = [int(it.text) for it in stack_reads
+                           if re.fullmatch(r"\d+", it.text) and it.score >= 0.95]
+                if len(amounts) == 1 and (max_stk is None or amounts[0] <= max_stk):
+                    stack = amounts[0]
             if stack is not None and stack > 0:
                 stack_values.add(stack)
             seat_info.append((seat, status, stack))
@@ -1514,21 +1532,27 @@ class TableRecognizer:
                     break
 
             # 尝试匹配 "sb/bb/ante(buyin)" 或 "sb/bb(ante)" 格式
-            # 先尝试三段格式: 1/2/4(2) → sb=1, bb=2, 后面忽略
-            m3 = re.search(r"(\d+)/(\d+)/(\d+)(?:[（(](\d+)[）)])?", text)
+            # V2 保留完整三段及括号；旧布局维持 sb/bb(ante) 兼容输出。
+            m3 = re.search(r"(\d+)/(\d+)/(\d+)\s*(?:[（(](\d+)[）)])?", text)
             if m3:
                 sb, bb = m3.group(1), m3.group(2)
                 ante = m3.group(4)
+                if self._layout.app_name == "polerv2":
+                    value = f"{sb}/{bb}/{m3.group(3)}"
+                    return f"{value}({ante})" if ante else value
                 return f"{sb}/{bb}({ante})" if ante else f"{sb}/{bb}"
 
             # FIX: OCR 经常把 "/" 读成 "7"，导致 "1/2/4(2)" → "172/4(2)"
             # 尝试把数字间的 "7" 替换回 "/" 再匹配
             text_fixed = re.sub(r"(\d)7(\d)", r"\1/\2", text)
             if text_fixed != text:
-                m3f = re.search(r"(\d+)/(\d+)/(\d+)(?:[（(](\d+)[）)])?", text_fixed)
+                m3f = re.search(r"(\d+)/(\d+)/(\d+)\s*(?:[（(](\d+)[）)])?", text_fixed)
                 if m3f:
                     sb, bb = m3f.group(1), m3f.group(2)
                     ante = m3f.group(4)
+                    if self._layout.app_name == "polerv2":
+                        value = f"{sb}/{bb}/{m3f.group(3)}"
+                        return f"{value}({ante})" if ante else value
                     return f"{sb}/{bb}({ante})" if ante else f"{sb}/{bb}"
 
             m = _BLIND_RE.search(text)
@@ -1601,9 +1625,13 @@ class TableRecognizer:
                     and x >= crop.shape[1] * 0.25
                     and crop.shape[0] * 0.50 <= y <= crop.shape[0] * 0.82):
                 candidates.append((x, y, width, height, area))
-        # The current V2 UI renders the missed one-digit count "6" with this
-        # stable glyph shape. Do not guess when multiple candidates appear.
-        return 6 if len(candidates) == 1 else None
+        # 轮廓只能确定“这里有数字”，不能将同尺寸的 0/6 强制归为 6。
+        if len(candidates) != 1:
+            return None
+        reads = _ocr_run(self._ocr, crop) or []
+        values = [int(text) for _, text, score in reads
+                  if re.fullmatch(r"\d", text or "") and float(score) >= 0.80]
+        return values[0] if len(values) == 1 else None
 
     # ==================================================================
     # current_bet
@@ -1923,12 +1951,10 @@ class TableRecognizer:
 
     def _detect_bet_chip_digit(self, img: np.ndarray, roi: tuple,
                                 chip_colors: tuple = ("red", "green")) -> int | None:
-        """Read a single small chip value for the V2 Poler layout.
+        """Read a V2 wager from its isolated marker card.
 
-        Newer Poler screenshots render the small blind/call markers as isolated
-        1/2/4 chips. General OCR can miss them or read the nearby table artwork;
-        this path finds the saturated chip inside a deliberately tight V2 ROI and
-        classifies the centered white digit with simple geometry.
+        Detect the complete numeric line before tight component recognition;
+        only an unambiguous single glyph may use the 1/2/4 geometry fallback.
         """
         if self._layout.app_name != "polerv2":
             return None
@@ -1939,6 +1965,17 @@ class TableRecognizer:
         white = cv2.inRange(chip_hsv, (0, 0, 175), (180, 110, 255))
         white = cv2.morphologyEx(
             white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+        # 整张白字掩码先检测数字行，保留与卡片边框粘连的末位（22 不能截为 2）。
+        # 掩码也避免把邻近绿色“跟注”标签拼入红色卡片的数字。
+        marker_reads = _ocr_run(self._ocr, cv2.cvtColor(
+            cv2.resize(white, None, fx=4, fy=4), cv2.COLOR_GRAY2BGR)) or []
+        marker_values = []
+        for _, text, score in marker_reads:
+            text = (text or "").strip(" .")
+            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90:
+                marker_values.append(int(text))
+        if len(marker_values) == 1:
+            return marker_values[0]
         contours, _ = cv2.findContours(white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         # Digit-sized strokes exclude the thin card border and tiny back logo.
         # Keep all adjacent digits, so 27/33 cannot be reduced to a single digit.
@@ -1965,30 +2002,23 @@ class TableRecognizer:
                 reads, _ = text_rec([cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)])
                 if len(reads) == 1:
                     text, score = reads[0][:2]
+                    # 裁片边框可能读成前后句点；内部小数点仍拒绝，避免把 24.6 当 246。
+                    text = str(text).strip(" .")
                     if re.fullmatch(r"\d{1,3}", str(text)) and float(score) >= 0.90:
                         return int(text)
             except (TypeError, ValueError, AttributeError):
                 pass  # Older/newer RapidOCR APIs can still use _ocr_run below.
-        # Two-character V2 wagers such as 27/33 are not safely distinguishable
-        # by a single component's aspect ratio. The red-card gate above keeps
-        # this OCR pass local to the wager marker instead of table UI text.
-        # Right-side wager cards can be overlapped by the green "跟注" label.
-        # The marker digits live on the left half of the red card, while the
-        # overlap is on the right, so keep the stable left-side text region.
+        # 右侧“跟注”标签可能覆盖卡片尾部；整行未读出时保留原有左侧区域重试。
         text_region = white[:, :max(1, int(white.shape[1] * 0.75))]
-        white_big = cv2.resize(
-            text_region, None, fx=4.0, fy=4.0, interpolation=cv2.INTER_CUBIC)
-        marker_ocr = _ocr_run(
-            self._ocr, cv2.cvtColor(white_big, cv2.COLOR_GRAY2BGR)) or []
-        numeric_reads = []
-        for _, text, score in marker_ocr:
-            value_text = (text or "").strip()
-            if re.fullmatch(r"\d", value_text) and value_text not in {"1", "2", "4"}:
-                continue
-            if re.fullmatch(r"\d{1,3}", value_text):
-                numeric_reads.append((float(score), int(value_text)))
-        if numeric_reads:
-            return max(numeric_reads)[1]
+        partial_reads = _ocr_run(self._ocr, cv2.cvtColor(
+            cv2.resize(text_region, None, fx=4, fy=4), cv2.COLOR_GRAY2BGR)) or []
+        partial_values = []
+        for _, text, score in partial_reads:
+            text = (text or "").strip(" .")
+            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90:
+                partial_values.append(int(text))
+        if len(partial_values) == 1:
+            return partial_values[0]
 
         # Unreadable multi-digit wagers must stay unknown, never collapse to
         # the largest glyph's 1/2/4 geometry. The broad component set also
@@ -2343,8 +2373,20 @@ class TableRecognizer:
             colorful = (hsv_right[:, :, 1] > 140) & (hsv_right[:, :, 2] > 130)
             # Exclude the teal table: action face is bright blue, green or red.
             hue = hsv_right[:, :, 0]
-            colorful &= ((hue < 75) | (hue > 95))
-            return bool(np.mean(colorful) > 0.06)
+            if np.mean(colorful & ((hue < 75) | (hue > 95))) > 0.06:
+                return True
+            # The active check button can share the table's cyan hue. Require
+            # its bright face and white icon together with the red fold button;
+            # a red fold button alone also appears beside gray pre-actions.
+            cyan = colorful & (hue >= 75) & (hue <= 95)
+            white = (hsv_right[:, :, 1] < 70) & (hsv_right[:, :, 2] > 180)
+            if np.mean(cyan) <= 0.06 or np.mean(white) <= 0.05:
+                return False
+            left = self._roi(img, (0.24, 0.70, 0.40, 0.78))
+            hsv_left = cv2.cvtColor(left, cv2.COLOR_BGR2HSV)
+            red = (((hsv_left[:, :, 0] <= 8) | (hsv_left[:, :, 0] >= 172))
+                   & (hsv_left[:, :, 1] > 140) & (hsv_left[:, :, 2] > 100))
+            return bool(np.mean(red) > 0.06)
         h, w   = img.shape[:2]
         y1, y2 = self._layout.action_btn_y
         x1, x2 = getattr(self._layout, 'action_btn_x', (0.0, 1.0))
@@ -3455,6 +3497,9 @@ class TableRecognizer:
 
         for it in items:
             if not it.text:
+                continue
+            # 顶部悬浮提示不属于 5 号座位，不能把“等待反馈/弃牌”当玩家状态。
+            if self._layout.app_name == "polerv2" and seat == 5 and it.cy < 0.12:
                 continue
             # 计算到最近搜索锚点的距离
             min_d = min(

@@ -1,10 +1,13 @@
 {
-  "version": 2,
+  "version": 3,
   "label_notes": [
     "Compared directly with original pixels; #3/#4 board Q is hearts, not diamonds.",
     "#4 has no current wager; 24 was an invalid inference from stack delta.",
     "#20 has no visible current wager. Prior uncertain label is now null.",
-    "Other unreviewed villain fields are intentionally not asserted."
+    "Top floating app hints are not player statuses; waiting seats have null stack.",
+    "All 95 eight-seat images manually checked for every table/player field (41 assertions each).",
+    "Folded current_bet remains null as explicitly confirmed by user.",
+    "New nine-seat image is tracked separately; its seat numbering contract is pending confirmation."
   ],
   "cases": [
     {
@@ -18,13 +21,63 @@
             "10 红桃"
           ],
           "stack": 196,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 25,
           "button_seat": 5,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 999,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1195,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 144,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 154,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 343,
+            "current_bet": 1
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 214,
+            "current_bet": 2
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 294,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -39,7 +92,10 @@
             "10 红桃"
           ],
           "stack": 194,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -49,7 +105,54 @@
           ],
           "main_pot": 36,
           "button_seat": 5,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 999,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1195,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 140,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 154,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 340,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 212,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 294,
+            "current_bet": null
+          }
         }
       }
     },
@@ -64,7 +167,10 @@
             "10 红桃"
           ],
           "stack": 194,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -75,10 +181,52 @@
           ],
           "main_pot": 60,
           "button_seat": 5,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 24
         },
         "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 999,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1195,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 140,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 154,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 340,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 212,
+            "current_bet": null
+          },
           "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 270,
             "current_bet": 24
           }
         }
@@ -95,7 +243,10 @@
             "10 红桃"
           ],
           "stack": 170,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -107,7 +258,54 @@
           ],
           "main_pot": 144,
           "button_seat": 5,
-          "stage": "river"
+          "stage": "river",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 36
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 999,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1195,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 116,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 154,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 340,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 212,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 234,
+            "current_bet": 36
+          }
         }
       }
     },
@@ -122,13 +320,63 @@
             "K 红桃"
           ],
           "stack": 302,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 96,
           "button_seat": 6,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 35
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 997,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1193,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 110,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 117,
+            "current_bet": 35
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 338,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 175,
+            "current_bet": 35
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 230,
+            "current_bet": null
+          }
         }
       }
     },
@@ -143,13 +391,63 @@
             "K 红桃"
           ],
           "stack": 207,
-          "current_bet": 99
+          "current_bet": 99,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 476,
           "button_seat": 6,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 210
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 997,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1193,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "all_in",
+            "stack": 0,
+            "current_bet": 114
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 117,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 338,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "all_in",
+            "stack": 0,
+            "current_bet": 210
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 230,
+            "current_bet": null
+          }
         }
       }
     },
@@ -164,13 +462,63 @@
             "2 梅花"
           ],
           "stack": 92,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 49,
           "button_seat": 7,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 24
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 991,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1187,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 115,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 312,
+            "current_bet": 24
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 528,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 227,
+            "current_bet": null
+          }
         }
       }
     },
@@ -185,13 +533,63 @@
             "3 梅花"
           ],
           "stack": 89,
-          "current_bet": 1
+          "current_bet": 1,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 21,
           "button_seat": 8,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 967,
+            "current_bet": 2
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1161,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 113,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 395,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 526,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 225,
+            "current_bet": null
+          }
         }
       }
     },
@@ -206,7 +604,10 @@
             "3 梅花"
           ],
           "stack": 86,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -216,7 +617,54 @@
           ],
           "main_pot": 26,
           "button_seat": 8,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 965,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1161,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 113,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 395,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 526,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 225,
+            "current_bet": null
+          }
         }
       }
     },
@@ -231,7 +679,10 @@
             "3 梅花"
           ],
           "stack": 86,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -241,7 +692,54 @@
           ],
           "main_pot": 35,
           "button_seat": 8,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 9
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 965,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1152,
+            "current_bet": 9
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 113,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 395,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 526,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 225,
+            "current_bet": null
+          }
         }
       }
     },
@@ -256,13 +754,63 @@
             "K 梅花"
           ],
           "stack": 84,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 25,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 962,
+            "current_bet": 1
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1183,
+            "current_bet": 2
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 107,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 393,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 520,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 223,
+            "current_bet": null
+          }
         }
       }
     },
@@ -277,7 +825,10 @@
             "K 梅花"
           ],
           "stack": 65,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -287,7 +838,54 @@
           ],
           "main_pot": 76,
           "button_seat": 1,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 962,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1166,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 92,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 393,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 520,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 223,
+            "current_bet": null
+          }
         }
       }
     },
@@ -302,7 +900,10 @@
             "K 梅花"
           ],
           "stack": 65,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -313,7 +914,54 @@
           ],
           "main_pot": 114,
           "button_seat": 1,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 38
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 962,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1166,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 54,
+            "current_bet": 38
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 393,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 520,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 223,
+            "current_bet": null
+          }
         }
       }
     },
@@ -328,13 +976,63 @@
             "4 方块"
           ],
           "stack": 209,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 29,
           "button_seat": 2,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 960,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1125,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 50,
+            "current_bet": 2
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 387,
+            "current_bet": 4
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 514,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 217,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -349,13 +1047,63 @@
             "4 红桃"
           ],
           "stack": 207,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 22,
           "button_seat": 3,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 958,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1123,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 196,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 166,
+            "current_bet": 2
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 508,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 498,
+            "current_bet": null
+          }
         }
       }
     },
@@ -370,13 +1118,63 @@
             "4 红桃"
           ],
           "stack": 207,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 22,
           "button_seat": 3,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 958,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1123,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 196,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 166,
+            "current_bet": 2
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 508,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 498,
+            "current_bet": null
+          }
         }
       }
     },
@@ -391,13 +1189,63 @@
             "2 方块"
           ],
           "stack": 205,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 21,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 952,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1147,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 194,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 163,
+            "current_bet": 1
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 504,
+            "current_bet": 2
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 492,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -412,13 +1260,63 @@
             "3 方块"
           ],
           "stack": 199,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 30,
           "button_seat": 6,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 946,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 192,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 269,
+            "current_bet": 4
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 498,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 486,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -433,7 +1331,10 @@
             "3 方块"
           ],
           "stack": 199,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -443,7 +1344,54 @@
           ],
           "main_pot": 30,
           "button_seat": 6,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 946,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 192,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 269,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 498,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 486,
+            "current_bet": null
+          }
         }
       }
     },
@@ -458,7 +1406,10 @@
             "3 方块"
           ],
           "stack": 184,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -469,7 +1420,54 @@
           ],
           "main_pot": 75,
           "button_seat": 6,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 946,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 192,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 269,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 483,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 471,
+            "current_bet": null
+          }
         }
       }
     },
@@ -484,7 +1482,10 @@
             "3 方块"
           ],
           "stack": 153,
-          "current_bet": 31
+          "current_bet": 31,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -495,7 +1496,54 @@
           ],
           "main_pot": 183,
           "button_seat": 6,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 77
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 946,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 192,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 269,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 483,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 394,
+            "current_bet": 77
+          }
         }
       }
     },
@@ -510,7 +1558,10 @@
             "3 方块"
           ],
           "stack": 153,
-          "current_bet": 31
+          "current_bet": 31,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -521,7 +1572,54 @@
           ],
           "main_pot": 183,
           "button_seat": 6,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 77
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 946,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 192,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 269,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 483,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 394,
+            "current_bet": 77
+          }
         }
       }
     },
@@ -536,7 +1634,10 @@
             "3 方块"
           ],
           "stack": 153,
-          "current_bet": 31
+          "current_bet": 31,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -547,7 +1648,54 @@
           ],
           "main_pot": 183,
           "button_seat": 6,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 77
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 946,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 192,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 269,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 483,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 394,
+            "current_bet": 77
+          }
         }
       }
     },
@@ -562,13 +1710,63 @@
             "6 红桃"
           ],
           "stack": 149,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 44,
           "button_seat": 7,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 23
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 940,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 956,
+            "current_bet": 23
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 190,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 267,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 481,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 569,
+            "current_bet": null
+          }
         }
       }
     },
@@ -583,13 +1781,63 @@
             "3 方块"
           ],
           "stack": 146,
-          "current_bet": 1
+          "current_bet": 1,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 63,
           "button_seat": 8,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 21
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 936,
+            "current_bet": 2
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 994,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 167,
+            "current_bet": 21
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 244,
+            "current_bet": 21
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 479,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 567,
+            "current_bet": null
+          }
         }
       }
     },
@@ -604,16 +1852,61 @@
             "7 黑桃"
           ],
           "stack": 144,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 58,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 33
         },
         "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 933,
+            "current_bet": 1
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 990,
+            "current_bet": 2
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 381,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 75,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 473,
+            "current_bet": 4
+          },
           "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 532,
             "current_bet": 33
           }
         }
@@ -630,16 +1923,61 @@
             "7 红桃"
           ],
           "stack": 142,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 58,
           "button_seat": 2,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 33
         },
         "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 931,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 987,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 377,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 69,
+            "current_bet": 4
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 467,
+            "current_bet": 4
+          },
           "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 555,
             "current_bet": 33
           }
         }
@@ -656,13 +1994,63 @@
             "4 红桃"
           ],
           "stack": 140,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 21,
           "button_seat": 3,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 929,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 985,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 374,
+            "current_bet": 1
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 296,
+            "current_bet": 2
+          },
+          "6": {
+            "seat": 6,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 392,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 732,
+            "current_bet": null
+          }
         }
       }
     },
@@ -677,16 +2065,61 @@
             "4 红桃"
           ],
           "stack": 140,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 21,
           "button_seat": 3,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
         },
         "villains_info": {
           "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 929,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 985,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 374,
+            "current_bet": 1
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 296,
+            "current_bet": 2
+          },
+          "6": {
+            "seat": 6,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 392,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 732,
             "current_bet": null
           }
         }
@@ -703,7 +2136,10 @@
             "4 红桃"
           ],
           "stack": 136,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -713,7 +2149,54 @@
           ],
           "main_pot": 31,
           "button_seat": 3,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 929,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 374,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 294,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 392,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 732,
+            "current_bet": null
+          }
         }
       }
     },
@@ -728,7 +2211,10 @@
             "4 红桃"
           ],
           "stack": 136,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -739,7 +2225,54 @@
           ],
           "main_pot": 31,
           "button_seat": 3,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 929,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 374,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 294,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 392,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 732,
+            "current_bet": null
+          }
         }
       }
     },
@@ -754,13 +2287,63 @@
             "Q 红桃"
           ],
           "stack": 165,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 27,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 927,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 979,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 372,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 291,
+            "current_bet": 1
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 196,
+            "current_bet": 2
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 386,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 726,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -775,7 +2358,10 @@
             "6 红桃"
           ],
           "stack": 155,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -785,7 +2371,54 @@
           ],
           "main_pot": 80,
           "button_seat": 5,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 917,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 969,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 389,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 281,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 186,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 376,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 716,
+            "current_bet": null
+          }
         }
       }
     },
@@ -801,7 +2434,9 @@
           ],
           "stack": 155,
           "current_bet": null,
-          "is_hero_turn": false
+          "is_hero_turn": false,
+          "seat": 1,
+          "status": "active"
         },
         "table_info": {
           "community_cards": [
@@ -811,7 +2446,54 @@
           ],
           "main_pot": 120,
           "button_seat": 5,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 40
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 917,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 929,
+            "current_bet": 40
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 389,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 281,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 186,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 376,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 716,
+            "current_bet": null
+          }
         }
       }
     },
@@ -826,13 +2508,63 @@
             "9 梅花"
           ],
           "stack": 149,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 72,
           "button_seat": 6,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 24
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 915,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 793,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 387,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 279,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 140,
+            "current_bet": 4
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 350,
+            "current_bet": 24
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 972,
+            "current_bet": 24
+          }
         }
       }
     },
@@ -847,13 +2579,63 @@
             "6 方块"
           ],
           "stack": 145,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 29,
           "button_seat": 7,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 909,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 787,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 381,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 277,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 668,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 849,
+            "current_bet": null
+          }
         }
       }
     },
@@ -868,13 +2650,63 @@
             "6 方块"
           ],
           "stack": 145,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 29,
           "button_seat": 7,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 909,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 787,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 381,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 277,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 668,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 849,
+            "current_bet": null
+          }
         }
       }
     },
@@ -889,7 +2721,10 @@
             "6 方块"
           ],
           "stack": 143,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -899,7 +2734,54 @@
           ],
           "main_pot": 31,
           "button_seat": 7,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 909,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 787,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 381,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 277,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 668,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 849,
+            "current_bet": null
+          }
         }
       }
     },
@@ -914,7 +2796,10 @@
             "6 方块"
           ],
           "stack": 143,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -924,7 +2809,54 @@
           ],
           "main_pot": 93,
           "button_seat": 7,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 31
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 878,
+            "current_bet": 31
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 756,
+            "current_bet": 31
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 381,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 277,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 668,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 849,
+            "current_bet": null
+          }
         }
       }
     },
@@ -939,13 +2871,63 @@
             "Q 梅花"
           ],
           "stack": 140,
-          "current_bet": 1
+          "current_bet": 1,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 23,
           "button_seat": 8,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 963,
+            "current_bet": 2
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 750,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 379,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 271,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 847,
+            "current_bet": null
+          }
         }
       }
     },
@@ -960,13 +2942,63 @@
             "4 黑桃"
           ],
           "stack": 138,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 23,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 958,
+            "current_bet": 1
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 746,
+            "current_bet": 2
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 373,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 290,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 845,
+            "current_bet": null
+          }
         }
       }
     },
@@ -981,13 +3013,63 @@
             "4 黑桃"
           ],
           "stack": 138,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 23,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 958,
+            "current_bet": 1
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 746,
+            "current_bet": 2
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 373,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 290,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 845,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1002,13 +3084,63 @@
             "4 黑桃"
           ],
           "stack": 134,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 73,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 26
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 958,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 722,
+            "current_bet": 26
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 373,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 268,
+            "current_bet": 26
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 845,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1023,13 +3155,63 @@
             "4 黑桃"
           ],
           "stack": 134,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 73,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 26
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 958,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 722,
+            "current_bet": 26
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 373,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 268,
+            "current_bet": 26
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 845,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1044,13 +3226,63 @@
             "7 黑桃"
           ],
           "stack": 132,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 19,
           "button_seat": 2,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 956,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 983,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 369,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 59,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 843,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1065,13 +3297,63 @@
             "6 梅花"
           ],
           "stack": 130,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 19,
           "button_seat": 3,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 950,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 981,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 364,
+            "current_bet": 1
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 80,
+            "current_bet": 2
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 837,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -1086,19 +3368,62 @@
             "9 方块"
           ],
           "stack": 124,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 32,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
         },
         "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 944,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 994,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 362,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 74,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
           "7": {
+            "seat": 7,
             "status": "waiting",
             "stack": null,
             "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 831,
+            "current_bet": 4
           }
         }
       }
@@ -1114,7 +3439,10 @@
             "9 方块"
           ],
           "stack": 124,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1124,7 +3452,54 @@
           ],
           "main_pot": 32,
           "button_seat": 4,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 944,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 994,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 362,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 74,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 831,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1139,13 +3514,63 @@
             "2 红桃"
           ],
           "stack": 120,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 22,
           "button_seat": 5,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 900,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1057,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 360,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 72,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 825,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -1160,7 +3585,10 @@
             "2 红桃"
           ],
           "stack": 118,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1170,7 +3598,54 @@
           ],
           "main_pot": 40,
           "button_seat": 5,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 16
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 900,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1057,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 360,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 72,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 809,
+            "current_bet": 16
+          }
         }
       }
     },
@@ -1185,13 +3660,63 @@
             "5 方块"
           ],
           "stack": 114,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 26,
           "button_seat": 7,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1051,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 358,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 70,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 194,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 843,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -1206,7 +3731,10 @@
             "5 方块"
           ],
           "stack": 112,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1216,7 +3744,54 @@
           ],
           "main_pot": 28,
           "button_seat": 7,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1051,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 358,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 70,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 194,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 843,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1231,7 +3806,10 @@
             "5 方块"
           ],
           "stack": 112,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1241,7 +3819,54 @@
           ],
           "main_pot": 42,
           "button_seat": 7,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 14
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1037,
+            "current_bet": 14
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 358,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 70,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 194,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 843,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1256,13 +3881,63 @@
             "8 方块"
           ],
           "stack": 109,
-          "current_bet": 1
+          "current_bet": 1,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 23,
           "button_seat": 8,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1075,
+            "current_bet": 2
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 352,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 68,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 192,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 837,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -1277,13 +3952,63 @@
             "K 方块"
           ],
           "stack": 107,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 23,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1113,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 348,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 62,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 186,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 816,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1298,13 +4023,63 @@
             "6 方块"
           ],
           "stack": 103,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 19,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1109,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 366,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 55,
+            "current_bet": 1
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 176,
+            "current_bet": 2
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 827,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -1319,7 +4094,10 @@
             "10 梅花"
           ],
           "stack": 97,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1329,7 +4107,54 @@
           ],
           "main_pot": 19,
           "button_seat": 7,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1172,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 364,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 174,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 824,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1344,7 +4169,10 @@
             "10 梅花"
           ],
           "stack": 97,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1355,7 +4183,54 @@
           ],
           "main_pot": 19,
           "button_seat": 7,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1172,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 364,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 174,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 824,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1370,7 +4245,10 @@
             "10 梅花"
           ],
           "stack": 97,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1381,7 +4259,54 @@
           ],
           "main_pot": 38,
           "button_seat": 7,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 19
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1153,
+            "current_bet": 19
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 364,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 174,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 824,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1396,7 +4321,10 @@
             "10 梅花"
           ],
           "stack": 78,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1408,12 +4336,52 @@
           ],
           "main_pot": 57,
           "button_seat": 7,
-          "stage": "river"
+          "stage": "river",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
         },
         "villains_info": {
           "2": {
+            "seat": 2,
             "status": "empty",
             "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1153,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 364,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 174,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 824,
             "current_bet": null
           }
         }
@@ -1430,13 +4398,63 @@
             "2 红桃"
           ],
           "stack": 131,
-          "current_bet": 1
+          "current_bet": 1,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 50,
           "button_seat": 8,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 29
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1149,
+            "current_bet": 2
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 358,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 168,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 793,
+            "current_bet": 29
+          }
         }
       }
     },
@@ -1451,13 +4469,63 @@
             "7 黑桃"
           ],
           "stack": 129,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 21,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1146,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 354,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 162,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 837,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -1472,13 +4540,63 @@
             "7 黑桃"
           ],
           "stack": 129,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 21,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1146,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 354,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 162,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 837,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -1493,7 +4611,10 @@
             "7 黑桃"
           ],
           "stack": 125,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1503,7 +4624,54 @@
           ],
           "main_pot": 27,
           "button_seat": 1,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1146,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 352,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 162,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 837,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1518,7 +4686,10 @@
             "7 黑桃"
           ],
           "stack": 125,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1529,7 +4700,54 @@
           ],
           "main_pot": 45,
           "button_seat": 1,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 18
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1146,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 352,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 162,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 819,
+            "current_bet": 18
+          }
         }
       }
     },
@@ -1544,13 +4762,63 @@
             "J 黑桃"
           ],
           "stack": 123,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 17,
           "button_seat": 3,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1144,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 331,
+            "current_bet": 1
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 158,
+            "current_bet": 2
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 875,
+            "current_bet": 4
+          }
         }
       }
     },
@@ -1565,7 +4833,10 @@
             "J 黑桃"
           ],
           "stack": 119,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1575,16 +4846,53 @@
           ],
           "main_pot": 182,
           "button_seat": 3,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 156
         },
         "villains_info": {
           "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1144,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 328,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
             "status": "empty",
             "stack": null,
             "current_bet": null
           },
           "7": {
+            "seat": 7,
+            "status": "all_in",
+            "stack": 0,
             "current_bet": 156
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 875,
+            "current_bet": null
           }
         }
       }
@@ -1600,13 +4908,63 @@
             "5 红桃"
           ],
           "stack": 115,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 22,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1138,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 322,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 176,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1621,13 +4979,63 @@
             "Q 黑桃"
           ],
           "stack": 109,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 36,
           "button_seat": 7,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 22
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1156,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 298,
+            "current_bet": 22
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 174,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1642,13 +5050,63 @@
             "6 梅花"
           ],
           "stack": 107,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 15,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1153,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 330,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 168,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1663,13 +5121,63 @@
             "6 方块"
           ],
           "stack": 105,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 19,
           "button_seat": 2,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 196,
+            "current_bet": 2
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1150,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 324,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 179,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1684,13 +5192,63 @@
             "7 梅花"
           ],
           "stack": 99,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 24,
           "button_seat": 3,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 188,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1145,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 316,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 201,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1705,7 +5263,10 @@
             "7 梅花"
           ],
           "stack": 99,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1716,7 +5277,54 @@
           ],
           "main_pot": 40,
           "button_seat": 3,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 16
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 188,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1145,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 300,
+            "current_bet": 16
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 201,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1731,13 +5339,63 @@
             "2 黑桃"
           ],
           "stack": 95,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 24,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 182,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1143,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 334,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 195,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1752,13 +5410,63 @@
             "Q 梅花"
           ],
           "stack": 92,
-          "current_bet": 1
+          "current_bet": 1,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 21,
           "button_seat": 7,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 178,
+            "current_bet": 2
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1137,
+            "current_bet": 4
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 356,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "waiting",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 189,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1773,13 +5481,63 @@
             "2 红桃"
           ],
           "stack": 90,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 23,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 196,
+            "current_bet": 1
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1133,
+            "current_bet": 2
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 350,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 294,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 187,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1794,13 +5552,63 @@
             "9 黑桃"
           ],
           "stack": 88,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 19,
           "button_seat": 2,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 191,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1156,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 346,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 288,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 185,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1815,13 +5623,63 @@
             "9 黑桃"
           ],
           "stack": 84,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 54,
           "button_seat": 2,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 31
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 187,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1156,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 346,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 261,
+            "current_bet": 31
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 185,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1836,13 +5694,63 @@
             "2 梅花"
           ],
           "stack": 82,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 19,
           "button_seat": 3,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 158,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1154,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 343,
+            "current_bet": 1
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 334,
+            "current_bet": 2
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 179,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1857,13 +5765,63 @@
             "5 方块"
           ],
           "stack": 76,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 28,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 152,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1171,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 341,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 328,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 173,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1878,7 +5836,10 @@
             "A 方块"
           ],
           "stack": 70,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1888,7 +5849,54 @@
           ],
           "main_pot": 25,
           "button_seat": 5,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 146,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1169,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 339,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 350,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 170,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1903,7 +5911,10 @@
             "8 红桃"
           ],
           "stack": 60,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1913,7 +5924,54 @@
           ],
           "main_pot": 60,
           "button_seat": 7,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 136,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1159,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 329,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 365,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 160,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1928,7 +5986,10 @@
             "8 红桃"
           ],
           "stack": 60,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -1938,15 +5999,53 @@
           ],
           "main_pot": 90,
           "button_seat": 7,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 30
         },
         "villains_info": {
-          "5": {
-            "status": "folded",
-            "stack": 365
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 136,
+            "current_bet": null
           },
           "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1129,
             "current_bet": 30
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 329,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 365,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 160,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
           }
         }
       }
@@ -1962,13 +6061,63 @@
             "10 黑桃"
           ],
           "stack": 58,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 27,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 218,
+            "current_bet": 1
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1125,
+            "current_bet": 2
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 323,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 359,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 154,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -1983,13 +6132,63 @@
             "10 红桃"
           ],
           "stack": 56,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 23,
           "button_seat": 2,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 198,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1122,
+            "current_bet": 1
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 319,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 409,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 133,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2005,7 +6204,9 @@
           ],
           "stack": 52,
           "current_bet": null,
-          "is_hero_turn": false
+          "is_hero_turn": false,
+          "seat": 1,
+          "status": "active"
         },
         "table_info": {
           "community_cards": [
@@ -2015,7 +6216,54 @@
           ],
           "main_pot": 32,
           "button_seat": 2,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 198,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1119,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 317,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 409,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 133,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2030,13 +6278,63 @@
             "5 梅花"
           ],
           "stack": 46,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 48,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 28
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 196,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 289,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 379,
+            "current_bet": 28
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2051,13 +6349,63 @@
             "2 黑桃"
           ],
           "stack": 42,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 24,
           "button_seat": 5,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 190,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 215,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 487,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 173,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2072,13 +6420,63 @@
             "4 黑桃"
           ],
           "stack": 37,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 21,
           "button_seat": 1,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 121,
+            "current_bet": 1
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 228,
+            "current_bet": 2
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 554,
+            "current_bet": 4
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 165,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2093,13 +6491,63 @@
             "A 黑桃"
           ],
           "stack": 35,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 17,
           "button_seat": 2,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 4
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 116,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 223,
+            "current_bet": 1
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 550,
+            "current_bet": 2
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 185,
+            "current_bet": 4
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2114,7 +6562,10 @@
             "A 黑桃"
           ],
           "stack": 17,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -2124,7 +6575,54 @@
           ],
           "main_pot": 86,
           "button_seat": 2,
-          "stage": "flop"
+          "stage": "flop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 98,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 206,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 534,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 185,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2139,7 +6637,10 @@
             "A 黑桃"
           ],
           "stack": 17,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -2150,7 +6651,54 @@
           ],
           "main_pot": 86,
           "button_seat": 2,
-          "stage": "turn"
+          "stage": "turn",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 98,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 206,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 534,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 185,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2165,7 +6713,10 @@
             "A 黑桃"
           ],
           "stack": 17,
-          "current_bet": null
+          "current_bet": null,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [
@@ -2177,7 +6728,54 @@
           ],
           "main_pot": 86,
           "button_seat": 2,
-          "stage": "river"
+          "stage": "river",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": null
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 98,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 206,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 534,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 185,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
         }
       }
     },
@@ -2192,18 +6790,62 @@
             "7 方块"
           ],
           "stack": 11,
-          "current_bet": 4
+          "current_bet": 4,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 42,
           "button_seat": 4,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 21
         },
         "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 92,
+            "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 265,
+            "current_bet": 21
+          },
           "5": {
+            "seat": 5,
             "status": "folded",
-            "stack": 531
+            "stack": 531,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 181,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
           }
         }
       }
@@ -2219,20 +6861,66 @@
             "J 红桃"
           ],
           "stack": 7,
-          "current_bet": 2
+          "current_bet": 2,
+          "seat": 1,
+          "status": "active",
+          "is_hero_turn": true
         },
         "table_info": {
           "community_cards": [],
           "main_pot": 50,
           "button_seat": 5,
-          "stage": "preflop"
+          "stage": "preflop",
+          "blind_size": "1/2/4(2)",
+          "mushroom_count": null,
+          "current_bet": 29
         },
         "villains_info": {
-          "4": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 127,
             "current_bet": 4
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 259,
+            "current_bet": 4
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 500,
+            "current_bet": 29
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 178,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
           }
         }
       }
     }
-  ]
+  ],
+  "complete_fields": true
 }

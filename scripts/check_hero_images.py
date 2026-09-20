@@ -26,7 +26,8 @@ def main():
     parser.add_argument('--manifest', type=Path,
                         default=ROOT / 'reports/hero-regression/manifest.json')
     args = parser.parse_args()
-    cases = json.loads(args.manifest.read_text())['cases']
+    manifest = json.loads(args.manifest.read_text())
+    cases = manifest['cases']
     # Fail before the run if an input is missing, changed or duplicated.
     seen = set()
     for case in cases:
@@ -51,6 +52,19 @@ def main():
             elapsed = time.perf_counter() - started
             timings.append(elapsed)
             errors = []
+            if manifest.get('complete_fields'):
+                for section in ('table_info', 'hero_info'):
+                    if set(result[section]) != set(case['expected'][section]):
+                        errors.append([f'{section}.keys', sorted(case['expected'][section]),
+                                       sorted(result[section])])
+                expected_seats = sorted(int(seat) for seat in case['expected']['villains_info'])
+                actual_seats = sorted(v['seat'] for v in result['villains_info'])
+                if actual_seats != expected_seats:
+                    errors.append(['villains_info.seats', expected_seats, actual_seats])
+                for player in result['villains_info']:
+                    if set(player) != {'seat', 'status', 'stack', 'current_bet'}:
+                        errors.append(['villains_info.keys',
+                                       ['current_bet', 'seat', 'stack', 'status'], sorted(player)])
             for section, expected in case['expected'].items():
                 actual = result[section]
                 if section == 'villains_info':
