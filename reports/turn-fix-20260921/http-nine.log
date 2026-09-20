@@ -1,0 +1,280 @@
+[OCR] RapidOCR 后端包: rapidocr_onnxruntime
+[OCR] 使用 RapidOCR (默认 server, PP-OCRv4)
+[OCR] RapidOCR 调用参数生效: {'use_cls': False}
+[
+  {
+    "file": "check-action.webp",
+    "parse_all": false,
+    "http_status": 200,
+    "seconds": 1.5173292588442564,
+    "response": {
+      "received_at": "2026-09-20T17:49:30.596961Z",
+      "parsed_at": "2026-09-20T17:49:32.105845Z",
+      "elapsed_ms": 1509,
+      "app": "polerv2",
+      "table_info": {
+        "stage": "flop",
+        "community_cards": [
+          "K 方块",
+          "J 方块",
+          "9 梅花"
+        ],
+        "main_pot": 31,
+        "button_seat": 3,
+        "blind_size": "1/2/4(2)",
+        "current_bet": null,
+        "mushroom_count": null
+      },
+      "hero_info": {
+        "seat": 1,
+        "status": "active",
+        "stack": 136,
+        "current_bet": null,
+        "is_hero_turn": true,
+        "hero_cards": [
+          "A 方块",
+          "4 红桃"
+        ]
+      },
+      "villains_info": [
+        {
+          "seat": 2,
+          "status": "folded",
+          "stack": 929,
+          "current_bet": null
+        },
+        {
+          "seat": 3,
+          "status": "active",
+          "stack": 981,
+          "current_bet": null
+        },
+        {
+          "seat": 4,
+          "status": "folded",
+          "stack": 374,
+          "current_bet": null
+        },
+        {
+          "seat": 5,
+          "status": "active",
+          "stack": 294,
+          "current_bet": null
+        },
+        {
+          "seat": 6,
+          "status": "waiting",
+          "stack": null,
+          "current_bet": null
+        },
+        {
+          "seat": 7,
+          "status": "active",
+          "stack": 392,
+          "current_bet": null
+        },
+        {
+          "seat": 8,
+          "status": "folded",
+          "stack": 732,
+          "current_bet": null
+        }
+      ]
+    }
+  },
+  {
+    "file": "check-action.webp",
+    "parse_all": true,
+    "http_status": 200,
+    "seconds": 1.0043571013957262,
+    "response": {
+      "received_at": "2026-09-20T17:49:32.111782Z",
+      "parsed_at": "2026-09-20T17:49:33.110562Z",
+      "elapsed_ms": 999,
+      "app": "polerv2",
+      "table_info": {
+        "stage": "flop",
+        "community_cards": [
+          "K 方块",
+          "J 方块",
+          "9 梅花"
+        ],
+        "main_pot": 31,
+        "button_seat": 3,
+        "blind_size": "1/2/4(2)",
+        "current_bet": null,
+        "mushroom_count": null
+      },
+      "hero_info": {
+        "seat": 1,
+        "status": "active",
+        "stack": 136,
+        "current_bet": null,
+        "is_hero_turn": true,
+        "hero_cards": [
+          "A 方块",
+          "4 红桃"
+        ]
+      },
+      "villains_info": [
+        {
+          "seat": 2,
+          "status": "folded",
+          "stack": 929,
+          "current_bet": null
+        },
+        {
+          "seat": 3,
+          "status": "active",
+          "stack": 981,
+          "current_bet": null
+        },
+        {
+          "seat": 4,
+          "status": "folded",
+          "stack": 374,
+          "current_bet": null
+        },
+        {
+          "seat": 5,
+          "status": "active",
+          "stack": 294,
+          "current_bet": null
+        },
+        {
+          "seat": 6,
+          "status": "waiting",
+          "stack": null,
+          "current_bet": null
+        },
+        {
+          "seat": 7,
+          "status": "active",
+          "stack": 392,
+          "current_bet": null
+        },
+        {
+          "seat": 8,
+          "status": "folded",
+          "stack": 732,
+          "current_bet": null
+        }
+      ]
+    }
+  },
+  {
+    "file": "no-actions.webp",
+    "parse_all": false,
+    "http_status": 200,
+    "seconds": 0.03880009613931179,
+    "response": {
+      "received_at": "2026-09-20T17:49:33.115890Z",
+      "parsed_at": "2026-09-20T17:49:33.149821Z",
+      "elapsed_ms": 34,
+      "app": "polerv2",
+      "table_info": {
+        "stage": "unknown",
+        "community_cards": [],
+        "main_pot": null,
+        "button_seat": null,
+        "blind_size": null,
+        "current_bet": null,
+        "mushroom_count": null
+      },
+      "hero_info": {
+        "seat": 1,
+        "status": "unknown",
+        "stack": null,
+        "current_bet": null,
+        "is_hero_turn": false,
+        "hero_cards": []
+      },
+      "villains_info": []
+    }
+  },
+  {
+    "file": "no-actions.webp",
+    "parse_all": true,
+    "http_status": 200,
+    "seconds": 1.6808099821209908,
+    "response": {
+      "received_at": "2026-09-20T17:49:33.154197Z",
+      "parsed_at": "2026-09-20T17:49:34.831376Z",
+      "elapsed_ms": 1677,
+      "app": "polerv2",
+      "table_info": {
+        "stage": "unknown",
+        "community_cards": [
+          "7 黑桃",
+          "6 黑桃"
+        ],
+        "main_pot": 530,
+        "button_seat": 8,
+        "blind_size": "10/20/40(20)",
+        "current_bet": null,
+        "mushroom_count": 0
+      },
+      "hero_info": {
+        "seat": 1,
+        "status": "active",
+        "stack": 0,
+        "current_bet": null,
+        "is_hero_turn": false,
+        "hero_cards": [
+          "5 黑桃",
+          "6 梅花"
+        ]
+      },
+      "villains_info": [
+        {
+          "seat": 2,
+          "status": "empty",
+          "stack": null,
+          "current_bet": null
+        },
+        {
+          "seat": 3,
+          "status": "empty",
+          "stack": null,
+          "current_bet": null
+        },
+        {
+          "seat": 4,
+          "status": "empty",
+          "stack": null,
+          "current_bet": null
+        },
+        {
+          "seat": 5,
+          "status": "empty",
+          "stack": null,
+          "current_bet": null
+        },
+        {
+          "seat": 6,
+          "status": "empty",
+          "stack": null,
+          "current_bet": null
+        },
+        {
+          "seat": 7,
+          "status": "empty",
+          "stack": null,
+          "current_bet": null
+        },
+        {
+          "seat": 8,
+          "status": "active",
+          "stack": 1346,
+          "current_bet": null
+        },
+        {
+          "seat": 9,
+          "status": "empty",
+          "stack": null,
+          "current_bet": null
+        }
+      ]
+    }
+  }
+]

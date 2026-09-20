@@ -13,3 +13,5 @@ OCR 使用 RapidOCR/Paddle 适配；牌点/花色通过 ONNX Runtime。polerv2 �
 `app/recognition_log.py` 将每次进入识别函数的完成/异常事件写入轮转 JSONL；默认 `logs/recognition.jsonl`，不记录图片载荷。`scripts/watch_recognition.py` 在开发机经 SSH 读新增日志，通过 botmux 在指定会话汇报，生命周期有界，详情见 `docs/recognition-monitoring.md`。
 
 识别响应先在 handler 内验证 schema，再记录成功结果；非法引擎输出记录 500。validation 排除需要服务端非空环境 token 与请求 token 匹配；未配置时所有请求均为 live。通知失败限次重试并写观察器日志，不中止 SSH 消费。
+
+V2归一化后检查顶部两个空座十字标记，命中时浅拷贝识别器并绑定九人桌布局，仅供该请求使用；不修改缓存实例的layout，不增加OCR实例或并发OCR。未匹配时维持八人桌布局，顶部有人/遮挡的九人桌尚无验证样本。

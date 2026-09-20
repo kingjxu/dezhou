@@ -1,0 +1,14 @@
+{
+  "images": 96,
+  "passed": 96,
+  "code_root": "/home/ubuntu/poker/dezhou-turn-20260921",
+  "recognizer_sha256": "9f7e9de88f22e6e490954ac94313837eca9e2629779aebdfa736d42725506b51",
+  "run_started_at": 1789926365.199426,
+  "run_finished_at": 1789926517.5942729,
+  "initialization_seconds": 0.32464009895920753,
+  "mean_seconds": 1.5833171333846014,
+  "median_seconds": 1.4731931732967496,
+  "p95_seconds": 2.4110151436179876,
+  "max_seconds": 3.400153448805213,
+  "failures": []
+}

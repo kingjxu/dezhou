@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+from copy import copy
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor, Future
@@ -950,6 +951,34 @@ class TableRecognizer:
     # ==================================================================
     def recognize(self, image_base64: str, parse_all: bool = False) -> dict:
         img = self._normalize_canvas(_b64_to_bgr(image_base64))
+        if self._layout.app_name == "polerv2" and self._has_nine_seat_placeholders(img):
+            from app.layouts.polerv2 import nine_seat_layout
+            # Cached recognizers are shared by requests. Never change their layout.
+            request_recognizer = copy(self)
+            request_recognizer._layout = nine_seat_layout()
+            return request_recognizer._recognize_normalized(img, parse_all)
+        return self._recognize_normalized(img, parse_all)
+
+    def _has_nine_seat_placeholders(self, img: np.ndarray) -> bool:
+        """Two top '+' seats positively identify the observed nine-seat UI.
+
+        Require both complete crosses; table rails or a single icon are not
+        sufficient evidence. Occupied/obscured top seats need separate samples.
+        """
+        for cx in (.33, .67):
+            crop = self._roi(img, (cx-.038, .174, cx+.038, .212))
+            hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+            mask = cv2.inRange(hsv, (70, 65, 85), (100, 255, 210)) > 0
+            h, w = mask.shape
+            horizontal = mask[int(.38*h):int(.62*h), int(.12*w):int(.88*w)]
+            vertical = mask[int(.12*h):int(.88*h), int(.38*w):int(.62*w)]
+            corners = np.concatenate([mask[:int(.25*h), :int(.25*w)].ravel(),
+                                      mask[-int(.25*h):, -int(.25*w):].ravel()])
+            if horizontal.mean() < .65 or vertical.mean() < .65 or corners.mean() > .25:
+                return False
+        return True
+
+    def _recognize_normalized(self, img: np.ndarray, parse_all: bool) -> dict:
         h, w = img.shape[:2]
 
         # ── 轮次门控（由请求参数 parse_all 控制）──
@@ -1995,6 +2024,11 @@ class TableRecognizer:
                 digit_boxes.append((x, y, w, h))
         if not digit_boxes:
             return None
+        # Reject an OCR result that drops a visible digit. OCR backend state /
+        # crop scaling can otherwise turn the same two-digit 21 into confident 2.
+        _, row_y, _, row_h = max(digit_boxes, key=lambda box: box[3])
+        visible_digits = sum(.85*row_h <= h <= 1.15*row_h and abs(y-row_y) <= .2*row_h
+                             for _, y, _, h in digit_boxes)
         # RapidOCR's recognizer can read an already isolated line directly.
         # Other backends and uncertain reads retain the normal detector path.
         text_rec = getattr(self._ocr, "text_rec", None)
@@ -2010,7 +2044,7 @@ class TableRecognizer:
                     text, score = reads[0][:2]
                     # 裁片边框可能读成前后句点；内部小数点仍拒绝，避免把 24.6 当 246。
                     text = str(text).strip(" .")
-                    if re.fullmatch(r"\d{1,3}", str(text)) and float(score) >= 0.90:
+                    if re.fullmatch(r"\d{1,3}", str(text)) and float(score) >= 0.90 and len(text) >= visible_digits:
                         return int(text)
             except (TypeError, ValueError, AttributeError):
                 pass  # Older/newer RapidOCR APIs can still use _ocr_run below.
@@ -2021,7 +2055,7 @@ class TableRecognizer:
         partial_values = []
         for _, text, score in partial_reads:
             text = (text or "").strip(" .")
-            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90:
+            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90 and len(text) >= visible_digits:
                 partial_values.append(int(text))
         if len(partial_values) == 1:
             return partial_values[0]
@@ -2033,7 +2067,7 @@ class TableRecognizer:
         marker_values = []
         for _, text, score in marker_reads:
             text = (text or "").strip(" .")
-            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90:
+            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90 and len(text) >= visible_digits:
                 marker_values.append(int(text))
         if len(marker_values) == 1:
             return marker_values[0]
@@ -3575,7 +3609,7 @@ class TableRecognizer:
             if not it.text:
                 continue
             # 顶部悬浮提示不属于 5 号座位，不能把“等待反馈/弃牌”当玩家状态。
-            if self._layout.app_name == "polerv2" and seat == 5 and it.cy < 0.12:
+            if self._layout.app_name == "polerv2" and self._layout.seat_positions.get(seat, (0, 1))[1] < .25 and it.cy < 0.12:
                 continue
             # 计算到最近搜索锚点的距离
             min_d = min(

@@ -88,6 +88,19 @@ class PolerV2Test(unittest.TestCase):
                 self.assertEqual(r._detect_bet_chip_digit(
                     image, r._layout.seat_bet_fallback_rois[seat], ("red",)), expected)
 
+    def test_confident_ocr_cannot_drop_a_visible_wager_digit(self):
+        r = self._normalizer()
+        image = cv2.imread(str(Path(__file__).parent / "fixtures/field-regression/bet-21.jpg"))
+        image = r._normalize_canvas(image)
+        class TruncatedOCR:
+            def text_rec(self, images):
+                return [("2", .999)], 0.0
+        r._ocr = TruncatedOCR()
+        with patch.dict(recognizer_module._OCR_ENGINE_BACKENDS, {id(r._ocr): "rapid"}), patch.object(
+                recognizer_module, "_ocr_run", return_value=[(None, "2", .999)]):
+            self.assertIsNone(r._detect_bet_chip_digit(
+                image, r._layout.seat_bet_fallback_rois[4], ("red",)))
+
     def test_stack_glyph_count_detects_truncated_high_confidence_read(self):
         r = self._normalizer()
         image = cv2.imread(str(Path(__file__).parent / "fixtures/field-regression/balance-191.jpg"))

@@ -1,0 +1,10 @@
+....................................
+----------------------------------------------------------------------
+Ran 36 tests in 38.098s
+
+OK
+[OCR] RapidOCR 后端包: rapidocr_onnxruntime
+[OCR] 使用 RapidOCR (默认 server, PP-OCRv4)
+[OCR] RapidOCR 调用参数生效: {'use_cls': False}
+[OCR] RapidOCR 调用参数生效: {'use_cls': False}
+[OCR] RapidOCR 调用参数生效: {'use_cls': False}
