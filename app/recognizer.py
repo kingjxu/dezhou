@@ -2874,11 +2874,26 @@ class TableRecognizer:
                     # 用拓扑特征（孔洞大小 + 形状）做最终判断。
                     _akq_ht = self._layout.akq_hero_thresholds
                     _akq_bt = self._layout.akq_board_thresholds
-                    if cnn_rank in ("A", "K") and not tight_rank_override:
+                    # V2 hero face cards are intentionally cropped wide.  The
+                    # topology helper was calibrated for a narrow rank patch;
+                    # on this wide crop, the K glyph can include the suit/art
+                    # and be misclassified as Q even when CNN confidence is
+                    # high.  Trust the calibrated CNN result in that case.
+                    _v2_wide_hero_confident = (
+                        is_hero
+                        and self._layout.app_name == "polerv2"
+                        and rp.shape[1] / max(1, rp.shape[0]) > 0.70
+                        and cnn_conf >= 0.95
+                    )
+                    if (cnn_rank in ("A", "K")
+                            and not tight_rank_override
+                            and not _v2_wide_hero_confident):
                         akq = _disambiguate_AKQ(rp, _akq_ht, _akq_bt)
                         if akq is not None:
                             cnn_rank = akq
-                    elif cnn_rank == "Q" and not tight_rank_override:
+                    elif (cnn_rank == "Q"
+                          and not tight_rank_override
+                          and not _v2_wide_hero_confident):
                         akq = _disambiguate_AKQ(rp, _akq_ht, _akq_bt)
                         if akq == "A":
                             cnn_rank = akq

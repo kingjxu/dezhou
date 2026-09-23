@@ -243,6 +243,7 @@ class PolerV2Test(unittest.TestCase):
             ("154714-hero.jpg", ["Q 方块", "2 方块"], None, "preflop", 21, []),
             ("155317-hero.jpg", ["7 梅花", "2 梅花"], None, "preflop", 25, []),
             ("155457-hero.jpg", ["J 方块", "8 梅花"], None, "preflop", 23, []),
+            ("2026-09-21-22-02-29-hero.jpg", ["6 红桃", "K 黑桃"], None, "preflop", 36, []),
         ]
         if not image_dir.exists():
             self.skipTest("remote hero regression fixtures are not available")
