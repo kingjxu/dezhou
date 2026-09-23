@@ -180,6 +180,24 @@ def _should_use_v2_tight_hero_rank(
     return False
 
 
+def _should_skip_v2_wide_hero_akq(
+    cnn_rank: str,
+    is_hero: bool,
+    app_name: str,
+    patch_shape: tuple[int, ...],
+    cnn_conf: float,
+) -> bool:
+    """Keep a high-confidence V2 hero K out of the narrow-patch topology fix.
+
+    The exception is deliberately K-only.  A and Q must continue through the
+    existing topology correction because those corrections cover real cards.
+    """
+    if cnn_rank != "K" or not is_hero or app_name != "polerv2" or cnn_conf < 0.95:
+        return False
+    height, width = patch_shape[:2]
+    return width / max(1, height) > 0.70
+
+
 def _classify_v2_hero_rank_with_corner_fallback(card_crop: np.ndarray,
                                                 broad_patch: np.ndarray,
                                                 app: str) -> tuple[str, float, bool] | None:
@@ -2879,21 +2897,17 @@ class TableRecognizer:
                     # on this wide crop, the K glyph can include the suit/art
                     # and be misclassified as Q even when CNN confidence is
                     # high.  Trust the calibrated CNN result in that case.
-                    _v2_wide_hero_confident = (
-                        is_hero
-                        and self._layout.app_name == "polerv2"
-                        and rp.shape[1] / max(1, rp.shape[0]) > 0.70
-                        and cnn_conf >= 0.95
-                    )
+                    _skip_v2_wide_hero_akq = _should_skip_v2_wide_hero_akq(
+                        cnn_rank, is_hero, self._layout.app_name,
+                        rp.shape, cnn_conf)
                     if (cnn_rank in ("A", "K")
                             and not tight_rank_override
-                            and not _v2_wide_hero_confident):
+                            and not _skip_v2_wide_hero_akq):
                         akq = _disambiguate_AKQ(rp, _akq_ht, _akq_bt)
                         if akq is not None:
                             cnn_rank = akq
                     elif (cnn_rank == "Q"
-                          and not tight_rank_override
-                          and not _v2_wide_hero_confident):
+                          and not tight_rank_override):
                         akq = _disambiguate_AKQ(rp, _akq_ht, _akq_bt)
                         if akq == "A":
                             cnn_rank = akq

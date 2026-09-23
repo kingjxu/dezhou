@@ -14,6 +14,7 @@ from app.recognizer import OcrItem
 from app.recognizer import (
     TableRecognizer,
     _classify_v2_marker_digit,
+    _should_skip_v2_wide_hero_akq,
     _should_use_v2_tight_hero_rank,
 )
 
@@ -177,6 +178,19 @@ class PolerV2Test(unittest.TestCase):
         self.assertFalse(_should_use_v2_tight_hero_rank("Q", 0.84, "7", 0.97))
         self.assertFalse(_should_use_v2_tight_hero_rank("J", 0.90, "A", 0.999))
         self.assertFalse(_should_use_v2_tight_hero_rank("2", 1.0, "3", 0.986))
+
+    def test_v2_wide_hero_akq_exception_is_k_only(self):
+        shape = (20, 16)
+        self.assertTrue(_should_skip_v2_wide_hero_akq(
+            "K", True, "polerv2", shape, 0.99))
+        self.assertFalse(_should_skip_v2_wide_hero_akq(
+            "A", True, "polerv2", shape, 0.99))
+        self.assertFalse(_should_skip_v2_wide_hero_akq(
+            "Q", True, "polerv2", shape, 0.99))
+        self.assertFalse(_should_skip_v2_wide_hero_akq(
+            "K", True, "polerv2", shape, 0.94))
+        self.assertFalse(_should_skip_v2_wide_hero_akq(
+            "K", True, "polerv2", (20, 12), 0.99))
 
     def _normalizer(self):
         recognizer = TableRecognizer.__new__(TableRecognizer)
