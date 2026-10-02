@@ -30,3 +30,10 @@ V2归一化后检查顶部两个空座十字标记，命中时浅拷贝识别器
 - 固定 manifest version=4、SHA256 `197b2d898e77c1e88ba18c5e6b023fad797f1bfae5ecf98640665db23e94e736` 的 96 图全字段结果为 96/96；无下注反例未产生 Hero 或 villain 下注。
 - 相同 4 vCPU 机器顺序 A/B：均值 1.830s→1.586s，P95 2.739s→2.046s，进程累计 CPU 674.085s→588.030s。完整证据见 `reports/cpu-optimization-20261002/REPORT.md`。
 - 1/2/4 并发只用于验证共享识别器没有字段串扰和比较 CPU 饱和退化，不替代 96 图串行准确性结论。
+
+## 2026-10-02 polerv2 OCR CPU 优化部署
+
+- 业务提交 `8ec92fe` 经 CR LGTM 后部署到 `/home/ubuntu/poker/dezhou`；`app/recognizer.py` SHA256 为 `c913ba43237cf8b3cee70b0dd35617cc39a403ffc64a1f1940444e615e6a1832`。
+- 服务 PID=156257、PPID=1，监听 5555；SSH 连接退出后进程仍存活，本机 `/health` 正常，部署后日志未发现 traceback/error/exception。
+- 线上入口顺序回放固定 manifest 前 12 张：12/12 全字段通过；外层 wall 均值 1.705s、P95 2.281s，服务内均值 1.696s、P95 2.234s，进程 CPU 累计 77.980s（6.498 CPU-s/图）。
+- 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261002-231715-before-8ec92fe`，保存了部署前源码 SHA、旧 PID 和原 `app/recognizer.py`。
