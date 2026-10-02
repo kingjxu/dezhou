@@ -1,12 +1,12 @@
 ---
 version: "1.0"
-last_updated: "2026-09-21"
+last_updated: "2026-10-03"
 ---
 # 测试与性能验证
 - Python 3.12 + `pip install -r requirements-test.txt`（OCR / ONNX / OpenCV 与 HTTP TestClient 依赖）执行 `python -m unittest discover`；原有 polerv2 用例包含 1080、1176、1179 宽截图与画布归一化，必须保留。
-- `python scripts/check_hero_images.py --images <图片目录> --output <结果目录>`：按默认 `reports/hero-regression/manifest.json` 的 SHA256 校验 96 张原图（95张八人桌加1张九人桌）；逐字段比较人工真值，保存每次响应、差异、耗时，失败退出非零。
+- `python scripts/check_hero_images.py --images <图片目录> --output <结果目录>`：按默认 `reports/hero-regression/manifest.json` 的 SHA256 校验服务器现存 506 张唯一 Hero 原图；逐字段比较人工真值，保存每次响应、差异、耗时，失败退出非零。
 - 图片集外置于本次审计归档；文件名、哈希和标签随代码提交。缺文件或哈希不符直接失败，不跳过。
-- 历史2026-09-18结果仅覆盖部分人工标注字段；2026-09-21的manifest扩展为95张八人桌每图41字段。新版默认manifest另含已确认编号的九人桌；全96图通过后才能报告本样本集完整字段通过。
+- 历史2026-09-18结果仅覆盖部分人工标注字段；2026-09-21 的 v4 manifest 扩展为95张八人桌加1张九人桌，仅是当时的历史验收集。当前验收以 v5 的506张完整字段人工标注为准。
 - 基准单进程串行执行，初始化单列，测量 `recognize(parse_all=True)` 包含解码与预处理，不包括 HTTP、网络和排队。P95 使用 nearest-rank。
 - 不与其他 OCR 回归并行跑性能测试；保留依赖版本和原始结果，区分首次探索和最终验收。
 - 修复说明与结果见 `reports/hero-regression/REPORT.md`。每次代码提交后需交 cr 审查，阻塞意见修复后再提交复审。
@@ -16,7 +16,7 @@ last_updated: "2026-09-21"
 - `test_recognition_log.py` 经 TestClient 验证真实响应状态：成功/400/500、非法模型 500、默认/缺失/错误验证 token 不可排除监控。`test_watch_recognition.py` 启动独立 CLI，用临时 SSH/botmux 替身验证首次失败、三次失败后恢复、持续失败均继续消费事件并正确汇总，不发送实际群消息。
 
 ## 2026-09-21 全字段复核
-- 新一轮盘点 96 张 hero 图，其中旧 95 张为八人桌，新增一张为九人桌。默认manifest已补第96图45字段；八人桌A/B仍固定eight-seat-manifest。见 `reports/turn-fix-20260921/REPORT.md`。
+- 2026-09-21 曾盘点 96 张 Hero 图，其中95张为八人桌、1张为九人桌；该结论保留为 v4 历史证据。见 `reports/turn-fix-20260921/REPORT.md`。
 - `reports/turn-fix-20260921/eight-seat-manifest.json` 补齐八人桌每图 41 项扑克字段人工断言；不能把旧的部分字段 95/95 当成整份响应准确率。
 - 用户确认 folded 的 current_bet 保持 null。九人桌座位编号已由用户确认；默认manifest第96项为重新人工核对后的最终标签，未跟踪探索manifest不用于验收。
 - 本轮96图3940项字段、36项单测、CR和部署冒烟已完成；报告 `reports/turn-fix-20260921/REPORT.md` 末节及deployment.json记录线上证据。九人桌检测仅覆盖顶部双空座十字形态，不能扩展为所有九人桌均受支持。
@@ -27,4 +27,10 @@ last_updated: "2026-09-21"
 - `test_nine_seat.py` 验证两幅真实九人桌截图及尺寸/JPEG/黑边变换、缺少一个十字的反例、并发请求布局隔离（不并发OCR）、实际九人桌后八人桌识别不串位。
 
 - 多位下注即使OCR高置信，也不能少于可见数字行组件数；真实21图被模拟高置信读成2时必须拒绝，避免序列相关的截断结果。
-- polerv2 下注回归包含蓝色牌背样本 `blue-wagers.jpg`、新 Hero 下注位置样本 `hero-bet-2.jpg`，以及 `no-actions.webp` 无下注反例；必须同时验证蓝色下注能读出且放宽候选颜色不会虚构下注。Hero ROI 变更还需通过既有 96 张人工标注全字段回归。
+- polerv2 下注回归包含蓝色牌背样本 `blue-wagers.jpg`、新 Hero 下注位置样本 `hero-bet-2.jpg`，以及 `no-actions.webp` 无下注反例；必须同时验证蓝色下注能读出且放宽候选颜色不会虚构下注。Hero ROI 变更需通过默认 506 张人工标注全字段回归。
+
+## 2026-10-03 全量 Hero 标注
+- 默认 manifest v5 共 506 张、SHA256 唯一 506 个。v4 的 96 张 `expected` 原样保留；新增 410 张按 103 张四联全宽审阅页逐图核对，OCR 输出只作为标注草稿。
+- 新增样本中有 62 张九人桌，必须输出 Hero=1、左下起沿左侧/顶部/右侧为 2..9 的完整八个对手；不能把七个对手的八人桌结果当成兼容输出。
+- 全量回归发现已部署批量下注 OCR 在 26 张图上改变结果，其中 24 张漏掉 seat3 的盲注 `1`。CPU 优化验收必须在 506 张上保持逐字段一致，不能再以 96 张通过替代全量准确性结论。
+- 人工标注要接受回放反查：原图明确显示与草稿不符时修正标签并记录原因；禁止为了让当前识别实现通过而把标签改成模型输出。
