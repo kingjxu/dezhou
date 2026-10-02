@@ -1,6 +1,6 @@
 ---
 version: "1.0"
-last_updated: "2026-10-02"
+last_updated: "2026-10-03"
 ---
 # 架构
 `app/main.py` 提供 /health、/recognize。Pydantic schema 在 app/schemas.py。
@@ -14,7 +14,7 @@ OCR 使用 RapidOCR/Paddle 适配；牌点/花色通过 ONNX Runtime。polerv2 �
 
 识别响应先在 handler 内验证 schema，再记录成功结果；非法引擎输出记录 500。validation 排除需要服务端非空环境 token 与请求 token 匹配；未配置时所有请求均为 live。通知失败限次重试并写观察器日志，不中止 SSH 消费。
 
-V2归一化后检查顶部两个空座十字标记，命中时浅拷贝识别器并绑定九人桌布局，仅供该请求使用；不修改缓存实例的layout，不增加OCR实例或并发OCR。未匹配时维持八人桌布局，顶部有人/遮挡的九人桌尚无验证样本。
+V2归一化后检查顶部两个空座十字，或“左右两条顶部余额且中央余额缺失”的占座形态；命中时浅拷贝识别器并绑定九人桌布局，仅供该请求使用，不修改缓存实例的 layout。顶部两座状态分区识别，避免相邻动作标签互相覆盖；未匹配时维持八人桌布局。
 
 ## 2026-10-02 下注识别修复部署
 
@@ -37,3 +37,12 @@ V2归一化后检查顶部两个空座十字标记，命中时浅拷贝识别器
 - 服务 PID=156257、PPID=1，监听 5555；SSH 连接退出后进程仍存活，本机 `/health` 正常，部署后日志未发现 traceback/error/exception。
 - 线上入口顺序回放固定 manifest 前 12 张：12/12 全字段通过；外层 wall 均值 1.705s、P95 2.281s，服务内均值 1.696s、P95 2.234s，进程 CPU 累计 77.980s（6.498 CPU-s/图）。
 - 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261002-231715-before-8ec92fe`，保存了部署前源码 SHA、旧 PID 和原 `app/recognizer.py`。
+
+## 2026-10-03 全量 Hero 识别修复部署
+
+- 业务提交 `d749eae` 经 CR LGTM 后部署到 `/home/ubuntu/poker/dezhou`。运行时 `app/recognizer.py` SHA256 为 `9d79907fa2b0addd78da2035db69525b2e47392cb62ffb13d85b5ec0e365a089`，`app/layouts/polerv2.py` SHA256 为 `9b957ebf90d8f93df631343a94a22de56ddefd2478eca4a115d5316fa7d64d23`。
+- 修复覆盖九人桌占座检测和顶部状态、旧宽屏顶部余额、Hero/folded 余额复核、八人桌空座，以及蓝色牌背稀疏白线被猜成盲注 `1/2`；批量 OCR 路径和颜色/牌形门控保持不变。
+- 部署前固定 manifest v5 的506张、20,998字段全量回归为506/506，最后28张分歧聚焦回归为28/28；远端 Python 3.12 全量43项单测、`py_compile` 和 `git diff --check` 通过。
+- 部署后进程 PID=217913、PPID=1，监听5555；SSH重连后进程存活，本机 `/health` 正常，新增日志未发现 traceback/error/exception。
+- 线上 HTTP 顺序回放12张代表图为12/12全字段通过；外层均值2.352秒、最大3.103秒。代表图覆盖九人桌顶部状态、宽屏/折叠/Hero余额、无下注牌背反例和相邻座位误判。
+- 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261003-022621-before-d749eae`，保存部署前两个运行时源码文件、SHA256和旧 PID。
