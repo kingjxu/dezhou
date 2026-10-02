@@ -2125,61 +2125,65 @@ class TableRecognizer:
             return None, False
         crop = img[ya:yb, xa:xb]
         hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
-        masks = []
-        if "red" in chip_colors:
-            masks.append(cv2.bitwise_or(
-                cv2.inRange(hsv, (0, 45, 45), (14, 255, 255)),
-                cv2.inRange(hsv, (150, 45, 45), (180, 255, 255)),
-            ))
-        if "green" in chip_colors:
-            masks.append(cv2.inRange(hsv, (65, 110, 70), (105, 255, 255)))
-        if not masks:
-            return None, False
-        mask = masks[0]
-        for extra in masks[1:]:
-            mask = cv2.bitwise_or(mask, extra)
-        contours, _ = cv2.findContours(
-            mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        candidates = []
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area < 80:
+        for color in chip_colors:
+            if color == "red":
+                mask = cv2.bitwise_or(
+                    cv2.inRange(hsv, (0, 45, 45), (14, 255, 255)),
+                    cv2.inRange(hsv, (150, 45, 45), (180, 255, 255)),
+                )
+            elif color == "green":
+                mask = cv2.inRange(hsv, (65, 110, 70), (105, 255, 255))
+            elif color == "blue":
+                mask = cv2.inRange(hsv, (90, 45, 45), (145, 255, 255))
+            else:
                 continue
-            x, y, w, h = cv2.boundingRect(contour)
-            # The marker is a tilted red card in the current V2 UI. It is
-            # usually taller than wide, but the top-seat marker is partially
-            # outside its tight ROI and appears wider than tall.
-            if not 0.40 <= w / max(h, 1) <= 1.60:
+            contours, _ = cv2.findContours(
+                mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            candidates = []
+            for contour in contours:
+                area = cv2.contourArea(contour)
+                if area < 80:
+                    continue
+                x, y, w, h = cv2.boundingRect(contour)
+                # Marker-card colour finds a candidate region; geometry keeps
+                # table felt and wide UI decorations out of digit OCR.
+                if not 0.40 <= w / max(h, 1) <= 1.60:
+                    continue
+                if h < crop.shape[0] * 0.20:
+                    continue
+                candidates.append((area, x, y, w, h))
+            if not candidates:
                 continue
-            if h < crop.shape[0] * 0.20:
-                continue
-            candidates.append((area, x, y, w, h))
-        if not candidates:
-            return None, False
-        _, x, y, w, h = max(candidates)
-        pad = max(3, int(max(w, h) * 0.25))
-        chip = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
-                    max(0, x-pad):min(crop.shape[1], x+w+pad)]
-        if chip.size == 0:
-            return None, False
-        return chip, True
+            _, x, y, w, h = max(candidates)
+            pad = max(3, int(max(w, h) * 0.25))
+            chip = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
+                        max(0, x-pad):min(crop.shape[1], x+w+pad)]
+            if chip.size:
+                return chip, True
+        return None, False
 
     def _read_v2_hero_bet(self, img: np.ndarray) -> int | None:
         """Read the already-placed wager below the action buttons, not call cost."""
-        crop = self._roi(img, self._layout.hero_bet_fallback_roi)
-        if crop.size == 0:
-            return None
-        hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
-        # A wager has a small colored chip to the left of its white number.
-        chip = cv2.inRange(hsv, (15, 60, 90), (100, 255, 255))
-        if cv2.countNonZero(chip) < crop.shape[0] * crop.shape[1] * 0.005:
-            return None
-        enlarged = cv2.resize(crop, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-        values = []
-        for _, text, score in _ocr_run(self._ocr, enlarged):
-            if re.fullmatch(r"\d{1,6}", text.strip()) and score >= 0.7:
-                values.append((score, int(text)))
-        return max(values)[1] if values else None
+        rois = (self._layout.hero_bet_fallback_roi,
+                *getattr(self._layout, "hero_bet_alternate_rois", ()))
+        for roi in rois:
+            crop = self._roi(img, roi)
+            if crop.size == 0:
+                continue
+            hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+            # A wager has a small colored chip to the left of its white number.
+            chip = cv2.inRange(hsv, (15, 60, 90), (100, 255, 255))
+            if cv2.countNonZero(chip) < crop.shape[0] * crop.shape[1] * 0.005:
+                continue
+            enlarged = cv2.resize(
+                crop, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+            values = []
+            for _, text, score in _ocr_run(self._ocr, enlarged):
+                if re.fullmatch(r"\d{1,6}", text.strip()) and score >= 0.7:
+                    values.append((score, int(text)))
+            if values:
+                return max(values)[1]
+        return None
 
     def _detect_v2_hero_stack(self, img: np.ndarray) -> int | None:
         """Use a local enlarged read only when full-image hero stack OCR misses."""

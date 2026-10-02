@@ -89,6 +89,35 @@ class PolerV2Test(unittest.TestCase):
                 self.assertEqual(r._detect_bet_chip_digit(
                     image, r._layout.seat_bet_fallback_rois[seat], ("red",)), expected)
 
+    def test_v2_blue_wager_cards_and_hero_bet_roi(self):
+        r = get_recognizer("polerv2")
+        fixtures = Path(__file__).parent / "fixtures/field-regression"
+
+        blue_wagers = r._normalize_canvas(cv2.imread(str(fixtures / "blue-wagers.jpg")))
+        self.assertEqual(r._read_v2_hero_bet(blue_wagers), 1)
+        for seat, expected in ((2, 2), (3, 4), (6, 4)):
+            with self.subTest(seat=seat):
+                self.assertEqual(r._detect_bet_chip_digit(
+                    blue_wagers,
+                    r._layout.seat_bet_fallback_rois[seat],
+                    r._layout.seat_bet_fallback_chip_colors[seat],
+                ), expected)
+
+        hero_bet = r._normalize_canvas(cv2.imread(str(fixtures / "hero-bet-2.jpg")))
+        self.assertEqual(r._read_v2_hero_bet(hero_bet), 2)
+
+    def test_v2_blue_marker_support_does_not_create_wagers(self):
+        r = get_recognizer("polerv2")
+        image = cv2.imread(str(
+            Path(__file__).parent / "fixtures/turn-gate/no-actions.webp"))
+        image = r._normalize_canvas(image)
+
+        self.assertIsNone(r._read_v2_hero_bet(image))
+        for seat, roi in r._layout.seat_bet_fallback_rois.items():
+            with self.subTest(seat=seat):
+                self.assertIsNone(r._detect_bet_chip_digit(
+                    image, roi, r._layout.seat_bet_fallback_chip_colors[seat]))
+
     def test_confident_ocr_cannot_drop_a_visible_wager_digit(self):
         r = self._normalizer()
         image = cv2.imread(str(Path(__file__).parent / "fixtures/field-regression/bet-21.jpg"))

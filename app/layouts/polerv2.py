@@ -24,7 +24,11 @@ class LayoutPolerV2(LayoutPoler):
     hero_card_rank_ry: tuple = (0.02, 0.60)
     hero_stack_anchor: Anchor = field(default_factory=lambda: Anchor(0.50, 0.888, 0.035))
     hero_stack_roi: tuple = (0.42, 0.875, 0.58, 0.905)
-    hero_bet_fallback_roi: tuple = (0.755, 0.765, 0.86, 0.795)
+    hero_bet_fallback_roi: tuple = (0.755, 0.765, 0.860, 0.795)
+    # A newer V2 canvas places the committed Hero wager below the action
+    # buttons. Read this only after the original ROI misses, preserving both UI
+    # generations without treating the action-button amount as a wager.
+    hero_bet_alternate_rois: tuple = ((0.750, 0.790, 0.870, 0.825),)
     # Face-card suit glyph is below the rank in the upper-left corner; use a
     # larger patch than legacy poler so K♠ is not split into club-like blobs.
     face_hero_suit_ry: tuple = (0.35, 0.70)
@@ -72,7 +76,9 @@ class LayoutPolerV2(LayoutPoler):
         8: (0.710, 0.575, 0.810, 0.645),
     })
     seat_bet_fallback_chip_colors: dict = field(default_factory=lambda: {
-        seat: ("red",) for seat in range(2, 9)
+        # V2 uses both red and blue marker-card themes. Colour narrows the
+        # candidate region; white digit geometry and OCR decide the value.
+        seat: ("red", "blue") for seat in range(2, 9)
     })
 
 
@@ -102,4 +108,4 @@ def nine_seat_layout() -> LayoutPolerV2:
                    seat_status_anchors=status, seat_stack_rois=stacks,
                    seat_bet_anchors=bets, seat_bet_fallback_rois=bet_rois,
                    button_positions=buttons,
-                   seat_bet_fallback_chip_colors={seat: ("red",) for seat in range(2, 10)})
+                   seat_bet_fallback_chip_colors={seat: ("red", "blue") for seat in range(2, 10)})
