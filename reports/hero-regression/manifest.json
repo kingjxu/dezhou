@@ -9,8 +9,11 @@
     "Folded current_bet remains null as explicitly confirmed by user.",
     "九人桌编号经用户2026-09-21确认：hero1，左下起沿左侧/顶部/右侧2..9；右中及庄位8。第96图45字段人工核对。",
     "Manifest v5 covers all 506 unique server Hero images available on 2026-10-02; all 410 additions were manually compared against full-width original pixels in 103 four-frame review sheets.",
-    "The original 96 v4 labels are preserved byte-for-byte at expected-field level; 62 nine-player frames were manually remapped to seats 2..9.",
-    "Baseline OCR output was used only as an annotation draft. Visible stack/status misses were manually corrected and are regression expectations, not accepted model output."
+    "The original 96 v4 labels were imported unchanged, then held to the same full-frame replay rule as the additions; 62 nine-player additions were manually remapped to seats 2..9.",
+    "Baseline OCR output was used only as an annotation draft. Visible stack/status misses were manually corrected and are regression expectations, not accepted model output.",
+    "Full-corpus replay disagreements were re-opened against original pixels on 2026-10-03; obvious draft transpositions (486/156/217/2255) and visible maximum wager targets were corrected before final acceptance.",
+    "Full-frame replay corrected six nine-seat top-right players whose visible folded pill had been transcribed as active; folded current_bet remains null by contract.",
+    "Final full-corpus review corrected additional visible stack transpositions and rejected sparse card-back strokes that resemble isolated blind digits."
   ],
   "cases": [
     {
@@ -7390,7 +7393,7 @@
           },
           "8": {
             "seat": 8,
-            "status": "empty",
+            "status": "waiting",
             "stack": null,
             "current_bet": null
           }
@@ -7432,7 +7435,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 488,
+            "stack": 486,
             "current_bet": null
           },
           "3": {
@@ -7509,7 +7512,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 488,
+            "stack": 486,
             "current_bet": null
           },
           "3": {
@@ -7587,7 +7590,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 488,
+            "stack": 486,
             "current_bet": null
           },
           "3": {
@@ -7665,7 +7668,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 488,
+            "stack": 486,
             "current_bet": null
           },
           "3": {
@@ -7743,7 +7746,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 488,
+            "stack": 486,
             "current_bet": null
           },
           "3": {
@@ -7821,7 +7824,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 488,
+            "stack": 486,
             "current_bet": null
           },
           "3": {
@@ -7899,7 +7902,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 488,
+            "stack": 486,
             "current_bet": null
           },
           "3": {
@@ -9577,8 +9580,8 @@
           },
           "8": {
             "seat": 8,
-            "status": "active",
-            "stack": 0,
+            "status": "empty",
+            "stack": null,
             "current_bet": null
           }
         }
@@ -18074,7 +18077,7 @@
           },
           "6": {
             "seat": 6,
-            "status": "active",
+            "status": "folded",
             "stack": 4644,
             "current_bet": null
           },
@@ -18156,7 +18159,7 @@
           },
           "6": {
             "seat": 6,
-            "status": "active",
+            "status": "folded",
             "stack": 4644,
             "current_bet": null
           },
@@ -18195,7 +18198,7 @@
             "A 红桃"
           ],
           "main_pot": 1425,
-          "current_bet": null,
+          "current_bet": 570,
           "button_seat": 8,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 400
@@ -18238,7 +18241,7 @@
           },
           "6": {
             "seat": 6,
-            "status": "active",
+            "status": "folded",
             "stack": 4644,
             "current_bet": null
           },
@@ -18519,7 +18522,7 @@
           "stage": "preflop",
           "community_cards": [],
           "main_pot": 363,
-          "current_bet": 20,
+          "current_bet": 238,
           "button_seat": 1,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 600
@@ -18597,7 +18600,7 @@
           "stage": "preflop",
           "community_cards": [],
           "main_pot": 363,
-          "current_bet": 20,
+          "current_bet": 238,
           "button_seat": 1,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 600
@@ -18675,7 +18678,7 @@
           "stage": "preflop",
           "community_cards": [],
           "main_pot": 125,
-          "current_bet": 10,
+          "current_bet": 20,
           "button_seat": 2,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 700
@@ -18753,7 +18756,7 @@
           "stage": "preflop",
           "community_cards": [],
           "main_pot": 125,
-          "current_bet": 10,
+          "current_bet": 20,
           "button_seat": 2,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 700
@@ -20278,9 +20281,9 @@
           },
           "6": {
             "seat": 6,
-            "status": "active",
+            "status": "folded",
             "stack": 2769,
-            "current_bet": 10
+            "current_bet": null
           },
           "7": {
             "seat": 7,
@@ -20824,9 +20827,9 @@
           },
           "6": {
             "seat": 6,
-            "status": "active",
+            "status": "folded",
             "stack": 2590,
-            "current_bet": 5
+            "current_bet": null
           },
           "7": {
             "seat": 7,
@@ -20902,9 +20905,9 @@
           },
           "6": {
             "seat": 6,
-            "status": "active",
+            "status": "folded",
             "stack": 2590,
-            "current_bet": 5
+            "current_bet": null
           },
           "7": {
             "seat": 7,
@@ -20980,9 +20983,9 @@
           },
           "6": {
             "seat": 6,
-            "status": "active",
+            "status": "folded",
             "stack": 2590,
-            "current_bet": 5
+            "current_bet": null
           },
           "7": {
             "seat": 7,
@@ -21058,9 +21061,9 @@
           },
           "6": {
             "seat": 6,
-            "status": "active",
+            "status": "folded",
             "stack": 2590,
-            "current_bet": 5
+            "current_bet": null
           },
           "7": {
             "seat": 7,
@@ -21745,7 +21748,7 @@
             "5 黑桃"
           ],
           "main_pot": 1017,
-          "current_bet": null,
+          "current_bet": 407,
           "button_seat": 6,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 500
@@ -21827,7 +21830,7 @@
             "5 黑桃"
           ],
           "main_pot": 1017,
-          "current_bet": null,
+          "current_bet": 407,
           "button_seat": 6,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 500
@@ -21909,7 +21912,7 @@
             "5 黑桃"
           ],
           "main_pot": 1017,
-          "current_bet": null,
+          "current_bet": 407,
           "button_seat": 6,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 500
@@ -22065,7 +22068,7 @@
           "stage": "preflop",
           "community_cards": [],
           "main_pot": 370,
-          "current_bet": 20,
+          "current_bet": 205,
           "button_seat": 8,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 700
@@ -22109,7 +22112,7 @@
           "6": {
             "seat": 6,
             "status": "active",
-            "stack": 2256,
+            "stack": 2255,
             "current_bet": 205
           },
           "7": {
@@ -22143,7 +22146,7 @@
           "stage": "preflop",
           "community_cards": [],
           "main_pot": 370,
-          "current_bet": 20,
+          "current_bet": 205,
           "button_seat": 8,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 700
@@ -22187,7 +22190,7 @@
           "6": {
             "seat": 6,
             "status": "active",
-            "stack": 2256,
+            "stack": 2255,
             "current_bet": 205
           },
           "7": {
@@ -22339,7 +22342,7 @@
           "5": {
             "seat": 5,
             "status": "waiting",
-            "stack": 314,
+            "stack": null,
             "current_bet": null
           },
           "6": {
@@ -22416,7 +22419,7 @@
           "5": {
             "seat": 5,
             "status": "waiting",
-            "stack": 314,
+            "stack": null,
             "current_bet": null
           },
           "6": {
@@ -24834,7 +24837,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 158,
+            "stack": 156,
             "current_bet": null
           },
           "3": {
@@ -24910,7 +24913,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 158,
+            "stack": 156,
             "current_bet": null
           },
           "3": {
@@ -24987,7 +24990,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 158,
+            "stack": 156,
             "current_bet": null
           },
           "3": {
@@ -25805,7 +25808,7 @@
           "5": {
             "seat": 5,
             "status": "folded",
-            "stack": 0,
+            "stack": 171,
             "current_bet": null
           },
           "6": {
@@ -33847,7 +33850,7 @@
           "7": {
             "seat": 7,
             "status": "folded",
-            "stack": 22,
+            "stack": 221,
             "current_bet": null
           },
           "8": {
@@ -33919,7 +33922,7 @@
           "7": {
             "seat": 7,
             "status": "folded",
-            "stack": 22,
+            "stack": 221,
             "current_bet": null
           },
           "8": {
@@ -33991,7 +33994,7 @@
           "7": {
             "seat": 7,
             "status": "folded",
-            "stack": 22,
+            "stack": 221,
             "current_bet": null
           },
           "8": {
@@ -34639,7 +34642,7 @@
           "7": {
             "seat": 7,
             "status": "folded",
-            "stack": 219,
+            "stack": 217,
             "current_bet": null
           },
           "8": {
@@ -34969,7 +34972,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 13,
+            "stack": 131,
             "current_bet": null
           },
           "3": {
@@ -35922,7 +35925,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 0,
+            "stack": 293,
             "current_bet": null
           },
           "3": {
@@ -35999,7 +36002,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 0,
+            "stack": 293,
             "current_bet": null
           },
           "3": {
@@ -36065,7 +36068,7 @@
         "hero_info": {
           "seat": 1,
           "status": "active",
-          "stack": 0,
+          "stack": 122,
           "current_bet": null,
           "is_hero_turn": true,
           "hero_cards": [
@@ -36496,8 +36499,8 @@
         },
         "hero_info": {
           "seat": 1,
-          "status": "all_in",
-          "stack": 0,
+          "status": "active",
+          "stack": 171,
           "current_bet": 1,
           "is_hero_turn": true,
           "hero_cards": [
@@ -36568,8 +36571,8 @@
         },
         "hero_info": {
           "seat": 1,
-          "status": "all_in",
-          "stack": 0,
+          "status": "active",
+          "stack": 171,
           "current_bet": 1,
           "is_hero_turn": true,
           "hero_cards": [
@@ -37019,7 +37022,7 @@
         "hero_info": {
           "seat": 1,
           "status": "active",
-          "stack": 0,
+          "stack": 222,
           "current_bet": null,
           "is_hero_turn": true,
           "hero_cards": [
@@ -37107,7 +37110,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 0,
+            "stack": 760,
             "current_bet": null
           },
           "3": {
@@ -37184,7 +37187,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 0,
+            "stack": 760,
             "current_bet": null
           },
           "3": {
@@ -37256,7 +37259,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 0,
+            "stack": 758,
             "current_bet": null
           },
           "3": {
@@ -37409,7 +37412,7 @@
           "2": {
             "seat": 2,
             "status": "folded",
-            "stack": 0,
+            "stack": 748,
             "current_bet": null
           },
           "3": {

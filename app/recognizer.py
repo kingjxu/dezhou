@@ -624,11 +624,22 @@ class OcrItem:
     score: float
 
 
-def _classify_v2_marker_digit(width: int, height: int) -> int | None:
+def _classify_v2_marker_digit(
+    width: int,
+    height: int,
+    fill_ratio: float = 1.0,
+) -> int | None:
     """Classify the isolated white `1`/`2`/`4` marker digit by its aspect."""
     if width <= 0 or height <= 0:
         return None
     aspect = width / height
+    # Across the fixed Hero corpus, real isolated 1/2/4 glyphs have at least
+    # 25% foreground fill and a 1 is at least .34 as wide as it is tall.
+    # Card backs can contain similarly sized white strokes, but their fill is
+    # at most 22% in the known false-positive frames. Keep a small margin on
+    # both measurements before using geometry as the final OCR fallback.
+    if fill_ratio < 0.24 or aspect < 0.30:
+        return None
     if aspect < 0.45:
         return 1
     if aspect < 0.72:
@@ -978,11 +989,16 @@ class TableRecognizer:
         return self._recognize_normalized(img, parse_all)
 
     def _has_nine_seat_placeholders(self, img: np.ndarray) -> bool:
-        """Two top '+' seats positively identify the observed nine-seat UI.
+        """Detect the nine-seat UI from its two distinct top-seat regions.
 
-        Require both complete crosses; table rails or a single icon are not
-        sufficient evidence. Occupied/obscured top seats need separate samples.
+        Empty top seats render two complete ``+`` placeholders.  Occupied top
+        seats instead render two balance strips around x=.33/.67 while the
+        eight-seat layout renders one centered strip.  The balance-strip check
+        deliberately uses only cheap white-pixel geometry; OCR still owns the
+        actual values after the layout has been selected.
         """
+        if self._has_nine_seat_top_balances(img):
+            return True
         for cx in (.33, .67):
             crop = self._roi(img, (cx-.038, .174, cx+.038, .212))
             hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
@@ -995,6 +1011,20 @@ class TableRecognizer:
             if horizontal.mean() < .65 or vertical.mean() < .65 or corners.mean() > .25:
                 return False
         return True
+
+    def _has_nine_seat_top_balances(self, img: np.ndarray) -> bool:
+        def white_pixels(roi: tuple[float, float, float, float]) -> int:
+            crop = self._roi(img, roi)
+            if crop.size == 0:
+                return 0
+            hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+            return int(cv2.countNonZero(
+                cv2.inRange(hsv, (0, 0, 150), (180, 110, 255))))
+
+        left = white_pixels((.265, .205, .395, .250))
+        right = white_pixels((.605, .205, .735, .250))
+        center = white_pixels((.435, .205, .565, .250))
+        return left >= 100 and right >= 100 and center < 300
 
     def _recognize_normalized(self, img: np.ndarray, parse_all: bool) -> dict:
         h, w = img.shape[:2]
@@ -1065,6 +1095,18 @@ class TableRecognizer:
             stack_values.add(hero_stack)
         for seat, anchor in self._layout.seat_anchors:
             status = self._seat_status(items, seat)
+            # Nine-seat top players share a narrow horizontal band.  Read each
+            # half independently so seat 5's action cannot hide seat 6's
+            # adjacent folded/all-in label (and vice versa).
+            if (self._layout.app_name == "polerv2"
+                    and len(self._layout.seat_anchors) == 8
+                    and seat in (5, 6)):
+                status_roi = ((.14, .12, .50, .24) if seat == 5
+                              else (.50, .12, .86, .24))
+                local_status = self._seat_status(
+                    self._ocr_strip(img, status_roi), seat)
+                if local_status in ("waiting", "all_in", "folded"):
+                    status = local_status
             if (self._layout.app_name == "polerv2" and status == "active"
                     and not self._pick_stack(items, anchor, min_value=0, max_value=max_stk)):
                 # 先用廉价视觉检查排除空座；不要为每个空座额外运行 OCR。
@@ -1089,13 +1131,14 @@ class TableRecognizer:
                 if stack is None:
                     # 有玩家但读不到筹码 → 0（不再返回 None）
                     stack = 0
-            if self._layout.app_name == "polerv2" and status == "active":
+            if self._layout.app_name == "polerv2" and status in ("active", "folded"):
+                digit_count = self._v2_stack_digit_count(img, seat)
                 trusted_read = any(
                     _parse_int(it.text) == stack and it.score >= 0.95
                     and (it.cx-anchor.cx)**2 + (it.cy-anchor.cy)**2 <= anchor.max_dist**2
                     for it in items)
-                if (not trusted_read or stack is None
-                        or self._v2_stack_digit_count(img, seat) != len(str(stack))):
+                if (not trusted_read or stack is None or stack < 5
+                        or digit_count != len(str(stack))):
                     v2_stack_recheck.append(seat)
             if stack is not None and stack > 0:
                 stack_values.add(stack)
@@ -2094,15 +2137,18 @@ class TableRecognizer:
                 white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             digit_boxes = []
             edge_boxes = []
+            digit_fill_ratios = {}
             for contour in contours:
                 x, y, width, height = cv2.boundingRect(contour)
                 area = cv2.contourArea(contour)
                 if (area >= 20 and area / (width * height) >= 0.12
                         and chip.shape[0] * 0.15 <= height <= chip.shape[0] * 0.50):
+                    box = (x, y, width, height)
+                    digit_fill_ratios[box] = area / (width * height)
                     if x + width <= chip.shape[1] * 0.85:
-                        digit_boxes.append((x, y, width, height))
-                    elif x + width <= chip.shape[1] * 0.90:
-                        edge_boxes.append((x, y, width, height))
+                        digit_boxes.append(box)
+                    elif x + width <= chip.shape[1] * 0.98:
+                        edge_boxes.append(box)
             for x, y, width, height in edge_boxes:
                 if any(.85 * box_h <= height <= 1.15 * box_h
                        and abs(y - box_y) <= .2 * box_h
@@ -2124,6 +2170,7 @@ class TableRecognizer:
             candidates[seat] = {
                 "white": white,
                 "digit_boxes": digit_boxes,
+                "digit_fill_ratios": digit_fill_ratios,
                 "visible_digits": visible_digits,
                 "line": cv2.cvtColor(line, cv2.COLOR_GRAY2BGR),
             }
@@ -2181,25 +2228,59 @@ class TableRecognizer:
             if len(values) == 1:
                 bets[seat] = values[0]
 
+        # A multi-digit line may be suppressed when several tiles share one
+        # detector canvas. Retry only those unresolved lines with RapidOCR's
+        # lightweight recognizer; single 1/2/4 wagers use the geometry below
+        # and never pay this per-tile cost.
+        if (_OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid"
+                and callable(text_rec)):
+            for seat, candidate in candidates.items():
+                if seat in bets or candidate["visible_digits"] <= 1:
+                    continue
+                try:
+                    reads, _ = text_rec([candidate["line"]])
+                except (TypeError, ValueError, AttributeError):
+                    continue
+                if len(reads) != 1:
+                    continue
+                text, score = reads[0][:2]
+                value = self._valid_v2_digit_read(
+                    text, score, candidate["visible_digits"])
+                if value is not None:
+                    bets[seat] = value
+
+        for seat, candidate in candidates.items():
+            if seat in bets or candidate["visible_digits"] <= 1:
+                continue
+            white = candidate["white"]
+            for region in (white[:, :max(1, int(white.shape[1] * .75))], white):
+                enlarged = cv2.resize(region, None, fx=4, fy=4,
+                                       interpolation=cv2.INTER_CUBIC)
+                values = []
+                for _, text, score in (_ocr_run(
+                        self._ocr,
+                        cv2.cvtColor(enlarged, cv2.COLOR_GRAY2BGR)) or []):
+                    value = self._valid_v2_digit_read(
+                        text, score, candidate["visible_digits"])
+                    if value is not None:
+                        values.append(value)
+                if len(values) == 1:
+                    bets[seat] = values[0]
+                    break
+
         for seat, candidate in candidates.items():
             if seat in bets or candidate["visible_digits"] != 1:
                 continue
-            white = candidate["white"]
-            contours, _ = cv2.findContours(
-                white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            digits = []
-            for contour in contours:
-                area = cv2.contourArea(contour)
-                x, y, width, height = cv2.boundingRect(contour)
-                if (area >= 80
-                        and height >= white.shape[0] * 0.22
-                        and height <= white.shape[0] * 0.35
-                        and width <= white.shape[1] * 0.35
-                        and x + width <= white.shape[1] * 0.85):
-                    digits.append((area, width, height))
-            if len(digits) == 1:
-                _, width, height = digits[0]
-                value = _classify_v2_marker_digit(width, height)
+            boxes = candidate["digit_boxes"]
+            _, row_y, _, row_height = max(boxes, key=lambda box: box[3])
+            row_boxes = [box for box in boxes
+                         if .85 * row_height <= box[3] <= 1.15 * row_height
+                         and abs(box[1] - row_y) <= .2 * row_height]
+            if len(row_boxes) == 1:
+                _, _, width, height = row_boxes[0]
+                fill_ratio = candidate["digit_fill_ratios"][row_boxes[0]]
+                value = _classify_v2_marker_digit(
+                    width, height, fill_ratio)
                 if value is not None:
                     bets[seat] = value
         return bets, marker_seats
@@ -2338,19 +2419,75 @@ class TableRecognizer:
         return None
 
     def _detect_v2_hero_stack(self, img: np.ndarray) -> int | None:
-        """Use a local enlarged read only when full-image hero stack OCR misses."""
-        crop = self._roi(img, self._layout.hero_stack_roi)
-        if crop.size == 0:
-            return None
-        enlarged = cv2.resize(crop, None, fx=4.0, fy=4.0,
-                              interpolation=cv2.INTER_CUBIC)
+        """Use an isolated local digit row when full-image Hero OCR misses."""
+        rois = (self._layout.hero_stack_roi, *getattr(
+            self._layout, "hero_stack_alternate_rois", ()))
         candidates = []
-        for _, text, score in _ocr_run(self._ocr, enlarged) or []:
-            value_text = (text or "").strip()
-            if not re.fullmatch(r"\d{1,4}", value_text):
-                continue
-            candidates.append((float(score), int(value_text)))
+        for roi in rois:
+            candidates.extend(self._read_v2_hero_stack_roi(img, roi))
         return max(candidates)[1] if candidates else None
+
+    def _read_v2_hero_stack_roi(
+        self, img: np.ndarray, roi: tuple
+    ) -> list[tuple[float, int]]:
+        """Return scored Hero balance reads from one explicitly configured ROI."""
+        crop = self._roi(img, roi)
+        if crop.size == 0:
+            return []
+        hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+        white = cv2.inRange(hsv, (0, 0, 145), (180, 115, 255))
+        white = cv2.morphologyEx(
+            white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+        contours, _ = cv2.findContours(
+            white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        boxes = []
+        for contour in contours:
+            x, y, width, height = cv2.boundingRect(contour)
+            if (cv2.contourArea(contour) >= 3
+                    and crop.shape[0] * .18 <= height <= crop.shape[0] * .80
+                    and width <= height * 1.4):
+                boxes.append((x, y, width, height))
+
+        inputs = []
+        if boxes:
+            _, row_y, _, row_height = max(boxes, key=lambda box: box[3])
+            row = [box for box in boxes
+                   if .65 * row_height <= box[3] <= 1.35 * row_height
+                   and abs(box[1] - row_y) <= .35 * row_height]
+            if row:
+                x0 = min(box[0] for box in row)
+                y0 = min(box[1] for box in row)
+                x1 = max(box[0] + box[2] for box in row)
+                y1 = max(box[1] + box[3] for box in row)
+                line = white[max(0, y0 - 2):min(white.shape[0], y1 + 2),
+                             max(0, x0 - 2):min(white.shape[1], x1 + 2)]
+                if line.size:
+                    inputs.append(cv2.cvtColor(
+                        cv2.resize(line, None, fx=4, fy=4,
+                                   interpolation=cv2.INTER_CUBIC),
+                        cv2.COLOR_GRAY2BGR))
+        inputs.append(cv2.resize(
+            crop, None, fx=4.0, fy=4.0, interpolation=cv2.INTER_CUBIC))
+
+        candidates: list[tuple[float, int]] = []
+        text_rec = getattr(self._ocr, "text_rec", None)
+        if (_OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid"
+                and callable(text_rec) and inputs):
+            try:
+                reads, _ = text_rec(inputs)
+                for text, score, *_ in reads:
+                    value_text = str(text or "").strip(" .")
+                    if re.fullmatch(r"\d{1,4}", value_text):
+                        candidates.append((float(score), int(value_text)))
+            except (TypeError, ValueError, AttributeError):
+                pass
+        if not candidates:
+            for ocr_input in inputs:
+                for _, text, score in _ocr_run(self._ocr, ocr_input) or []:
+                    value_text = str(text or "").strip(" .")
+                    if re.fullmatch(r"\d{1,4}", value_text):
+                        candidates.append((float(score), int(value_text)))
+        return candidates
 
     # ==================================================================
     # 白色文字下注检测（DPZX 用）
@@ -2493,6 +2630,9 @@ class TableRecognizer:
         仅在 layout.enable_empty_seat_visual_check=True 且 layout 提供
         seat_positions 时调用。dpzx 默认关闭。
         """
+        if self._has_v2_empty_placeholder(img, seat):
+            return "empty"
+
         seat_pos = (self._layout.seat_positions or {}).get(seat)
         if not seat_pos:
             return None
@@ -2523,6 +2663,33 @@ class TableRecognizer:
         if white_ratio > 0.50 and color_ratio < 0.18 and green_ratio < 0.10:
             return "waiting"
         return None
+
+    def _has_v2_empty_placeholder(self, img: np.ndarray, seat: int) -> bool:
+        """Recognize the bright green center of a V2 ``+`` empty seat.
+
+        The check is enabled only for the eight-seat layout.  Across the full
+        labeled corpus the center occupancy is >= .39 for every visible empty
+        placeholder and <= .02 for occupied/waiting/folded seats.
+        """
+        positions = getattr(self._layout, "empty_seat_positions", {})
+        if (self._layout.app_name != "polerv2"
+                or len(self._layout.seat_anchors) != 7
+                or seat not in positions):
+            return False
+        height, width = img.shape[:2]
+        cx = int(positions[seat][0] * width)
+        cy = int(positions[seat][1] * height)
+        radius = max(20, int(min(width, height) * .04))
+        crop = img[max(0, cy-radius):min(height, cy+radius),
+                   max(0, cx-radius):min(width, cx+radius)]
+        if crop.size == 0:
+            return False
+        hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+        green = cv2.inRange(hsv, (70, 50, 80), (100, 255, 255))
+        y0, y1 = int(green.shape[0] * .4), int(green.shape[0] * .6)
+        x0, x1 = int(green.shape[1] * .4), int(green.shape[1] * .6)
+        center = green[y0:y1, x0:x1]
+        return bool(center.size and cv2.countNonZero(center) / center.size >= .30)
 
     def _detect_turn_fast(self, img: np.ndarray) -> bool:
         """轮次快速预判（turn-gated 模式专用）：尽量不跑全图 OCR。
@@ -2720,7 +2887,7 @@ class TableRecognizer:
     # ------------------------------------------------------------------
     def _v2_stack_digit_count(self, img: np.ndarray, seat: int) -> int:
         """Count white glyphs cheaply; a mismatch asks OCR to retry, never invents a value."""
-        crop = self._roi(img, self._layout.seat_stack_rois[seat])
+        crop = self._roi(img, self._v2_stack_roi(img, seat))
         if not crop.size:
             return 0
         white = cv2.inRange(cv2.cvtColor(crop, cv2.COLOR_BGR2HSV),
@@ -2736,6 +2903,17 @@ class TableRecognizer:
                 count += 1
         return count
 
+    def _v2_stack_roi(self, img: np.ndarray, seat: int) -> tuple:
+        """Select a configured balance band for the current canvas generation."""
+        height, width = img.shape[:2]
+        target_width, target_height = self._layout.reference_canvas
+        tolerance = getattr(self._layout, "reference_aspect_tolerance", .03)
+        wide_rois = getattr(self._layout, "wide_canvas_seat_stack_rois", {})
+        if (width / height > target_width / target_height + tolerance
+                and seat in wide_rois):
+            return wide_rois[seat]
+        return self._layout.seat_stack_rois[seat]
+
     def _read_v2_stacks(self, img: np.ndarray, seats: list[int]) -> dict[int, int]:
         """Read original-resolution balance strips in one OCR image.
 
@@ -2745,7 +2923,7 @@ class TableRecognizer:
         tiles = []
         top = 16
         for seat in seats:
-            x0, y0, x1, y1 = self._layout.seat_stack_rois[seat]
+            x0, y0, x1, y1 = self._v2_stack_roi(img, seat)
             # Count glyphs in the narrow band, but OCR a wider strip so large
             # balances are not clipped to the width of the short-stack samples.
             crop = self._roi(img, (max(0, x0-.035), max(0, y0-.02),

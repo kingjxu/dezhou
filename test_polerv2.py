@@ -20,10 +20,51 @@ from app.recognizer import (
 
 
 class PolerV2Test(unittest.TestCase):
+    def test_empty_placeholder_uses_explicit_plus_center(self):
+        recognizer = self._normalizer()
+        hsv = np.zeros((2400, 1080, 3), dtype=np.uint8)
+        cx, cy = int(.92 * 1080), int(.61 * 2400)
+        cv2.line(hsv, (cx - 18, cy), (cx + 18, cy), (85, 200, 180), 12)
+        cv2.line(hsv, (cx, cy - 18), (cx, cy + 18), (85, 200, 180), 12)
+        image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+        self.assertTrue(recognizer._has_v2_empty_placeholder(image, 8))
+        self.assertFalse(recognizer._has_v2_empty_placeholder(image, 2))
+
+    def test_nine_seat_detection_accepts_two_top_balances_only(self):
+        recognizer = self._normalizer()
+        image = np.zeros((2400, 1080, 3), dtype=np.uint8)
+
+        def fill(roi, pixels):
+            x0, y0, x1, y1 = roi
+            xa, ya = int(x0 * 1080), int(y0 * 2400)
+            xb, yb = int(x1 * 1080), int(y1 * 2400)
+            image[ya:yb, xa:xb] = 0
+            image[ya:yb, xa:min(xb, xa + pixels)] = 255
+
+        left = (.265, .205, .395, .250)
+        right = (.605, .205, .735, .250)
+        center = (.435, .205, .565, .250)
+        fill(left, 2)
+        fill(right, 2)
+        self.assertTrue(recognizer._has_nine_seat_top_balances(image))
+
+        fill(center, 4)
+        self.assertFalse(recognizer._has_nine_seat_top_balances(image))
+
+        image[:] = 0
+        fill(left, 2)
+        self.assertFalse(recognizer._has_nine_seat_top_balances(image))
+
     def test_v2_marker_digit_supports_distinct_blind_values(self):
-        self.assertEqual(_classify_v2_marker_digit(4, 20), 1)
+        self.assertIsNone(_classify_v2_marker_digit(2, 32))
+        self.assertEqual(_classify_v2_marker_digit(7, 20, 0.28), 1)
         self.assertEqual(_classify_v2_marker_digit(14, 28), 2)
         self.assertEqual(_classify_v2_marker_digit(22, 28), 4)
+
+    def test_v2_marker_digit_rejects_sparse_card_back_strokes(self):
+        self.assertIsNone(_classify_v2_marker_digit(9, 21, 0.17))
+        self.assertIsNone(_classify_v2_marker_digit(8, 14, 0.22))
 
     def test_v2_marker_ocr_uncertainty_preserves_digit_count(self):
         class OCRStub:
@@ -137,6 +178,20 @@ class PolerV2Test(unittest.TestCase):
         for image in (image, cv2.resize(image, None, fx=.5, fy=.5)):
             self.assertEqual(r._v2_stack_digit_count(r._normalize_canvas(image), 2), 3)
             self.assertNotEqual(r._v2_stack_digit_count(r._normalize_canvas(image), 2), len("19"))
+
+    def test_wide_canvas_uses_alternate_top_stack_band(self):
+        r = self._normalizer()
+        wide = np.zeros((2048, 1004, 3), dtype=np.uint8)
+        reference = np.zeros((2400, 1080, 3), dtype=np.uint8)
+
+        self.assertEqual(
+            r._v2_stack_roi(wide, 5),
+            r._layout.wide_canvas_seat_stack_rois[5],
+        )
+        self.assertEqual(
+            r._v2_stack_roi(reference, 5),
+            r._layout.seat_stack_rois[5],
+        )
 
     def test_stack_batch_is_single_call_and_does_not_mix_rows(self):
         r = self._normalizer()

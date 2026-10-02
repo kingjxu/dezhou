@@ -24,6 +24,10 @@ class LayoutPolerV2(LayoutPoler):
     hero_card_rank_ry: tuple = (0.02, 0.60)
     hero_stack_anchor: Anchor = field(default_factory=lambda: Anchor(0.50, 0.888, 0.035))
     hero_stack_roi: tuple = (0.42, 0.875, 0.58, 0.905)
+    # Older 1004x2048 captures do not match the 1080x2400 reference aspect,
+    # so canvas normalization intentionally leaves them untouched.  Their
+    # Hero balance row sits lower than the current UI generation.
+    hero_stack_alternate_rois: tuple = ((0.42, 0.905, 0.58, 0.940),)
     hero_bet_fallback_roi: tuple = (0.755, 0.765, 0.860, 0.795)
     # A newer V2 canvas places the committed Hero wager below the action
     # buttons. Read this only after the original ROI misses, preserving both UI
@@ -45,9 +49,21 @@ class LayoutPolerV2(LayoutPoler):
         7: (0.855, 0.498, 0.980, 0.526),
         8: (0.855, 0.630, 0.980, 0.658),
     })
+    # The unscaled 1004x2048 generation places the top balance above the
+    # current reference-canvas band. Other seats keep their regular ROIs.
+    wide_canvas_seat_stack_rois: dict = field(default_factory=lambda: {
+        5: (0.435, 0.185, 0.565, 0.212),
+    })
     seat_positions: dict = field(default_factory=lambda: {
         **LayoutPoler().seat_positions,
         5: (0.50, 0.18),
+    })
+    # Empty placeholders are centered slightly farther toward the rail than
+    # player avatars.  Keeping these coordinates separate avoids weakening the
+    # generic avatar colour heuristic for real players.
+    empty_seat_positions: dict = field(default_factory=lambda: {
+        2: (.08, .61), 3: (.08, .50), 4: (.08, .38), 5: (.50, .18),
+        6: (.92, .38), 7: (.92, .50), 8: (.92, .61),
     })
     button_positions: dict = field(default_factory=lambda: {
         **LayoutPoler().button_positions,
@@ -95,7 +111,9 @@ def nine_seat_layout() -> LayoutPolerV2:
     anchors = remap(dict(base.seat_anchors))
     anchors.update({5: Anchor(.33, .23, .04), 6: Anchor(.67, .23, .04)})
     status = remap(base.seat_status_anchors)
-    status.update({5: Anchor(.33, .19, .09), 6: Anchor(.67, .19, .09)})
+    # The action pills are between the two top avatars, not centered below
+    # either avatar.  Separate anchors keep the adjacent labels independent.
+    status.update({5: Anchor(.44, .175, .06), 6: Anchor(.56, .175, .06)})
     stacks = remap(base.seat_stack_rois)
     stacks.update({5: (.265, .216, .395, .244), 6: (.605, .216, .735, .244)})
     bets = remap(base.seat_bet_anchors)
