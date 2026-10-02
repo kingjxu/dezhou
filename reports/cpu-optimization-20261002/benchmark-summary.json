@@ -1,0 +1,55 @@
+{
+  "environment": {
+    "cpu_count": 4,
+    "cpu_model": "Intel(R) Xeon(R) Platinum 8255C CPU @ 2.50GHz",
+    "manifest_version": 4,
+    "manifest_sha256": "197b2d898e77c1e88ba18c5e6b023fad797f1bfae5ecf98640665db23e94e736",
+    "baseline_recognizer_sha256": "413f729d85288b09b424965544011d301aceb2860fb719ce638560516c5d86a1",
+    "candidate_recognizer_sha256": "c913ba43237cf8b3cee70b0dd35617cc39a403ffc64a1f1940444e615e6a1832"
+  },
+  "serial_96": {
+    "baseline": {
+      "passed": 96,
+      "images": 96,
+      "wall_seconds": 175.732495944947,
+      "cpu_seconds": 674.085200554,
+      "cpu_seconds_per_image": 7.021720839104167,
+      "mean_seconds": 1.8304625894331064,
+      "median_seconds": 1.8121312884613872,
+      "p95_seconds": 2.739101469516754,
+      "max_seconds": 3.2451290991157293,
+      "throughput_images_per_second": 0.546284848933544,
+      "failures": []
+    },
+    "candidate": {
+      "passed": 96,
+      "images": 96,
+      "wall_seconds": 152.22098278440535,
+      "cpu_seconds": 588.0303413620001,
+      "cpu_seconds_per_image": 6.125316055854167,
+      "mean_seconds": 1.5855839695626248,
+      "median_seconds": 1.615594550035894,
+      "p95_seconds": 2.045735126361251,
+      "max_seconds": 2.246344894170761,
+      "throughput_images_per_second": 0.6306620693414348,
+      "failures": []
+    }
+  },
+  "concurrency_12": {
+    "baseline": {
+      "1": {"passed": 12, "wall_seconds": 21.98767394013703, "cpu_seconds": 84.73764282100001, "cpu_seconds_per_image": 7.061470235083334, "mean_seconds": 1.8322455319575965, "p95_seconds": 3.1175859980285168, "throughput_images_per_second": 0.5457603215633829, "failures": []},
+      "2": {"passed": 12, "wall_seconds": 27.00960604660213, "cpu_seconds": 106.18183099699999, "cpu_seconds_per_image": 8.848485916416665, "mean_seconds": 4.495744925457984, "p95_seconds": 6.696698697283864, "throughput_images_per_second": 0.4442863764578909, "failures": []},
+      "4": {"passed": 12, "wall_seconds": 26.155648274347186, "cpu_seconds": 103.225131602, "cpu_seconds_per_image": 8.602094300166668, "mean_seconds": 8.357410843949765, "p95_seconds": 12.243454396724701, "throughput_images_per_second": 0.45879191653488105, "failures": []}
+    },
+    "candidate": {
+      "1": {"passed": 12, "wall_seconds": 20.633627673611045, "cpu_seconds": 79.541014353, "cpu_seconds_per_image": 6.628417862749999, "mean_seconds": 1.7194104210163157, "p95_seconds": 1.9940012879669666, "throughput_images_per_second": 0.5815749023787589, "failures": []},
+      "2": {"passed": 12, "wall_seconds": 20.797803794965148, "cpu_seconds": 81.816658579, "cpu_seconds_per_image": 6.8180548815833335, "mean_seconds": 3.4541683898617825, "p95_seconds": 4.103478979319334, "throughput_images_per_second": 0.5769839988059234, "failures": []},
+      "4": {"passed": 12, "wall_seconds": 20.74333832040429, "cpu_seconds": 81.781774639, "cpu_seconds_per_image": 6.8151478865833335, "mean_seconds": 6.784896496062477, "p95_seconds": 7.763661256060004, "throughput_images_per_second": 0.5784989771003319, "failures": []}
+    }
+  },
+  "no_action": {
+    "fixture": "fixtures/turn-gate/no-actions.webp",
+    "hero_bet": null,
+    "villain_bets": {"2": null, "3": null, "4": null, "5": null, "6": null, "7": null, "8": null}
+  }
+}

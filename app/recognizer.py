@@ -1211,20 +1211,12 @@ class TableRecognizer:
         v2_chip_bets: dict[int, int] = {}
         v2_marker_seats: set[int] = set()
         if self._layout.app_name == "polerv2":
-            for seat, status, _ in seat_info:
-                if status in ("folded", "empty", "waiting"):
-                    continue
-                v2_roi = _seat_fb_rois.get(seat)
-                if not v2_roi:
-                    continue
-                marker_crop, has_marker = self._v2_marker_card_crop(
-                    img, v2_roi, _fb_chip_map.get(seat, ("red", "green")))
-                if has_marker:
-                    v2_marker_seats.add(seat)
-                v2_bet = self._detect_bet_chip_digit(
-                    img, v2_roi, _fb_chip_map.get(seat, ("red", "green")))
-                if v2_bet is not None:
-                    v2_chip_bets[seat] = v2_bet
+            eligible_seats = [
+                seat for seat, status, _ in seat_info
+                if status not in ("folded", "empty", "waiting")
+            ]
+            v2_chip_bets, v2_marker_seats = self._read_v2_chip_bets(
+                img, eligible_seats, _seat_fb_rois, _fb_chip_map)
 
         villains = []
         seat_anchor_map = dict(self._layout.seat_anchors)
@@ -2006,111 +1998,211 @@ class TableRecognizer:
 
     def _detect_bet_chip_digit(self, img: np.ndarray, roi: tuple,
                                 chip_colors: tuple = ("red", "green")) -> int | None:
-        """Read a V2 wager from its isolated marker card.
+        """Read one V2 wager through the same batched recognition path."""
+        bets, _ = self._read_v2_chip_bets(
+            img, [0], {0: roi}, {0: chip_colors})
+        return bets.get(0)
 
-        Keep the complete numeric line, including digits near the card's edge;
-        only an unambiguous single glyph may use the 1/2/4 geometry fallback.
+    @staticmethod
+    def _valid_v2_digit_read(text, score, visible_digits: int,
+                             min_score: float = 0.90) -> int | None:
+        """Validate an OCR read without allowing a visible digit to disappear."""
+        cleaned = str(text or "").strip(" .")
+        try:
+            confidence = float(score)
+        except (TypeError, ValueError):
+            return None
+        if (confidence < min_score or not re.fullmatch(r"\d{1,3}", cleaned)
+                or len(cleaned) < visible_digits):
+            return None
+        return int(cleaned)
+
+    def _ocr_v2_tiles(self, tiles: list[tuple[int, np.ndarray]]) -> dict[int, list[tuple[str, float]]]:
+        """Run one detector pass for several isolated V2 text tiles.
+
+        Marker-card fallbacks used to invoke the full OCR detector once or
+        twice per occupied seat.  Packing the already isolated masks keeps the
+        same OCR validation while paying detector startup only once per pass.
         """
-        if self._layout.app_name != "polerv2":
-            return None
-        chip, _ = self._v2_marker_card_crop(img, roi, chip_colors)
-        if chip is None:
-            return None
-        chip_hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
-        white = cv2.inRange(chip_hsv, (0, 0, 175), (180, 110, 255))
-        white = cv2.morphologyEx(
-            white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
-        contours, _ = cv2.findContours(white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        # Digit-sized strokes exclude the thin card border and tiny back logo.
-        digit_boxes = []
-        edge_boxes = []
-        for contour in contours:
-            x, y, w, h = cv2.boundingRect(contour)
-            area = cv2.contourArea(contour)
-            if (area >= 20 and area / (w * h) >= 0.12
-                    and chip.shape[0] * 0.15 <= h <= chip.shape[0] * 0.50):
-                if x + w <= chip.shape[1] * 0.85:
-                    digit_boxes.append((x, y, w, h))
-                elif x + w <= chip.shape[1] * 0.90:
-                    edge_boxes.append((x, y, w, h))
-        # The last 2 in a left-side 22 reaches 87% of the crop. Extend an
-        # existing digit row, but do not turn isolated edge/logo strokes on a
-        # blank card back into new OCR work.
-        for x, y, w, h in edge_boxes:
-            if any(.85*bh <= h <= 1.15*bh and abs(y-by) <= .2*bh
-                   and 0 <= x-(bx+bw) <= .65*bh for bx, by, bw, bh in digit_boxes):
-                digit_boxes.append((x, y, w, h))
-        if not digit_boxes:
-            return None
-        # Reject an OCR result that drops a visible digit. OCR backend state /
-        # crop scaling can otherwise turn the same two-digit 21 into confident 2.
-        _, row_y, _, row_h = max(digit_boxes, key=lambda box: box[3])
-        visible_digits = sum(.85*row_h <= h <= 1.15*row_h and abs(y-row_y) <= .2*row_h
-                             for _, y, _, h in digit_boxes)
-        # RapidOCR's recognizer can read an already isolated line directly.
-        # Other backends and uncertain reads retain the normal detector path.
+        prepared = [(key, tile) for key, tile in tiles
+                    if tile is not None and tile.size]
+        if not prepared:
+            return {}
+
+        padding = 24
+        max_width = 1024
+        placements = []
+        x = y = padding
+        row_height = 0
+        for key, tile in prepared:
+            height, width = tile.shape[:2]
+            if x > padding and x + width + padding > max_width:
+                x = padding
+                y += row_height + padding
+                row_height = 0
+            placements.append((key, tile, x, y, width, height))
+            x += width + padding
+            row_height = max(row_height, height)
+        canvas_height = y + row_height + padding
+        canvas_width = max(
+            x + width + padding for _, _, x, _, width, _ in placements)
+        canvas = np.zeros((canvas_height, canvas_width, 3), dtype=np.uint8)
+        for _, tile, x, y, width, height in placements:
+            canvas[y:y + height, x:x + width] = tile
+
+        values: dict[int, list[tuple[str, float]]] = {
+            key: [] for key, *_ in placements
+        }
+        for box, text, score in _ocr_run(self._ocr, canvas) or []:
+            if box is None:
+                continue
+            xs = [point[0] for point in box]
+            ys = [point[1] for point in box]
+            cx = sum(xs) / len(xs)
+            cy = sum(ys) / len(ys)
+            for key, _, x, y, width, height in placements:
+                if x <= cx <= x + width and y <= cy <= y + height:
+                    values[key].append((str(text or ""), float(score)))
+                    break
+        return values
+
+    def _read_v2_chip_bets(
+        self,
+        img: np.ndarray,
+        seats: list[int],
+        rois: dict[int, tuple],
+        chip_colors: dict[int, tuple],
+    ) -> tuple[dict[int, int], set[int]]:
+        """Batch V2 wager recognition while preserving the existing guards."""
+        candidates = {}
+        marker_seats: set[int] = set()
+        for seat in seats:
+            roi = rois.get(seat)
+            if not roi:
+                continue
+            chip, has_marker = self._v2_marker_card_crop(
+                img, roi, chip_colors.get(seat, ("red", "green")))
+            if has_marker:
+                marker_seats.add(seat)
+            if chip is None:
+                continue
+            chip_hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
+            white = cv2.inRange(chip_hsv, (0, 0, 175), (180, 110, 255))
+            white = cv2.morphologyEx(
+                white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+            contours, _ = cv2.findContours(
+                white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            digit_boxes = []
+            edge_boxes = []
+            for contour in contours:
+                x, y, width, height = cv2.boundingRect(contour)
+                area = cv2.contourArea(contour)
+                if (area >= 20 and area / (width * height) >= 0.12
+                        and chip.shape[0] * 0.15 <= height <= chip.shape[0] * 0.50):
+                    if x + width <= chip.shape[1] * 0.85:
+                        digit_boxes.append((x, y, width, height))
+                    elif x + width <= chip.shape[1] * 0.90:
+                        edge_boxes.append((x, y, width, height))
+            for x, y, width, height in edge_boxes:
+                if any(.85 * box_h <= height <= 1.15 * box_h
+                       and abs(y - box_y) <= .2 * box_h
+                       and 0 <= x - (box_x + box_w) <= .65 * box_h
+                       for box_x, box_y, box_w, box_h in digit_boxes):
+                    digit_boxes.append((x, y, width, height))
+            if not digit_boxes:
+                continue
+            _, row_y, _, row_height = max(digit_boxes, key=lambda box: box[3])
+            visible_digits = sum(
+                .85 * row_height <= height <= 1.15 * row_height
+                and abs(y - row_y) <= .2 * row_height
+                for _, y, _, height in digit_boxes)
+            x0 = min(box[0] for box in digit_boxes)
+            y0 = min(box[1] for box in digit_boxes)
+            x1 = max(box[0] + box[2] for box in digit_boxes)
+            y1 = max(box[1] + box[3] for box in digit_boxes)
+            line = white[max(0, y0 - 2):y1 + 2, max(0, x0 - 2):x1 + 2]
+            candidates[seat] = {
+                "white": white,
+                "digit_boxes": digit_boxes,
+                "visible_digits": visible_digits,
+                "line": cv2.cvtColor(line, cv2.COLOR_GRAY2BGR),
+            }
+
+        bets: dict[int, int] = {}
         text_rec = getattr(self._ocr, "text_rec", None)
-        if _OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid" and callable(text_rec):
-            x0 = min(b[0] for b in digit_boxes)
-            y0 = min(b[1] for b in digit_boxes)
-            x1 = max(b[0] + b[2] for b in digit_boxes)
-            y1 = max(b[1] + b[3] for b in digit_boxes)
-            line = white[max(0, y0-2):y1+2, max(0, x0-2):x1+2]
+        if (_OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid"
+                and callable(text_rec) and candidates):
+            seats_in_order = list(candidates)
             try:
-                reads, _ = text_rec([cv2.cvtColor(line, cv2.COLOR_GRAY2BGR)])
-                if len(reads) == 1:
-                    text, score = reads[0][:2]
-                    # 裁片边框可能读成前后句点；内部小数点仍拒绝，避免把 24.6 当 246。
-                    text = str(text).strip(" .")
-                    if re.fullmatch(r"\d{1,3}", str(text)) and float(score) >= 0.90 and len(text) >= visible_digits:
-                        return int(text)
+                reads, _ = text_rec([candidates[seat]["line"]
+                                     for seat in seats_in_order])
+                for seat, read in zip(seats_in_order, reads):
+                    text, score = read[:2]
+                    value = self._valid_v2_digit_read(
+                        text, score, candidates[seat]["visible_digits"])
+                    if value is not None:
+                        bets[seat] = value
             except (TypeError, ValueError, AttributeError):
-                pass  # Older/newer RapidOCR APIs can still use _ocr_run below.
-        # 右侧“跟注”标签可能覆盖卡片尾部；整行未读出时保留原有左侧区域重试。
-        text_region = white[:, :max(1, int(white.shape[1] * 0.75))]
-        partial_reads = _ocr_run(self._ocr, cv2.cvtColor(
-            cv2.resize(text_region, None, fx=4, fy=4), cv2.COLOR_GRAY2BGR)) or []
-        partial_values = []
-        for _, text, score in partial_reads:
-            text = (text or "").strip(" .")
-            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90 and len(text) >= visible_digits:
-                partial_values.append(int(text))
-        if len(partial_values) == 1:
-            return partial_values[0]
+                pass
 
-        # Card logos and overlapping labels can confuse the tight/partial line.
-        # Retry the complete mask only after both fast reads are uncertain.
-        marker_reads = _ocr_run(self._ocr, cv2.cvtColor(
-            cv2.resize(white, None, fx=4, fy=4), cv2.COLOR_GRAY2BGR)) or []
-        marker_values = []
-        for _, text, score in marker_reads:
-            text = (text or "").strip(" .")
-            if re.fullmatch(r"\d{1,3}", text) and float(score) >= 0.90 and len(text) >= visible_digits:
-                marker_values.append(int(text))
-        if len(marker_values) == 1:
-            return marker_values[0]
+        unresolved = [seat for seat in candidates if seat not in bets]
+        partial_tiles = []
+        for seat in unresolved:
+            white = candidates[seat]["white"]
+            partial = white[:, :max(1, int(white.shape[1] * 0.75))]
+            enlarged = cv2.resize(partial, None, fx=4, fy=4,
+                                   interpolation=cv2.INTER_CUBIC)
+            partial_tiles.append((seat, cv2.cvtColor(enlarged, cv2.COLOR_GRAY2BGR)))
+        partial_reads = self._ocr_v2_tiles(partial_tiles)
+        for seat in unresolved:
+            values = []
+            for text, score in partial_reads.get(seat, []):
+                value = self._valid_v2_digit_read(
+                    text, score, candidates[seat]["visible_digits"])
+                if value is not None:
+                    values.append(value)
+            if len(values) == 1:
+                bets[seat] = values[0]
 
-        # Unreadable multi-digit wagers must stay unknown, never collapse to
-        # the largest glyph's 1/2/4 geometry. The broad component set also
-        # catches extra digits that fail the stricter single-digit shape gate.
-        if len(digit_boxes) != 1:
-            return None
-        cnts, _ = cv2.findContours(
-            white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        digits = []
-        for contour in cnts:
-            area = cv2.contourArea(contour)
-            x, y, w, h = cv2.boundingRect(contour)
-            if (area >= 80
-                    and h >= chip.shape[0] * 0.22
-                    and h <= chip.shape[0] * 0.35
-                    and w <= chip.shape[1] * 0.35
-                    and x + w <= chip.shape[1] * 0.85):
-                digits.append((area, x, y, w, h, contour))
-        if len(digits) != 1:
-            return None
-        _, x, y, w, h, contour = digits[0]
-        return _classify_v2_marker_digit(w, h)
+        unresolved = [seat for seat in candidates if seat not in bets]
+        full_tiles = []
+        for seat in unresolved:
+            enlarged = cv2.resize(candidates[seat]["white"], None, fx=4, fy=4,
+                                   interpolation=cv2.INTER_CUBIC)
+            full_tiles.append((seat, cv2.cvtColor(enlarged, cv2.COLOR_GRAY2BGR)))
+        full_reads = self._ocr_v2_tiles(full_tiles)
+        for seat in unresolved:
+            values = []
+            for text, score in full_reads.get(seat, []):
+                value = self._valid_v2_digit_read(
+                    text, score, candidates[seat]["visible_digits"])
+                if value is not None:
+                    values.append(value)
+            if len(values) == 1:
+                bets[seat] = values[0]
+
+        for seat, candidate in candidates.items():
+            if seat in bets or candidate["visible_digits"] != 1:
+                continue
+            white = candidate["white"]
+            contours, _ = cv2.findContours(
+                white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            digits = []
+            for contour in contours:
+                area = cv2.contourArea(contour)
+                x, y, width, height = cv2.boundingRect(contour)
+                if (area >= 80
+                        and height >= white.shape[0] * 0.22
+                        and height <= white.shape[0] * 0.35
+                        and width <= white.shape[1] * 0.35
+                        and x + width <= white.shape[1] * 0.85):
+                    digits.append((area, width, height))
+            if len(digits) == 1:
+                _, width, height = digits[0]
+                value = _classify_v2_marker_digit(width, height)
+                if value is not None:
+                    bets[seat] = value
+        return bets, marker_seats
 
     def _v2_marker_card_crop(self, img: np.ndarray, roi: tuple,
                               chip_colors: tuple = ("red", "green")) -> tuple[np.ndarray | None, bool]:
@@ -2166,7 +2258,8 @@ class TableRecognizer:
         """Read the already-placed wager below the action buttons, not call cost."""
         rois = (self._layout.hero_bet_fallback_roi,
                 *getattr(self._layout, "hero_bet_alternate_rois", ()))
-        for roi in rois:
+        candidates = []
+        for index, roi in enumerate(rois):
             crop = self._roi(img, roi)
             if crop.size == 0:
                 continue
@@ -2175,14 +2268,73 @@ class TableRecognizer:
             chip = cv2.inRange(hsv, (15, 60, 90), (100, 255, 255))
             if cv2.countNonZero(chip) < crop.shape[0] * crop.shape[1] * 0.005:
                 continue
-            enlarged = cv2.resize(
-                crop, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-            values = []
-            for _, text, score in _ocr_run(self._ocr, enlarged):
-                if re.fullmatch(r"\d{1,6}", text.strip()) and score >= 0.7:
-                    values.append((score, int(text)))
-            if values:
-                return max(values)[1]
+            white = cv2.inRange(hsv, (0, 0, 155), (180, 110, 255))
+            white = cv2.morphologyEx(
+                white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+            contours, _ = cv2.findContours(
+                white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            boxes = []
+            height = crop.shape[0]
+            for contour in contours:
+                x, y, width, box_height = cv2.boundingRect(contour)
+                area = cv2.contourArea(contour)
+                if (area >= 5 and .15 * height <= box_height <= .60 * height
+                        and width <= 1.4 * box_height):
+                    boxes.append((x, y, width, box_height))
+            if not boxes:
+                continue
+            _, row_y, _, row_height = max(boxes, key=lambda box: box[3])
+            row = [box for box in boxes
+                   if .65 * row_height <= box[3] <= 1.35 * row_height
+                   and abs(box[1] - row_y) <= .35 * row_height]
+            if not row:
+                continue
+            x0 = min(box[0] for box in row)
+            y0 = min(box[1] for box in row)
+            x1 = max(box[0] + box[2] for box in row)
+            y1 = max(box[1] + box[3] for box in row)
+            pad = max(2, int(height * .08))
+            line = white[max(0, y0 - pad):min(white.shape[0], y1 + pad),
+                         max(0, x0 - pad):min(white.shape[1], x1 + pad)]
+            if line.size:
+                candidates.append((index, crop, cv2.cvtColor(
+                    cv2.resize(line, None, fx=4, fy=4,
+                               interpolation=cv2.INTER_CUBIC),
+                    cv2.COLOR_GRAY2BGR)))
+
+        values: dict[int, int] = {}
+        text_rec = getattr(self._ocr, "text_rec", None)
+        if (_OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid"
+                and callable(text_rec) and candidates):
+            try:
+                reads, _ = text_rec([line for _, _, line in candidates])
+                for (index, _, _), read in zip(candidates, reads):
+                    text, score = read[:2]
+                    cleaned = str(text or "").strip(" .")
+                    if re.fullmatch(r"\d{1,6}", cleaned) and float(score) >= .70:
+                        values[index] = int(cleaned)
+            except (TypeError, ValueError, AttributeError):
+                pass
+
+        unresolved = [(index, crop) for index, crop, _ in candidates
+                      if index not in values]
+        fallback_tiles = [
+            (index, cv2.resize(crop, None, fx=3, fy=3,
+                               interpolation=cv2.INTER_CUBIC))
+            for index, crop in unresolved
+        ]
+        fallback_reads = self._ocr_v2_tiles(fallback_tiles)
+        for index, _ in unresolved:
+            valid = []
+            for text, score in fallback_reads.get(index, []):
+                cleaned = str(text or "").strip()
+                if re.fullmatch(r"\d{1,6}", cleaned) and float(score) >= .70:
+                    valid.append((float(score), int(cleaned)))
+            if valid:
+                values[index] = max(valid)[1]
+        for index in range(len(rois)):
+            if index in values:
+                return values[index]
         return None
 
     def _detect_v2_hero_stack(self, img: np.ndarray) -> int | None:

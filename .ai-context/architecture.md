@@ -1,6 +1,6 @@
 ---
 version: "1.0"
-last_updated: "2026-09-21"
+last_updated: "2026-10-02"
 ---
 # 架构
 `app/main.py` 提供 /health、/recognize。Pydantic schema 在 app/schemas.py。
@@ -23,3 +23,10 @@ V2归一化后检查顶部两个空座十字标记，命中时浅拷贝识别器
 - 部署后进程 PID=129462、PPID=1，本机 `/health` 正常；`app/recognizer.py` SHA256 为 `413f729d85288b09b424965544011d301aceb2860fb719ce638560516c5d86a1`。
 - 三张线上问题图复验通过：`18:24:09/12` 均识别 Hero=1、seat2=2、seat3=4、seat6=4；`18:42:29` 识别 Hero=2、seat5=2、seat8=2。
 - 部署前验证 33 项相关单测通过，96 张人工标注 Hero 全字段回归为 96/96；回滚目录 `/home/ubuntu/poker/dezhou-backups/20261002-214513-before-4e74655`。
+
+## 2026-10-02 polerv2 OCR CPU 优化候选
+
+- 多个 villain 下注候选在颜色、牌形和数字轮廓门控后批量 OCR；Hero 多个固定 ROI 优先批量识别数字行，仅对未确定候选执行完整 ROI OCR 兜底。业务门控和金额安全规则不变。
+- 固定 manifest version=4、SHA256 `197b2d898e77c1e88ba18c5e6b023fad797f1bfae5ecf98640665db23e94e736` 的 96 图全字段结果为 96/96；无下注反例未产生 Hero 或 villain 下注。
+- 相同 4 vCPU 机器顺序 A/B：均值 1.830s→1.586s，P95 2.739s→2.046s，进程累计 CPU 674.085s→588.030s。完整证据见 `reports/cpu-optimization-20261002/REPORT.md`。
+- 1/2/4 并发只用于验证共享识别器没有字段串扰和比较 CPU 饱和退化，不替代 96 图串行准确性结论。
