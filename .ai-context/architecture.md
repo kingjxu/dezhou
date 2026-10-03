@@ -46,3 +46,10 @@ V2归一化后检查顶部两个空座十字，或“左右两条顶部余额且
 - 部署后进程 PID=217913、PPID=1，监听5555；SSH重连后进程存活，本机 `/health` 正常，新增日志未发现 traceback/error/exception。
 - 线上 HTTP 顺序回放12张代表图为12/12全字段通过；外层均值2.352秒、最大3.103秒。代表图覆盖九人桌顶部状态、宽屏/折叠/Hero余额、无下注牌背反例和相邻座位误判。
 - 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261003-022621-before-d749eae`，保存部署前两个运行时源码文件、SHA256和旧 PID。
+
+## 2026-10-03 九人桌状态 OCR 优化部署
+
+- 业务提交 `15b956b` 经 CR LGTM 后部署到 `/home/ubuntu/poker/dezhou`；运行时 `app/recognizer.py` SHA256 为 `19b06782aa57f4855f3164e8647786e0ca8a68f0e3ccf1af11f8e281c53ba659`。
+- 服务 PID=312035、PPID=1，监听5555；本机 `/health` 正常，SSH重连后进程存活，部署日志未发现 traceback/error/exception。
+- 部署后通过本机 HTTP 顺序回放12张九人桌和1张八人桌真实标注图，13/13全字段通过；外层均值1.977秒、最大2.645秒。
+- 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261003-085029-before-15b956b`，保存部署前 `app/recognizer.py`、旧PID和源码SHA。
