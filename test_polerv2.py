@@ -160,6 +160,15 @@ class PolerV2Test(unittest.TestCase):
                 self.assertIsNone(r._detect_bet_chip_digit(
                     image, roi, r._layout.seat_bet_fallback_chip_colors[seat]))
 
+    def test_v2_visible_hero_bet_33_from_decided_frame(self):
+        r = get_recognizer("polerv2")
+        image = cv2.imread(str(
+            Path(__file__).parent
+            / "fixtures/field-regression/hero-bet-33-decided.jpg"))
+        image = r._normalize_canvas(image)
+
+        self.assertEqual(r._read_v2_hero_bet(image), 33)
+
     def test_confident_ocr_cannot_drop_a_visible_wager_digit(self):
         r = self._normalizer()
         image = cv2.imread(str(Path(__file__).parent / "fixtures/field-regression/bet-21.jpg"))
