@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-03",
+  "machine": "production host, 4 vCPU, sequential isolated run",
+  "manifest": "reports/nine-seat-optimization-20261003/manifest.json",
+  "manifest_sha256": "09b4aa141b6e1a15685e416ef16e8e3badd8b7c24949dcf7fc44778b658525a7",
+  "images": 63,
+  "baseline": {
+    "source_commit": "d749eae",
+    "recognizer_sha256": "9d79907fa2b0addd78da2035db69525b2e47392cb62ffb13d85b5ec0e365a089",
+    "passed": 63,
+    "mean_seconds": 2.1765992845748623,
+    "median_seconds": 2.185789754614234,
+    "p95_seconds": 2.640334475785494,
+    "max_seconds": 3.0639256332069635,
+    "user_cpu_seconds": 504.33,
+    "system_cpu_seconds": 31.89,
+    "total_cpu_seconds": 536.22,
+    "wall_seconds": 137.91,
+    "max_rss_kbytes": 460784
+  },
+  "candidate": {
+    "recognizer_sha256": "19b06782aa57f4855f3164e8647786e0ca8a68f0e3ccf1af11f8e281c53ba659",
+    "passed": 63,
+    "mean_seconds": 2.02065128034779,
+    "median_seconds": 1.992163386195898,
+    "p95_seconds": 2.623683599755168,
+    "max_seconds": 2.9726331904530525,
+    "user_cpu_seconds": 465.48,
+    "system_cpu_seconds": 29.63,
+    "total_cpu_seconds": 495.11,
+    "wall_seconds": 128.16,
+    "max_rss_kbytes": 473040
+  },
+  "delta_percent": {
+    "mean_seconds": -7.164754915259131,
+    "p95_seconds": -0.6306351025989754,
+    "total_cpu_seconds": -7.6666293685427656,
+    "wall_seconds": -7.0698281487926895
+  },
+  "validation": {
+    "unit_tests": "45/45",
+    "eight_seat_isolation": "one labeled eight-seat image, baseline result exactly equals candidate; both no errors",
+    "no_action_counterexample": "covered by full unit suite"
+  },
+  "rejected_experiments": [
+    {
+      "name": "recognition-only wager path",
+      "reason": "reduced latency but changed labeled wager fields; rejected before completion"
+    },
+    {
+      "name": "single combined partial/full wager detector canvas",
+      "reason": "changed labeled wager fields; rejected before completion"
+    },
+    {
+      "name": "3x wager tile scale",
+      "reason": "63/63 accurate but CPU and mean latency were worse than the selected candidate"
+    }
+  ]
+}

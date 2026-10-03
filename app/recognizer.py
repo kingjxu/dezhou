@@ -1093,18 +1093,14 @@ class TableRecognizer:
         stack_values: set = set()
         if hero_stack > 0:
             stack_values.add(hero_stack)
+        nine_top_statuses = self._read_v2_nine_top_statuses(img)
         for seat, anchor in self._layout.seat_anchors:
             status = self._seat_status(items, seat)
-            # Nine-seat top players share a narrow horizontal band.  Read each
-            # half independently so seat 5's action cannot hide seat 6's
-            # adjacent folded/all-in label (and vice versa).
-            if (self._layout.app_name == "polerv2"
-                    and len(self._layout.seat_anchors) == 8
-                    and seat in (5, 6)):
-                status_roi = ((.14, .12, .50, .24) if seat == 5
-                              else (.50, .12, .86, .24))
-                local_status = self._seat_status(
-                    self._ocr_strip(img, status_roi), seat)
+            # Nine-seat top players share a narrow horizontal band. Their two
+            # isolated crops are OCRed in one detector pass, then mapped back
+            # to their original coordinates so adjacent labels stay separate.
+            if seat in nine_top_statuses:
+                local_status = nine_top_statuses[seat]
                 if local_status in ("waiting", "all_in", "folded"):
                     status = local_status
             if (self._layout.app_name == "polerv2" and status == "active"
@@ -2108,6 +2104,66 @@ class TableRecognizer:
                     values[key].append((str(text or ""), float(score)))
                     break
         return values
+
+    def _read_v2_nine_top_statuses(self, img: np.ndarray) -> dict[int, str]:
+        """Read both nine-seat top status bands with one OCR detector call."""
+        if (self._layout.app_name != "polerv2"
+                or len(self._layout.seat_anchors) != 8):
+            return {}
+
+        height, width = img.shape[:2]
+        # This supplemental pass only resolves the two adjacent action pills
+        # around their dedicated status anchors. Avatar/stack text remains in
+        # the full-image pass and the existing per-seat fallback. Keeping the
+        # old .14-.86 band here would reprocess names and unrelated table text.
+        rois = {
+            5: (.375, .130, .50, .220),
+            6: (.50, .130, .625, .220),
+        }
+        padding = 24
+        placements = []
+        canvas_width = padding
+        canvas_height = padding * 2
+        for seat, (x0, y0, x1, y1) in rois.items():
+            xa, ya = max(0, int(x0 * width)), max(0, int(y0 * height))
+            xb, yb = min(width, int(x1 * width)), min(height, int(y1 * height))
+            if xb <= xa or yb <= ya:
+                continue
+            crop = img[ya:yb, xa:xb]
+            placements.append((seat, crop, canvas_width, padding, xa, ya))
+            canvas_width += crop.shape[1] + padding
+            canvas_height = max(canvas_height, crop.shape[0] + padding * 2)
+        if not placements:
+            return {}
+
+        canvas = np.zeros((canvas_height, canvas_width, 3), dtype=np.uint8)
+        for _, crop, x, y, _, _ in placements:
+            crop_height, crop_width = crop.shape[:2]
+            canvas[y:y + crop_height, x:x + crop_width] = crop
+
+        items_by_seat = {seat: [] for seat, *_ in placements}
+        for box, text, score in _ocr_run(self._ocr, canvas) or []:
+            if box is None:
+                continue
+            xs = [point[0] for point in box]
+            ys = [point[1] for point in box]
+            cx = sum(xs) / len(xs)
+            cy = sum(ys) / len(ys)
+            for seat, crop, x, y, xa, ya in placements:
+                crop_height, crop_width = crop.shape[:2]
+                if x <= cx <= x + crop_width and y <= cy <= y + crop_height:
+                    items_by_seat[seat].append(OcrItem(
+                        text=text or "",
+                        cx=(xa + cx - x) / width,
+                        cy=(ya + cy - y) / height,
+                        score=float(score),
+                    ))
+                    break
+
+        return {
+            seat: self._seat_status(items, seat)
+            for seat, items in items_by_seat.items()
+        }
 
     def _read_v2_chip_bets(
         self,

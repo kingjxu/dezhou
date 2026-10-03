@@ -1,0 +1,5021 @@
+{
+  "version": "5-nine-seat-63",
+  "label_notes": [
+    "Compared directly with original pixels; #3/#4 board Q is hearts, not diamonds.",
+    "#4 has no current wager; 24 was an invalid inference from stack delta.",
+    "#20 has no visible current wager. Prior uncertain label is now null.",
+    "Top floating app hints are not player statuses; waiting seats have null stack.",
+    "All 95 eight-seat images manually checked for every table/player field (41 assertions each).",
+    "Folded current_bet remains null as explicitly confirmed by user.",
+    "九人桌编号经用户2026-09-21确认：hero1，左下起沿左侧/顶部/右侧2..9；右中及庄位8。第96图45字段人工核对。",
+    "Manifest v5 covers all 506 unique server Hero images available on 2026-10-02; all 410 additions were manually compared against full-width original pixels in 103 four-frame review sheets.",
+    "The original 96 v4 labels were imported unchanged, then held to the same full-frame replay rule as the additions; 62 nine-player additions were manually remapped to seats 2..9.",
+    "Baseline OCR output was used only as an annotation draft. Visible stack/status misses were manually corrected and are regression expectations, not accepted model output.",
+    "Full-corpus replay disagreements were re-opened against original pixels on 2026-10-03; obvious draft transpositions (486/156/217/2255) and visible maximum wager targets were corrected before final acceptance.",
+    "Full-frame replay corrected six nine-seat top-right players whose visible folded pill had been transcribed as active; folded current_bet remains null by contract.",
+    "Final full-corpus review corrected additional visible stack transpositions and rejected sparse card-back strokes that resemble isolated blind digits."
+  ],
+  "cases": [
+    {
+      "index": 96,
+      "file": "2026-09-20 15:26:40-hero.jpg",
+      "sha256": "2b376c72c363be11629562b6e407ea049803adb3e36a4afb340a3f0846e35c17",
+      "annotation_source": "manifest-v4-preserved",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "10 红桃",
+            "Q 黑桃",
+            "7 方块"
+          ],
+          "main_pot": 220,
+          "current_bet": null,
+          "button_seat": 8,
+          "blind_size": "10/20/40(20)",
+          "mushroom_count": 0
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 932,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "4 黑桃",
+            "3 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 836,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "empty",
+            "stack": null,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 234,
+      "file": "2026-10-01 13:45:07-hero.jpg",
+      "sha256": "6f0f7d94964969955ffd5e2695c07c2b561fe54d9a79f42e7069f5ccc8024d05",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 200
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1480,
+          "current_bet": 10,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "2 红桃",
+            "5 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7037,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1480,
+            "current_bet": 10
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3900,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4253,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4869,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1311,
+            "current_bet": 5
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3494,
+            "current_bet": 10
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8479,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 235,
+      "file": "2026-10-01 13:45:11-hero.jpg",
+      "sha256": "a3b36c3c7513ecd01a5081a5bce6e9e8e96082fceac92086d262201fedfbc383",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 200
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1480,
+          "current_bet": 10,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "2 红桃",
+            "5 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7037,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1480,
+            "current_bet": 10
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3900,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4253,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4869,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1311,
+            "current_bet": 5
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3494,
+            "current_bet": 10
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8479,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 236,
+      "file": "2026-10-01 13:45:54-hero.jpg",
+      "sha256": "8a923542bddea19cb5d9f830b4bc8de7c05d7440847a27f6ad1a6490787e5a62",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 185,
+          "current_bet": 20,
+          "button_seat": 7,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1450,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 梅花",
+            "8 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7228,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1460,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3850,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4223,
+            "current_bet": 20
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4839,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1181,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3469,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8459,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 237,
+      "file": "2026-10-01 13:45:59-hero.jpg",
+      "sha256": "b58be589ff6eb0cfcfb88d19a31675e70f7ce475b83e4ad6ab95efd771152a7f",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "Q 黑桃",
+            "J 红桃",
+            "K 黑桃"
+          ],
+          "main_pot": 185,
+          "current_bet": null,
+          "button_seat": 7,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1450,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 梅花",
+            "8 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7228,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1460,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3850,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4223,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4839,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1181,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3469,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8459,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 238,
+      "file": "2026-10-01 13:46:04-hero.jpg",
+      "sha256": "c7f91b051a2a8489bb0845f88aa1b981a6b2beac87985d825c32261b68d79977",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "Q 黑桃",
+            "J 红桃",
+            "K 黑桃"
+          ],
+          "main_pot": 370,
+          "current_bet": 85,
+          "button_seat": 7,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1450,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 梅花",
+            "8 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7228,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1460,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3850,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4223,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4839,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 996,
+            "current_bet": 85
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3469,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8459,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 239,
+      "file": "2026-10-01 13:46:06-hero.jpg",
+      "sha256": "5d2fd07eb1891babf4a34d04312a564f01c3481ad3a14970ea2c8938cb20235d",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "Q 黑桃",
+            "J 红桃",
+            "K 黑桃"
+          ],
+          "main_pot": 370,
+          "current_bet": 85,
+          "button_seat": 7,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1450,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 梅花",
+            "8 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7228,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 1460,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3850,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4223,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4839,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 996,
+            "current_bet": 85
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3469,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8459,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 240,
+      "file": "2026-10-01 13:46:36-hero.jpg",
+      "sha256": "ed993319982cb7f7b57b2d717c43856e08a7b2ed886a4d2f9c6c157f3ca11c74",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 515,
+          "current_bet": 185,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1430,
+          "current_bet": 10,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "7 红桃",
+            "7 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7198,
+            "current_bet": 20
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1430,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3840,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4028,
+            "current_bet": 185
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4644,
+            "current_bet": 185
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1353,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3359,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8444,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 241,
+      "file": "2026-10-01 13:46:41-hero.jpg",
+      "sha256": "73e10c052250a85e7df97b734516912499d39b0f8ab7d76c8a2fb8f358003a6c",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "Q 黑桃",
+            "J 黑桃",
+            "A 红桃"
+          ],
+          "main_pot": 855,
+          "current_bet": null,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1255,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "7 红桃",
+            "7 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7198,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1265,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3840,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4028,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4644,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1353,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3359,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8444,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 242,
+      "file": "2026-10-01 13:46:44-hero.jpg",
+      "sha256": "aa2a1c23e25fe0b914fa446a0650eeab9e64f093f164d7c7e3486a2a63135d6b",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "Q 黑桃",
+            "J 黑桃",
+            "A 红桃"
+          ],
+          "main_pot": 855,
+          "current_bet": null,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1255,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "7 红桃",
+            "7 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7198,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1265,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3840,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 4028,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4644,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1353,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3359,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8444,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 243,
+      "file": "2026-10-01 13:46:50-hero.jpg",
+      "sha256": "b8afea58f9c96b94cd82682fc3f6381c7d9bb5f16400a6e840a25a3a76c82909",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "Q 黑桃",
+            "J 黑桃",
+            "A 红桃"
+          ],
+          "main_pot": 1425,
+          "current_bet": 570,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1255,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "7 红桃",
+            "7 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7198,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1265,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3840,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 3458,
+            "current_bet": 570
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4644,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1353,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3359,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8444,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 244,
+      "file": "2026-10-01 13:46:53-hero.jpg",
+      "sha256": "d7f3d68a570b562cb0732b995821db2a375e4536a4a4aebc33d6ef7d707a7016",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "Q 黑桃",
+            "J 黑桃",
+            "A 红桃"
+          ],
+          "main_pot": 1425,
+          "current_bet": 570,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1255,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "7 红桃",
+            "7 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7198,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1265,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3840,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 3458,
+            "current_bet": 570
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4644,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1353,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3359,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8444,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 245,
+      "file": "2026-10-01 13:46:55-hero.jpg",
+      "sha256": "63ba59740654b590897d4e93c1b3c86b4811797788272f1ab904978e0aa6bbcd",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "Q 黑桃",
+            "J 黑桃",
+            "A 红桃"
+          ],
+          "main_pot": 1425,
+          "current_bet": 570,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1255,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "7 红桃",
+            "7 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7198,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 1265,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3840,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 3458,
+            "current_bet": 570
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4644,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1353,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3359,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8444,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 246,
+      "file": "2026-10-01 13:47:19-hero.jpg",
+      "sha256": "03f7c8dd03800f484567696c2c0ffc9260e371563b222dd71f1ead7baa8bf996",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "9 方块",
+            "8 梅花",
+            "9 红桃"
+          ],
+          "main_pot": 900,
+          "current_bet": null,
+          "button_seat": 9,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1155,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "A 黑桃",
+            "2 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7098,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 3020,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3740,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2663,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4544,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1253,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3259,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8244,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 247,
+      "file": "2026-10-01 13:47:33-hero.jpg",
+      "sha256": "87c1c91d0c182a8b78b93ff9479f2b7d41999e3cda026b994eb0d6be8fc422b7",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "9 方块",
+            "8 梅花",
+            "9 红桃"
+          ],
+          "main_pot": 1500,
+          "current_bet": 600,
+          "button_seat": 9,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1155,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "A 黑桃",
+            "2 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7098,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 3020,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3740,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2663,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4544,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1253,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3259,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 7644,
+            "current_bet": 600
+          }
+        }
+      }
+    },
+    {
+      "index": 248,
+      "file": "2026-10-01 13:47:36-hero.jpg",
+      "sha256": "80eed12aece70a9afb607fd6a42a155ac5c995df4aa7c9f7b02c4e185a2f63a4",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "9 方块",
+            "8 梅花",
+            "9 红桃"
+          ],
+          "main_pot": 1500,
+          "current_bet": 600,
+          "button_seat": 9,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1155,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "A 黑桃",
+            "2 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7098,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 3020,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3740,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2663,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4544,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1253,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3259,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 7644,
+            "current_bet": 600
+          }
+        }
+      }
+    },
+    {
+      "index": 249,
+      "file": "2026-10-01 13:47:51-hero.jpg",
+      "sha256": "a1be607bb0b014603dbd73a8184874f2d2251799c3f2d6a8db0d407e8a3a7a7e",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 363,
+          "current_bet": 238,
+          "button_seat": 1,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 600
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1045,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "5 红桃",
+            "3 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7083,
+            "current_bet": 5
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 3000,
+            "current_bet": 10
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3710,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2415,
+            "current_bet": 238
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4534,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1243,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3249,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9101,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 250,
+      "file": "2026-10-01 13:47:53-hero.jpg",
+      "sha256": "115b3158bcd62126767c3368c39e85c3bf32276cf3f4526691c10ee3bcd33083",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 363,
+          "current_bet": 238,
+          "button_seat": 1,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 600
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1045,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "5 红桃",
+            "3 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7083,
+            "current_bet": 5
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 3000,
+            "current_bet": 10
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3710,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2415,
+            "current_bet": 238
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4534,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1243,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3249,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9101,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 251,
+      "file": "2026-10-01 13:48:16-hero.jpg",
+      "sha256": "4896e3da105bf59c2699db81e1d1e4120f7d27cb06742a12eb163b106969d9f2",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 125,
+          "current_bet": 20,
+          "button_seat": 2,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 700
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1035,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "Q 红桃",
+            "3 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 6973,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2985,
+            "current_bet": 5
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3690,
+            "current_bet": 10
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2746,
+            "current_bet": 20
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4524,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1233,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3239,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9091,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 252,
+      "file": "2026-10-01 13:48:18-hero.jpg",
+      "sha256": "8c35a10b1b69979d3b9d7c299da71c3ce1098ea147e7028b2f8186e8af6c7fdf",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 125,
+          "current_bet": 20,
+          "button_seat": 2,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 700
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1035,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "Q 红桃",
+            "3 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 6973,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2985,
+            "current_bet": 5
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3690,
+            "current_bet": 10
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2746,
+            "current_bet": 20
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4524,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 1233,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3239,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9091,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 253,
+      "file": "2026-10-01 13:48:42-hero.jpg",
+      "sha256": "131c09e912b03498807f5a8fa0bedffbbd8a5f0d05bc1dcc9d0fbd7a57a43b46",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 3,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 800
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1025,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "4 黑桃",
+            "8 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7086,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2875,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3675,
+            "current_bet": 5
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2726,
+            "current_bet": 10
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4494,
+            "current_bet": 20
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1203,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3229,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9081,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 254,
+      "file": "2026-10-01 13:48:46-hero.jpg",
+      "sha256": "058627cede788c16784eede96e2f8daa7d503a23c022a6af74b2049e615fb86e",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 3,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 800
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1025,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "4 黑桃",
+            "8 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7086,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2875,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3675,
+            "current_bet": 5
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2726,
+            "current_bet": 10
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4494,
+            "current_bet": 20
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1203,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3229,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9081,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 255,
+      "file": "2026-10-01 13:49:39-hero.jpg",
+      "sha256": "3176154869882059c77eb59866857bf2df2d3831c9881c73ec6532916e7f86dd",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 4,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 900
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1015,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "9 红桃",
+            "7 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7474,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2865,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3423,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2574,
+            "current_bet": 5
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4474,
+            "current_bet": 10
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1173,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3199,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9071,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 256,
+      "file": "2026-10-01 13:49:43-hero.jpg",
+      "sha256": "3f3d2e9d125458f5082d355d56f12ad2ef96f699b50db1f83e5556fa75f0f34e",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 4,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 900
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1015,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "9 红桃",
+            "7 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7474,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2865,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3423,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2574,
+            "current_bet": 5
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4474,
+            "current_bet": 10
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1173,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3199,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9071,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 257,
+      "file": "2026-10-01 13:50:07-hero.jpg",
+      "sha256": "b9def4cc6ebda5407875e12db63f232f75d193bf92827bdf8e8a54b9b6e21761",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 5,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 1000
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1005,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "9 梅花",
+            "5 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7606,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2855,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3413,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2464,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4459,
+            "current_bet": 5
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1153,
+            "current_bet": 10
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3169,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 9041,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 258,
+      "file": "2026-10-01 13:50:11-hero.jpg",
+      "sha256": "ab4e527f8badd7247e83b211fd97162bb5dbe13b11c18feab6331b73689ae229",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 5,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 1000
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1005,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "9 梅花",
+            "5 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7606,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2855,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3413,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2464,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4459,
+            "current_bet": 5
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1153,
+            "current_bet": 10
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3169,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 9041,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 259,
+      "file": "2026-10-01 13:51:06-hero.jpg",
+      "sha256": "aaae0c9afa3f940f449603146bbba147f2de0bf6ba1569b1a9054771576c27ee",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 125,
+          "current_bet": 20,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 1100
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 995,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "9 黑桃",
+            "4 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7576,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2825,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3383,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2434,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4167,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1519,
+            "current_bet": 5
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3149,
+            "current_bet": 10
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 9011,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 260,
+      "file": "2026-10-01 13:51:10-hero.jpg",
+      "sha256": "184f578bccc129665ec771cae227db4165aa99fb4962154eacbd765a4b89e98f",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 125,
+          "current_bet": 20,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 1100
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 995,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "9 黑桃",
+            "4 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7576,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2825,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 3383,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2434,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4167,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 1519,
+            "current_bet": 5
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3149,
+            "current_bet": 10
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 9011,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 261,
+      "file": "2026-10-01 13:52:20-hero.jpg",
+      "sha256": "73339d7371e6f3d56d6bb175fba6462517e2b910b78105462c66e9f26f3d8699",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 242,
+          "current_bet": 117,
+          "button_seat": 7,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 100
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 965,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "A 黑桃",
+            "5 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7449,
+            "current_bet": 117
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 2815,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3226,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2404,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4157,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 2788,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3124,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8991,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 262,
+      "file": "2026-10-01 13:52:22-hero.jpg",
+      "sha256": "183719b87d43dc6b9232caa49928b40f7f07922fcb3d4f35fefccee0827458d7",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 242,
+          "current_bet": 117,
+          "button_seat": 7,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 100
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 965,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "A 黑桃",
+            "5 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7449,
+            "current_bet": 117
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 2815,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3226,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2404,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4157,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 2788,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3124,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8991,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 263,
+      "file": "2026-10-01 13:52:25-hero.jpg",
+      "sha256": "73ddbcab9582a2e01cdfab8716c6e8f061d9d9997afac76a888f3d0ea76a43fc",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 242,
+          "current_bet": 117,
+          "button_seat": 7,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 100
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 965,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "A 黑桃",
+            "5 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7449,
+            "current_bet": 117
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 2815,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3226,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2404,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 4157,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 2788,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3124,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8991,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 264,
+      "file": "2026-10-01 13:52:48-hero.jpg",
+      "sha256": "35adf9a0ffb1889edf5a3b1328eb215862830624ab63928a62b288d36979aaec",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 497,
+          "current_bet": 93,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 200
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 945,
+          "current_bet": 10,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "6 红桃",
+            "9 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7659,
+            "current_bet": 20
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 2712,
+            "current_bet": 93
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3216,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2301,
+            "current_bet": 93
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 4054,
+            "current_bet": 93
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 2685,
+            "current_bet": 93
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3014,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8976,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 265,
+      "file": "2026-10-01 13:53:47-hero.jpg",
+      "sha256": "b39dfb923b6fc25e135c7844dc99eb2ae4d633e7f0aa424cbf9e0ac8da3fdf97",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 165,
+          "current_bet": 20,
+          "button_seat": 9,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 930,
+          "current_bet": 5,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 梅花",
+            "A 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7281,
+            "current_bet": 10
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4691,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3206,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2291,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2809,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 2655,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3004,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8846,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 266,
+      "file": "2026-10-01 13:53:50-hero.jpg",
+      "sha256": "01bb527a76410217aca6524f6b371f6766b28092a8d04c6eaa44d0cc8df8a595",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 165,
+          "current_bet": 20,
+          "button_seat": 9,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 930,
+          "current_bet": 5,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 梅花",
+            "A 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7281,
+            "current_bet": 10
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4691,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3206,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2291,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2809,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 2655,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3004,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8846,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 267,
+      "file": "2026-10-01 13:53:52-hero.jpg",
+      "sha256": "c0fd404fffb923cc841e0ae617cc530ebfa34bb4362b0578292302ca9071814b",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 165,
+          "current_bet": 20,
+          "button_seat": 9,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 930,
+          "current_bet": 5,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 梅花",
+            "A 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7281,
+            "current_bet": 10
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4691,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3206,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2291,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2809,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 2655,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3004,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8846,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 268,
+      "file": "2026-10-01 13:53:54-hero.jpg",
+      "sha256": "448844619f52386141ad0e46435d4615e10ce689bc6ebf63b7da45063a2ccb47",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 165,
+          "current_bet": 20,
+          "button_seat": 9,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 930,
+          "current_bet": 5,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 梅花",
+            "A 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7281,
+            "current_bet": 10
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4691,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3206,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2291,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2809,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 2655,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3004,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8846,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 269,
+      "file": "2026-10-01 13:54:04-hero.jpg",
+      "sha256": "4832ff6726204a6f1de1481fe12babf877d2257e9ba8985504fdf694e26d277a",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 1095,
+          "current_bet": null,
+          "button_seat": 9,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1377,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 梅花",
+            "A 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7281,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 4691,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 3206,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2291,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2809,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 2655,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 3004,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8846,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 270,
+      "file": "2026-10-01 13:54:20-hero.jpg",
+      "sha256": "de257874aa8d9148cf5134833266d78f2975c578f97f163fce40610e0d7fee8e",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 175,
+          "current_bet": 20,
+          "button_seat": 1,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 100
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1267,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "6 红桃",
+            "K 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7266,
+            "current_bet": 5
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4671,
+            "current_bet": 10
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 23,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2261,
+            "current_bet": 20
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2779,
+            "current_bet": 20
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 2645,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 2974,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8816,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 271,
+      "file": "2026-10-01 13:55:07-hero.jpg",
+      "sha256": "ba6a647d6ea87844a668c01cc49c8df9d1df317326592c2cf0edcc2c824dea8e",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 330,
+          "current_bet": 185,
+          "button_seat": 2,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 100
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1257,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "5 红桃",
+            "10 方块"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7551,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4646,
+            "current_bet": 5
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2980,
+            "current_bet": 10
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2231,
+            "current_bet": 20
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2769,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 2615,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 2779,
+            "current_bet": 185
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 8672,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 272,
+      "file": "2026-10-01 13:55:41-hero.jpg",
+      "sha256": "7c96b21e023a34391f68382ec66fae20e09feb1f822f9f12e1af6bfa878ca7dc",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 275,
+          "current_bet": 130,
+          "button_seat": 3,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 200
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1247,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "5 黑桃",
+            "5 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7541,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4536,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2965,
+            "current_bet": 5
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2211,
+            "current_bet": 10
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2739,
+            "current_bet": 20
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 2605,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3076,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8532,
+            "current_bet": 130
+          }
+        }
+      }
+    },
+    {
+      "index": 273,
+      "file": "2026-10-01 13:55:44-hero.jpg",
+      "sha256": "68a32b794a2770aeef89ece8942dc921128c8ea5a4b4471752ac0a4fc8bbe8bf",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 275,
+          "current_bet": 130,
+          "button_seat": 3,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 200
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1247,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "5 黑桃",
+            "5 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7541,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4536,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2965,
+            "current_bet": 5
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2211,
+            "current_bet": 10
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2739,
+            "current_bet": 20
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 0,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3076,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8532,
+            "current_bet": 130
+          }
+        }
+      }
+    },
+    {
+      "index": 274,
+      "file": "2026-10-01 13:55:48-hero.jpg",
+      "sha256": "0254d642dfdfde239eb706f8dcd90e8a9969715f236ea3c37c254a325677b7d5",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 275,
+          "current_bet": 130,
+          "button_seat": 3,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 200
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1247,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "5 黑桃",
+            "5 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7541,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4536,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2965,
+            "current_bet": 5
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2211,
+            "current_bet": 10
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2739,
+            "current_bet": 20
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 2605,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 3076,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 8532,
+            "current_bet": 130
+          }
+        }
+      }
+    },
+    {
+      "index": 275,
+      "file": "2026-10-01 13:56:30-hero.jpg",
+      "sha256": "6e6ff95b5ed4f95a1065730587d903613d66dd1d71b212747c03c4903becc903",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 145,
+          "current_bet": 20,
+          "button_seat": 4,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 300
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1237,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "2 黑桃",
+            "A 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7401,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4526,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2855,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2196,
+            "current_bet": 5
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2719,
+            "current_bet": 10
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 2575,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 1667,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "all_in",
+            "stack": 0,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 276,
+      "file": "2026-10-01 13:57:35-hero.jpg",
+      "sha256": "104c0870ed5ca201ac039308c3f4983d0a69d060d7fa125e9f75f82da9a92288",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 125,
+          "current_bet": 20,
+          "button_seat": 5,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1227,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 黑桃",
+            "3 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7391,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4516,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2845,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2086,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2590,
+            "current_bet": 5
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 3194,
+            "current_bet": 10
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 1637,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9804,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 277,
+      "file": "2026-10-01 13:57:39-hero.jpg",
+      "sha256": "36c0f95047d32be8040652c922303cc1f801b06af51ead964d029922098a875c",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 125,
+          "current_bet": 20,
+          "button_seat": 5,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1227,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 黑桃",
+            "3 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7391,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4516,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2845,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 2086,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2590,
+            "current_bet": 5
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 3194,
+            "current_bet": 10
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 1637,
+            "current_bet": 20
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9804,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 278,
+      "file": "2026-10-01 13:57:52-hero.jpg",
+      "sha256": "6e46963e38abf9a7bc37ec540f12767218f983e2a94f525471cf50f6da07f937",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 760,
+          "current_bet": 205,
+          "button_seat": 5,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1207,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 黑桃",
+            "3 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7391,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4496,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2640,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1881,
+            "current_bet": 205
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2590,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3194,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 1452,
+            "current_bet": 205
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9804,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 279,
+      "file": "2026-10-01 13:57:55-hero.jpg",
+      "sha256": "0bec5835eb4aaf145eceb8d84fcb8be3b7070e2fa74b14099ab8fe5a8d222431",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 760,
+          "current_bet": 205,
+          "button_seat": 5,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1207,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 黑桃",
+            "3 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7391,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4496,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2640,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1881,
+            "current_bet": 205
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2590,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3194,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 1452,
+            "current_bet": 205
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9804,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 280,
+      "file": "2026-10-01 13:57:57-hero.jpg",
+      "sha256": "6914f397be6e4448f874291447901849e1750c747a1388393b47193efb4bdb9a",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 760,
+          "current_bet": 205,
+          "button_seat": 5,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1207,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 黑桃",
+            "3 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7391,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4496,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2640,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1881,
+            "current_bet": 205
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2590,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3194,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 1452,
+            "current_bet": 205
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9804,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 281,
+      "file": "2026-10-01 13:57:59-hero.jpg",
+      "sha256": "5fe90f29bfdddf6500c2b1e318336451afd171932e9ac90fcc4da3149bf8198d",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 760,
+          "current_bet": 205,
+          "button_seat": 5,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 400
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1207,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "3 黑桃",
+            "3 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7391,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 4496,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2640,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1881,
+            "current_bet": 205
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2590,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3194,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 1452,
+            "current_bet": 205
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9804,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 282,
+      "file": "2026-10-01 13:58:46-hero.jpg",
+      "sha256": "98206f0d906b4d4f019cdf27d059dfad90dd2bd4597620dd1f7f7d26ca74aa9c",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 125,
+          "current_bet": 20,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1197,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1871,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 3179,
+            "current_bet": 5
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 1117,
+            "current_bet": 10
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 9774,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 283,
+      "file": "2026-10-01 13:58:50-hero.jpg",
+      "sha256": "bc63fb36bcb7f9de85f9b8e2bca1fd6c8779fcea7dac12aa0b6c2e0ec325e91b",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 125,
+          "current_bet": 20,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1197,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1871,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 3179,
+            "current_bet": 5
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 1117,
+            "current_bet": 10
+          },
+          "9": {
+            "seat": 9,
+            "status": "active",
+            "stack": 9774,
+            "current_bet": 20
+          }
+        }
+      }
+    },
+    {
+      "index": 284,
+      "file": "2026-10-01 13:59:13-hero.jpg",
+      "sha256": "5cf45b86f18b31e5701ac900804712040c134d8c231373add09d7d20c8b00bc0",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 610,
+          "current_bet": null,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1706,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 285,
+      "file": "2026-10-01 13:59:15-hero.jpg",
+      "sha256": "aacbad58af2ab6d1a5ee50cad61c5c01da6fa98d7ae570ee9a3068c0edffbdb8",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 610,
+          "current_bet": null,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1706,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 286,
+      "file": "2026-10-01 13:59:16-hero.jpg",
+      "sha256": "641663376763edb11a6013060ba461f2c9c70b70af5384975022cae051a9aab6",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 610,
+          "current_bet": null,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1706,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 287,
+      "file": "2026-10-01 13:59:18-hero.jpg",
+      "sha256": "f04a67557df2450041ffdd9ad168145d953d8a6aed459f0a1a16e280152642d0",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 610,
+          "current_bet": null,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1706,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 288,
+      "file": "2026-10-01 13:59:20-hero.jpg",
+      "sha256": "7e776ef1847806b6b623685de18772573dcb3ef5cd1c1ec0b69972f33a28bade",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 610,
+          "current_bet": null,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1706,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 289,
+      "file": "2026-10-01 13:59:22-hero.jpg",
+      "sha256": "58992e06f3261438ff588c583424aa894b17788bf863656ae35eee47d6bb81a0",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 610,
+          "current_bet": null,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1706,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 290,
+      "file": "2026-10-01 13:59:26-hero.jpg",
+      "sha256": "10b5292dcde933435ce0579870bb83ba4d21614b29f413b256348a227b2b5c72",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 1017,
+          "current_bet": 407,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1299,
+            "current_bet": 407
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 291,
+      "file": "2026-10-01 13:59:28-hero.jpg",
+      "sha256": "5838cdc2cd5f1a44c68d570f60d4159d1c9a2688415094940d0346b6c7c1f332",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 1017,
+          "current_bet": 407,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1299,
+            "current_bet": 407
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 292,
+      "file": "2026-10-01 13:59:30-hero.jpg",
+      "sha256": "fcbd8ec099b95a25c53b9d7018a2d596bccda2ebfd359bcde13f2bbf171789b3",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "flop",
+          "community_cards": [
+            "J 梅花",
+            "Q 红桃",
+            "5 黑桃"
+          ],
+          "main_pot": 1017,
+          "current_bet": 407,
+          "button_seat": 6,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 500
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1032,
+          "current_bet": null,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "K 黑桃",
+            "A 梅花"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "folded",
+            "stack": 7381,
+            "current_bet": null
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5515,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "folded",
+            "stack": 2630,
+            "current_bet": null
+          },
+          "5": {
+            "seat": 5,
+            "status": "active",
+            "stack": 1299,
+            "current_bet": 407
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2480,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3179,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 962,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9774,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 293,
+      "file": "2026-10-01 13:59:52-hero.jpg",
+      "sha256": "b5165073eb1ae42c238f53882231b260e1f824869f7a73f8f81abf0ed0ceee9c",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 334,
+          "current_bet": 154,
+          "button_seat": 7,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 600
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 1002,
+          "current_bet": 20,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "7 梅花",
+            "K 黑桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 7351,
+            "current_bet": 20
+          },
+          "3": {
+            "seat": 3,
+            "status": "folded",
+            "stack": 5505,
+            "current_bet": null
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2600,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2279,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "folded",
+            "stack": 2470,
+            "current_bet": null
+          },
+          "7": {
+            "seat": 7,
+            "status": "active",
+            "stack": 3049,
+            "current_bet": 20
+          },
+          "8": {
+            "seat": 8,
+            "status": "active",
+            "stack": 798,
+            "current_bet": 154
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9754,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 294,
+      "file": "2026-10-01 14:00:34-hero.jpg",
+      "sha256": "4aca886381d440da03a8fd5b9f6a4708f35ecd6b2f953dbdf30937916e85d7bf",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 370,
+          "current_bet": 205,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 700
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 982,
+          "current_bet": 10,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "A 红桃",
+            "K 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 8397,
+            "current_bet": 20
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 5475,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2570,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2269,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2255,
+            "current_bet": 205
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3039,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 1390,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9739,
+            "current_bet": null
+          }
+        }
+      }
+    },
+    {
+      "index": 295,
+      "file": "2026-10-01 14:00:37-hero.jpg",
+      "sha256": "4ac23e5c7196b568216cd9b1c42513185ba80562bcf2527e343b4c61565e1b88",
+      "annotation_source": "manual-nine-seat-review",
+      "expected": {
+        "table_info": {
+          "stage": "preflop",
+          "community_cards": [],
+          "main_pot": 370,
+          "current_bet": 205,
+          "button_seat": 8,
+          "blind_size": "5/10/20(10)",
+          "mushroom_count": 700
+        },
+        "hero_info": {
+          "seat": 1,
+          "status": "active",
+          "stack": 982,
+          "current_bet": 10,
+          "is_hero_turn": true,
+          "hero_cards": [
+            "A 红桃",
+            "K 红桃"
+          ]
+        },
+        "villains_info": {
+          "2": {
+            "seat": 2,
+            "status": "active",
+            "stack": 8397,
+            "current_bet": 20
+          },
+          "3": {
+            "seat": 3,
+            "status": "active",
+            "stack": 5475,
+            "current_bet": 20
+          },
+          "4": {
+            "seat": 4,
+            "status": "active",
+            "stack": 2570,
+            "current_bet": 20
+          },
+          "5": {
+            "seat": 5,
+            "status": "folded",
+            "stack": 2269,
+            "current_bet": null
+          },
+          "6": {
+            "seat": 6,
+            "status": "active",
+            "stack": 2255,
+            "current_bet": 205
+          },
+          "7": {
+            "seat": 7,
+            "status": "folded",
+            "stack": 3039,
+            "current_bet": null
+          },
+          "8": {
+            "seat": 8,
+            "status": "folded",
+            "stack": 1390,
+            "current_bet": null
+          },
+          "9": {
+            "seat": 9,
+            "status": "folded",
+            "stack": 9739,
+            "current_bet": null
+          }
+        }
+      }
+    }
+  ],
+  "complete_fields": true,
+  "derived_from": "reports/hero-regression/manifest.json",
+  "selection": "len(expected.villains_info) == 8"
+}

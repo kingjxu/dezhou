@@ -9,6 +9,7 @@ import app.recognizer as recognizer_module
 
 from app.engines import get_recognizer
 from app.layouts.polerv2 import LayoutPolerV2
+from app.layouts.polerv2 import nine_seat_layout
 from app.layouts.poler import LayoutPoler
 from app.recognizer import OcrItem
 from app.recognizer import (
@@ -234,6 +235,35 @@ class PolerV2Test(unittest.TestCase):
             self.assertEqual(r._seat_status(items, 5), "active")
         self.assertEqual(r._seat_status([
             OcrItem(text="留座174秒", cx=.5, cy=.18, score=.99)], 5), "waiting")
+
+    def test_nine_top_statuses_share_one_ocr_call_and_stay_isolated(self):
+        r = self._normalizer()
+        r._layout = nine_seat_layout()
+        r._ocr = object()
+        image = np.zeros((1000, 1000, 3), dtype=np.uint8)
+
+        def box(cx, cy):
+            return [[cx - 10, cy - 5], [cx + 10, cy - 5],
+                    [cx + 10, cy + 5], [cx - 10, cy + 5]]
+
+        # The packed crops start at x=24 and x=173. These centers map back
+        # exactly to the two nine-seat status anchors at x=.44 and x=.56.
+        reads = [(box(89, 69), "弃牌", .99),
+                 (box(233, 69), "留座20秒", .99)]
+        with patch.object(recognizer_module, "_ocr_run", return_value=reads) as ocr:
+            self.assertEqual(r._read_v2_nine_top_statuses(image), {
+                5: "folded",
+                6: "waiting",
+            })
+            ocr.assert_called_once()
+
+    def test_eight_seat_skips_nine_top_status_ocr(self):
+        r = self._normalizer()
+        r._ocr = object()
+        image = np.zeros((1000, 1000, 3), dtype=np.uint8)
+        with patch.object(recognizer_module, "_ocr_run") as ocr:
+            self.assertEqual(r._read_v2_nine_top_statuses(image), {})
+            ocr.assert_not_called()
 
     def test_v2_button_positions_include_hero_side_marker(self):
         self.assertIn((0.65, 0.78), LayoutPolerV2().button_positions[1])
