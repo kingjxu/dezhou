@@ -1,6 +1,6 @@
 ---
-version: "1.0"
-last_updated: "2026-10-03"
+version: "1.1"
+last_updated: "2026-10-06"
 ---
 # 测试与性能验证
 - Python 3.12 + `pip install -r requirements-test.txt`（OCR / ONNX / OpenCV 与 HTTP TestClient 依赖）执行 `python -m unittest discover`；原有 polerv2 用例包含 1080、1176、1179 宽截图与画布归一化，必须保留。
@@ -28,6 +28,8 @@ last_updated: "2026-10-03"
 
 - 多位下注即使OCR高置信，也不能少于可见数字行组件数；真实21图被模拟高置信读成2时必须拒绝，避免序列相关的截断结果。
 - polerv2 下注回归包含蓝色牌背样本 `blue-wagers.jpg`、新 Hero 下注位置样本 `hero-bet-2.jpg`，以及 `no-actions.webp` 无下注反例；必须同时验证蓝色下注能读出且放宽候选颜色不会虚构下注。Hero ROI 变更需通过默认 506 张人工标注全字段回归。
+- polerv2 的 Hero 轮次判定必须同时看到左侧红色 fold 控件和右侧可操作控件；结束页仅出现右侧绿色“新手牌”等控件时必须返回 false。当天现场集需逐张核对结束页，不能只用服务端历史输出自证。
+- polerv2 公共牌 rank CNN 低置信时必须进入 OCR 复核，覆盖运动过渡帧中 `10` 被压成单个数字的回归；该门控只用于公共牌，不改变已校准的 Hero 手牌路径。
 - `hero-bet-33-decided.jpg` 是 2026-10-02 18:54:54 原始 decided 帧的脱敏 ROI 夹具；
   原图明确显示 Hero 已下注 33，必须由备选 Hero 下注 ROI 直接读取为 33。
   不能在上游通过筹码或底池差额补出该数值。

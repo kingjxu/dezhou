@@ -21,6 +21,31 @@ from app.recognizer import (
 
 
 class PolerV2Test(unittest.TestCase):
+    def test_v2_turn_requires_fold_button_with_bright_right_control(self):
+        recognizer = self._normalizer()
+        hsv = np.zeros((1000, 1000, 3), dtype=np.uint8)
+        # A bright green right-side control also exists on the hand-end screen.
+        hsv[700:780, 610:760] = (60, 255, 220)
+        hand_end = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+        self.assertFalse(recognizer._detect_hero_turn(hand_end))
+
+        # The same right control is actionable only when the red fold button is
+        # simultaneously present in its dedicated left ROI.
+        hsv[700:780, 240:400] = (0, 255, 220)
+        actionable = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+        self.assertTrue(recognizer._detect_hero_turn(actionable))
+
+    def test_v2_low_confidence_board_ten_uses_ocr_verification(self):
+        recognizer = get_recognizer("polerv2")
+        image = cv2.imread(str(
+            Path(__file__).parent
+            / "fixtures/field-regression/board-ten-transition.jpg"))
+
+        ranks = recognizer._find_ranks(
+            image, [], recognizer._layout.board_rois[:3])
+
+        self.assertEqual(ranks, {0: "7", 1: "6", 2: "10"})
+
     def test_empty_placeholder_uses_explicit_plus_center(self):
         recognizer = self._normalizer()
         hsv = np.zeros((2400, 1080, 3), dtype=np.uint8)

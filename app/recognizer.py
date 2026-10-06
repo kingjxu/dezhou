@@ -2815,6 +2815,19 @@ class TableRecognizer:
           - hue 收紧到 0-8 + 172-180 (深红)，刚好跨过 X 弃牌按钮但跳过橙色标签。
         """
         if self._layout.app_name == "polerv2":
+            # Every actionable V2 state has the red fold button. Bright green
+            # hand-end controls (for example "new hand") can occupy the right
+            # action ROI as well, so the right button must never be sufficient
+            # by itself.
+            left = self._roi(img, (0.24, 0.70, 0.40, 0.78))
+            if left.size == 0:
+                return False
+            hsv_left = cv2.cvtColor(left, cv2.COLOR_BGR2HSV)
+            red = (((hsv_left[:, :, 0] <= 8) | (hsv_left[:, :, 0] >= 172))
+                   & (hsv_left[:, :, 1] > 140) & (hsv_left[:, :, 2] > 100))
+            if np.mean(red) <= 0.06:
+                return False
+
             right = self._roi(img, (0.61, 0.70, 0.76, 0.78))
             if right.size == 0:
                 return False
@@ -2831,11 +2844,7 @@ class TableRecognizer:
             white = (hsv_right[:, :, 1] < 70) & (hsv_right[:, :, 2] > 180)
             if np.mean(cyan) <= 0.06 or np.mean(white) <= 0.05:
                 return False
-            left = self._roi(img, (0.24, 0.70, 0.40, 0.78))
-            hsv_left = cv2.cvtColor(left, cv2.COLOR_BGR2HSV)
-            red = (((hsv_left[:, :, 0] <= 8) | (hsv_left[:, :, 0] >= 172))
-                   & (hsv_left[:, :, 1] > 140) & (hsv_left[:, :, 2] > 100))
-            return bool(np.mean(red) > 0.06)
+            return True
         h, w   = img.shape[:2]
         y1, y2 = self._layout.action_btn_y
         x1, x2 = getattr(self._layout, 'action_btn_x', (0.0, 1.0))
@@ -3265,6 +3274,13 @@ class TableRecognizer:
                     # （OCR 对 AA Poker 小角标识别不稳，实测反而降准确度）。
                     _ocr_verify_thr = getattr(
                         self._layout, 'rank_ocr_verify_threshold', 0.70)
+                    # V2 normally trusts its rank CNN, but a motion-blurred
+                    # two-character board rank can collapse into an uncertain
+                    # single digit (observed 10 -> 8 at confidence 0.489).
+                    # Re-enable OCR only for low-confidence board cards; this
+                    # leaves the calibrated Hero-card path unchanged.
+                    if self._layout.app_name == "polerv2" and not is_hero:
+                        _ocr_verify_thr = max(_ocr_verify_thr, 0.70)
                     _ocr_override_min = getattr(
                         self._layout, 'rank_ocr_override_min_score', 0.70)
                     if cnn_conf < _ocr_verify_thr:
