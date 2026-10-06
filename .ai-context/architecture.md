@@ -1,6 +1,6 @@
 ---
-version: "1.0"
-last_updated: "2026-10-03"
+version: "1.1"
+last_updated: "2026-10-06"
 ---
 # 架构
 `app/main.py` 提供 /health、/recognize。Pydantic schema 在 app/schemas.py。
@@ -53,3 +53,11 @@ V2归一化后检查顶部两个空座十字，或“左右两条顶部余额且
 - 服务 PID=312035、PPID=1，监听5555；本机 `/health` 正常，SSH重连后进程存活，部署日志未发现 traceback/error/exception。
 - 部署后通过本机 HTTP 顺序回放12张九人桌和1张八人桌真实标注图，13/13全字段通过；外层均值1.977秒、最大2.645秒。
 - 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261003-085029-before-15b956b`，保存部署前 `app/recognizer.py`、旧PID和源码SHA。
+
+## 2026-10-06 polerv2 轮次与公共牌过渡识别部署
+
+- 业务提交 `c92e6dc`。polerv2 轮到 Hero 必须同时存在左侧红色 fold 控件和右侧操作控件；公共牌 rank CNN 低置信时进入 OCR 复核，Hero 手牌路径不变。
+- Python 3.12 完整单测 48/48、52 张当天现场图候选重放、`py_compile` 和 `git diff --check` 通过。
+- 运行时 `app/recognizer.py` SHA256 为 `26f42e12844a49560dc159bfc0e1deaa5ea944a783cf690de5fb62f1c83f4b4c`；部署后 PID 1512987、PPID 1，SSH 重连后 `/health` 正常。
+- 生产服务顺序回放 52/52 HTTP 200：5 张结束页从 Hero turn true 修正为 false，其余 47 张保持 true；`17:51:12` 公共牌从错误的 `8♥` 修正为原图可见的 `10♥`。回放证据 SHA256 为 `2dbdc3db70868b3ca886f22b20fdf2595ce3f69673b49f71c464fad569f256ea`。
+- 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261006-1835-before-c92e6dc`，包含替换前 `app/recognizer.py`、旧 PID 和源码校验值。
