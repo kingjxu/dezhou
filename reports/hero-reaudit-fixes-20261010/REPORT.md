@@ -28,4 +28,8 @@
 
 ## 部署
 
-代码评审通过后再备份并原子替换生产 `app/recognizer.py` 与 `app/layouts/polerv2.py`，重启后核对进程、`/health`、问题图片回放和运行时SHA。
+- 提交 `c50ad37` 经 CR LGTM 后部署到 `/home/ubuntu/poker/dezhou`。替换前文件、旧 PID 和 SHA256 已保存到 `/home/ubuntu/poker/dezhou-backups/20261010-210905-before-c50ad37`，两个源码文件在同目录内原子替换。
+- 运行时 `app/recognizer.py` SHA256 为 `eaa084af216082b8cab01c1a40ee4bff4d4c671ef5e53dcff9a46473c8028211`，`app/layouts/polerv2.py` SHA256 为 `9f1b4944e0d211c68da6460bdb94abd162eb4f97dbf0f35524c68ef4bee5fd9c`，与已评审候选一致。
+- 重启后 PID `2938328`、PPID `1`，`/proc/2938328/exe` 为 `/usr/bin/python3.12`；重新建立 SSH 连接后 `/health` 返回 `ok=true`，支持 `dpzx/poler/polerv2`。
+- 生产 HTTP 回放5张关键问题图全部为200：`14:36:14/17/20` 的对手下注均为102、Hero已投入12、全桌最大下注102；`14:39:24/27` 的对手下注均为264、Hero已投入49、全桌最大下注264。
+- 边界现场回放保持预期：启动页 `14:01:25` 和历史面板 `14:31:40` 均为 `is_hero_turn=false`；真实牌桌 `14:22:29` 为 `is_hero_turn=true`，完整识别 `6♦ K♦`。该线上回放用于确认运行时行为，完整506张逐字段门槛仍以前述部署前结果为准。
