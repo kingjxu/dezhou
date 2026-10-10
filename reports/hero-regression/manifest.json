@@ -13,7 +13,9 @@
     "Baseline OCR output was used only as an annotation draft. Visible stack/status misses were manually corrected and are regression expectations, not accepted model output.",
     "Full-corpus replay disagreements were re-opened against original pixels on 2026-10-03; obvious draft transpositions (486/156/217/2255) and visible maximum wager targets were corrected before final acceptance.",
     "Full-frame replay corrected six nine-seat top-right players whose visible folded pill had been transcribed as active; folded current_bet remains null by contract.",
-    "Final full-corpus review corrected additional visible stack transpositions and rejected sparse card-back strokes that resemble isolated blind digits."
+    "Final full-corpus review corrected additional visible stack transpositions and rejected sparse card-back strokes that resemble isolated blind digits.",
+    "2026-10-10 full-frame re-review corrected #238/#239 visible wager from 85 to 185; the marker card does not occlude the leading 1.",
+    "2026-10-10 full-frame re-review corrected #269 is_hero_turn to false: it is the YOU WIN hand-end screen with paid card-peek controls, not poker action buttons."
   ],
   "cases": [
     {
@@ -17618,7 +17620,7 @@
       "index": 238,
       "file": "2026-10-01 13:46:04-hero.jpg",
       "sha256": "c7f91b051a2a8489bb0845f88aa1b981a6b2beac87985d825c32261b68d79977",
-      "annotation_source": "manual-nine-seat-review",
+      "annotation_source": "manifest-v5-20261010-full-frame-correction",
       "expected": {
         "table_info": {
           "stage": "flop",
@@ -17628,7 +17630,7 @@
             "K 黑桃"
           ],
           "main_pot": 370,
-          "current_bet": 85,
+          "current_bet": 185,
           "button_seat": 7,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 300
@@ -17679,7 +17681,7 @@
             "seat": 7,
             "status": "active",
             "stack": 996,
-            "current_bet": 85
+            "current_bet": 185
           },
           "8": {
             "seat": 8,
@@ -17700,7 +17702,7 @@
       "index": 239,
       "file": "2026-10-01 13:46:06-hero.jpg",
       "sha256": "5d2fd07eb1891babf4a34d04312a564f01c3481ad3a14970ea2c8938cb20235d",
-      "annotation_source": "manual-nine-seat-review",
+      "annotation_source": "manifest-v5-20261010-full-frame-correction",
       "expected": {
         "table_info": {
           "stage": "flop",
@@ -17710,7 +17712,7 @@
             "K 黑桃"
           ],
           "main_pot": 370,
-          "current_bet": 85,
+          "current_bet": 185,
           "button_seat": 7,
           "blind_size": "5/10/20(10)",
           "mushroom_count": 300
@@ -17761,7 +17763,7 @@
             "seat": 7,
             "status": "active",
             "stack": 996,
-            "current_bet": 85
+            "current_bet": 185
           },
           "8": {
             "seat": 8,
@@ -20076,7 +20078,7 @@
       "index": 269,
       "file": "2026-10-01 13:54:04-hero.jpg",
       "sha256": "4832ff6726204a6f1de1481fe12babf877d2257e9ba8985504fdf694e26d277a",
-      "annotation_source": "manual-nine-seat-review",
+      "annotation_source": "manifest-v5-20261010-full-frame-correction",
       "expected": {
         "table_info": {
           "stage": "preflop",
@@ -20092,7 +20094,7 @@
           "status": "active",
           "stack": 1377,
           "current_bet": null,
-          "is_hero_turn": true,
+          "is_hero_turn": false,
           "hero_cards": [
             "K 梅花",
             "A 黑桃"

@@ -87,9 +87,11 @@ class LayoutPolerV2(LayoutPoler):
         3: (0.205, 0.460, 0.305, 0.530),
         4: (0.120, 0.270, 0.280, 0.380),
         5: (0.500, 0.210, 0.570, 0.285),
-        6: (0.710, 0.270, 0.810, 0.370),
-        7: (0.710, 0.400, 0.810, 0.500),
-        8: (0.710, 0.575, 0.810, 0.645),
+        # Right-side wager text is left-aligned beside the marker card.  Keep
+        # enough room for the leading digit of values such as 102/264.
+        6: (0.650, 0.270, 0.810, 0.370),
+        7: (0.650, 0.400, 0.810, 0.500),
+        8: (0.650, 0.575, 0.810, 0.645),
     })
     seat_bet_fallback_chip_colors: dict = field(default_factory=lambda: {
         # V2 uses both red and blue marker-card themes. Colour narrows the

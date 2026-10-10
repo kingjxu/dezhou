@@ -1572,9 +1572,9 @@ class TableRecognizer:
                     x, y, bw, bh = cv2.boundingRect(c)
                     cx = (x + bw / 2) / w
                     cy = (y + bh / 2) / h
-                    if (2500 < area < 5000
+                    if (min_area < area < 5000
                             and 0.60 <= cx <= 0.69
-                            and 0.80 <= cy <= 0.85
+                            and 0.78 <= cy <= 0.85
                             and 0.75 <= bw / max(bh, 1) <= 1.50):
                         return 1
             return None
@@ -1594,12 +1594,28 @@ class TableRecognizer:
                 x, y, bw, bh = cv2.boundingRect(c)
                 cx = (x + bw / 2) / w
                 cy = (y + bh / 2) / h
-                if (2500 < area < 5000
+                if (min_area < area < 5000
                         and 0.60 <= cx <= 0.69
-                        and 0.80 <= cy <= 0.85
+                        and 0.78 <= cy <= 0.85
                         and 0.75 <= bw / max(bh, 1) <= 1.50):
                     return 1
         return None
+
+    def _has_v2_table_surface(self, img: np.ndarray) -> bool:
+        """Reject non-table screens before treating coloured controls as actions.
+
+        The V2 action ROIs can line up with red/green launcher icons, while the
+        hand-history sheet leaves the underlying action buttons visible.  A
+        live green table has a large, stable teal/green surface in the middle
+        of the canvas; launcher pages and opaque sheets do not.
+        """
+        table = self._roi(img, (0.30, 0.30, 0.70, 0.65))
+        if table.size == 0:
+            return False
+        hsv = cv2.cvtColor(table, cv2.COLOR_BGR2HSV)
+        surface = ((hsv[:, :, 0] >= 35) & (hsv[:, :, 0] <= 100)
+                   & (hsv[:, :, 1] > 50) & (hsv[:, :, 2] > 30))
+        return bool(np.mean(surface) > 0.50)
 
     # ==================================================================
     # 盲注（支持全角括号）
@@ -2235,18 +2251,24 @@ class TableRecognizer:
         text_rec = getattr(self._ocr, "text_rec", None)
         if (_OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid"
                 and callable(text_rec) and candidates):
-            seats_in_order = list(candidates)
-            try:
-                reads, _ = text_rec([candidates[seat]["line"]
-                                     for seat in seats_in_order])
-                for seat, read in zip(seats_in_order, reads):
+            # Recognize each wager row independently. RapidOCR normalizes a
+            # batch to its widest tile; mixing a newly restored three-digit
+            # row with narrow one-digit rows can turn a visible ``2`` into
+            # ``12``. There are at most a few active wagers, while keeping
+            # their inputs isolated prevents one seat from changing another.
+            for seat, candidate in candidates.items():
+                try:
+                    reads, _ = text_rec([candidate["line"]])
+                    if len(reads) != 1:
+                        continue
+                    read = reads[0]
                     text, score = read[:2]
                     value = self._valid_v2_digit_read(
-                        text, score, candidates[seat]["visible_digits"])
+                        text, score, candidate["visible_digits"])
                     if value is not None:
                         bets[seat] = value
-            except (TypeError, ValueError, AttributeError):
-                pass
+                except (TypeError, ValueError, AttributeError):
+                    continue
 
         unresolved = [seat for seat in candidates if seat not in bets]
         partial_tiles = []
@@ -2385,11 +2407,69 @@ class TableRecognizer:
                 continue
             _, x, y, w, h = max(candidates)
             pad = max(3, int(max(w, h) * 0.25))
+            tight = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
+                         max(0, x-pad):min(crop.shape[1], x+w+pad)]
+            tight_hsv = cv2.cvtColor(tight, cv2.COLOR_BGR2HSV)
+            tight_white = cv2.inRange(tight_hsv, (0, 0, 175), (180, 110, 255))
+            edge_width = max(2, int(tight_white.shape[1] * 0.04))
+            clipped_digit = cv2.countNonZero(tight_white[:, :edge_width]) >= 4
+            expanded_pad = max(pad, int(max(w, h) * 0.80))
+            expanded = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
+                            max(0, x-expanded_pad):min(crop.shape[1], x+w+pad)]
+            # White pixels at the left edge can mean either a clipped leading
+            # digit or a complete narrow digit such as the ``1`` in ``16``.
+            # Keep the wider crop only when it preserves at least as many
+            # digit-shaped components as the tight crop.  This restores the
+            # leading digit in 102/264 without turning a complete 16 into 11.
+            tight_digits = self._v2_marker_digit_components(tight)
+            expanded_digits = self._v2_marker_digit_components(expanded)
+            use_expanded = (clipped_digit and tight_digits > 0
+                            and expanded_digits > tight_digits)
+            if (clipped_digit and not use_expanded and tight_digits > 0
+                    and expanded_digits == tight_digits
+                    and _OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid"):
+                text_rec = getattr(self._ocr, "text_rec", None)
+                if callable(text_rec):
+                    try:
+                        reads, _ = text_rec([tight])
+                        cleaned = re.sub(
+                            r"\D", "", str(reads[0][0] or "")) if reads else ""
+                        use_expanded = len(cleaned) > tight_digits
+                    except (TypeError, ValueError, AttributeError, IndexError):
+                        pass
+            left_pad = expanded_pad if use_expanded else pad
             chip = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
-                        max(0, x-pad):min(crop.shape[1], x+w+pad)]
+                        max(0, x-left_pad):min(crop.shape[1], x+w+pad)]
             if chip.size:
                 return chip, True
         return None, False
+
+    @staticmethod
+    def _v2_marker_digit_components(chip: np.ndarray) -> int:
+        if chip.size == 0:
+            return 0
+        hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
+        white = cv2.inRange(hsv, (0, 0, 175), (180, 110, 255))
+        white = cv2.morphologyEx(
+            white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+        contours, _ = cv2.findContours(
+            white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        boxes = []
+        for contour in contours:
+            x, y, width, height = cv2.boundingRect(contour)
+            area = cv2.contourArea(contour)
+            if (area >= 20 and area / (width * height) >= 0.12
+                    and chip.shape[0] * 0.15 <= height <= chip.shape[0] * 0.50
+                    and x + width <= chip.shape[1] * 0.85):
+                boxes.append((x, y, width, height))
+        if not boxes:
+            return 0
+        _, row_y, _, row_height = max(boxes, key=lambda box: box[3])
+        return sum(
+            .85 * row_height <= height <= 1.15 * row_height
+            and abs(y - row_y) <= .2 * row_height
+            for _, y, _, height in boxes
+        )
 
     def _read_v2_hero_bet(self, img: np.ndarray) -> int | None:
         """Read the already-placed wager below the action buttons, not call cost."""
@@ -2815,6 +2895,8 @@ class TableRecognizer:
           - hue 收紧到 0-8 + 172-180 (深红)，刚好跨过 X 弃牌按钮但跳过橙色标签。
         """
         if self._layout.app_name == "polerv2":
+            if not self._has_v2_table_surface(img):
+                return False
             # Every actionable V2 state has the red fold button. Bright green
             # hand-end controls (for example "new hand") can occupy the right
             # action ROI as well, so the right button must never be sufficient
@@ -2825,7 +2907,13 @@ class TableRecognizer:
             hsv_left = cv2.cvtColor(left, cv2.COLOR_BGR2HSV)
             red = (((hsv_left[:, :, 0] <= 8) | (hsv_left[:, :, 0] >= 172))
                    & (hsv_left[:, :, 1] > 140) & (hsv_left[:, :, 2] > 100))
-            if np.mean(red) <= 0.06:
+            # The normal fold button is red, but the all-in option renders the
+            # same left action as a gray button with a large white X.  Require
+            # one of those two action faces.  The table-surface gate above
+            # keeps similarly coloured launcher icons out of this path.
+            left_white = ((hsv_left[:, :, 1] < 70)
+                          & (hsv_left[:, :, 2] > 180))
+            if np.mean(red) <= 0.045 and np.mean(left_white) <= 0.05:
                 return False
 
             right = self._roi(img, (0.61, 0.70, 0.76, 0.78))

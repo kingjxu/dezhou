@@ -1,3 +1,4 @@
+import math
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -24,6 +25,7 @@ class PolerV2Test(unittest.TestCase):
     def test_v2_turn_requires_fold_button_with_bright_right_control(self):
         recognizer = self._normalizer()
         hsv = np.zeros((1000, 1000, 3), dtype=np.uint8)
+        hsv[:, :] = (85, 180, 90)
         # A bright green right-side control also exists on the hand-end screen.
         hsv[700:780, 610:760] = (60, 255, 220)
         hand_end = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
@@ -34,6 +36,60 @@ class PolerV2Test(unittest.TestCase):
         hsv[700:780, 240:400] = (0, 255, 220)
         actionable = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
         self.assertTrue(recognizer._detect_hero_turn(actionable))
+
+    def test_v2_turn_rejects_launcher_icons_without_table_surface(self):
+        recognizer = self._normalizer()
+        hsv = np.zeros((1000, 490, 3), dtype=np.uint8)
+        hsv[:, :] = (170, 120, 220)
+        hsv[700:780, 118:196] = (0, 255, 220)
+        hsv[700:780, 299:373] = (60, 255, 220)
+
+        launcher = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+        self.assertFalse(recognizer._detect_hero_turn(launcher))
+
+    def test_v2_turn_rejects_history_sheet_over_action_buttons(self):
+        recognizer = self._normalizer()
+        hsv = np.zeros((1000, 490, 3), dtype=np.uint8)
+        hsv[:, :] = (85, 180, 90)
+        hsv[300:650, 147:343] = (0, 0, 35)
+        hsv[700:780, 118:196] = (0, 255, 220)
+        hsv[700:780, 299:373] = (60, 255, 220)
+
+        history = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+        self.assertFalse(recognizer._detect_hero_turn(history))
+
+    def test_v2_turn_accepts_gray_fold_x_for_all_in_option(self):
+        recognizer = self._normalizer()
+        hsv = np.zeros((1000, 1000, 3), dtype=np.uint8)
+        hsv[:, :] = (85, 180, 90)
+        # Some all-in states replace the red fold face with a gray circle and
+        # a large white X while keeping an actionable right-side control.
+        cv2.circle(hsv, (320, 740), 55, (0, 20, 140), -1)
+        cv2.line(hsv, (285, 705), (355, 775), (0, 0, 255), 12)
+        cv2.line(hsv, (355, 705), (285, 775), (0, 0, 255), 12)
+        hsv[700:780, 610:760] = (0, 255, 220)
+
+        actionable = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+        self.assertTrue(recognizer._detect_hero_turn(actionable))
+
+    def test_v2_button_accepts_small_hero_side_badge(self):
+        recognizer = self._normalizer()
+        image = np.zeros((1000, 1000, 3), dtype=np.uint8)
+        center = (614, 799)
+        points = []
+        for index in range(16):
+            angle = math.pi * index / 8
+            radius = 35 if index % 2 == 0 else 15
+            points.append([
+                round(center[0] + radius * math.cos(angle)),
+                round(center[1] + radius * math.sin(angle)),
+            ])
+        cv2.fillPoly(image, [np.array(points, dtype=np.int32)], (255, 255, 255))
+
+        self.assertEqual(recognizer._detect_button_seat(image), 1)
 
     def test_v2_low_confidence_board_ten_uses_ocr_verification(self):
         recognizer = get_recognizer("polerv2")
@@ -206,6 +262,23 @@ class PolerV2Test(unittest.TestCase):
                 recognizer_module, "_ocr_run", return_value=[(None, "2", .999)]):
             self.assertIsNone(r._detect_bet_chip_digit(
                 image, r._layout.seat_bet_fallback_rois[4], ("red",)))
+
+    def test_right_wager_roi_keeps_leading_three_digit_value(self):
+        r = self._normalizer()
+        image = np.zeros((2400, 1080, 3), dtype=np.uint8)
+        cv2.putText(image, "102", (710, 790), cv2.FONT_HERSHEY_SIMPLEX,
+                    1.4, (255, 255, 255), 3, cv2.LINE_AA)
+        cv2.rectangle(image, (785, 720), (835, 820), (40, 40, 150), -1)
+
+        class ThreeDigitOCR:
+            def text_rec(self, images):
+                return [("102", .999) for _ in images], 0.0
+
+        r._ocr = ThreeDigitOCR()
+        with patch.dict(recognizer_module._OCR_ENGINE_BACKENDS,
+                        {id(r._ocr): "rapid"}):
+            self.assertEqual(r._detect_bet_chip_digit(
+                image, r._layout.seat_bet_fallback_rois[6], ("red",)), 102)
 
     def test_stack_glyph_count_detects_truncated_high_confidence_read(self):
         r = self._normalizer()
