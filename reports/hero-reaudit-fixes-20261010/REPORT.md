@@ -28,7 +28,7 @@
 
 ## 部署
 
-- 提交 `c50ad37` 经 CR LGTM 后部署到 `/home/ubuntu/poker/dezhou`。替换前文件、旧 PID 和 SHA256 已保存到 `/home/ubuntu/poker/dezhou-backups/20261010-210905-before-c50ad37`，两个源码文件在同目录内原子替换。
+- 识别业务提交 `c50ad37` 经 CR LGTM 后部署到 `/home/ubuntu/poker/dezhou`；只记录部署事实的提交为 `5ced119`，不包含新的运行时逻辑。替换前文件、旧 PID 和 SHA256 已保存到 `/home/ubuntu/poker/dezhou-backups/20261010-210905-before-c50ad37`，两个源码文件在同目录内原子替换。
 - 运行时 `app/recognizer.py` SHA256 为 `eaa084af216082b8cab01c1a40ee4bff4d4c671ef5e53dcff9a46473c8028211`，`app/layouts/polerv2.py` SHA256 为 `9f1b4944e0d211c68da6460bdb94abd162eb4f97dbf0f35524c68ef4bee5fd9c`，与已评审候选一致。
 - 重启后 PID `2938328`、PPID `1`，`/proc/2938328/exe` 为 `/usr/bin/python3.12`；重新建立 SSH 连接后 `/health` 返回 `ok=true`，支持 `dpzx/poler/polerv2`。
 - 生产 HTTP 回放5张关键问题图全部为200：`14:36:14/17/20` 的对手下注均为102、Hero已投入12、全桌最大下注102；`14:39:24/27` 的对手下注均为264、Hero已投入49、全桌最大下注264。

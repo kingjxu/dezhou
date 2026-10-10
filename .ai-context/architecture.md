@@ -66,7 +66,7 @@ polerv2 的Hero turn先验证中央绿色牌桌表面，再组合左侧fold动�
 
 ## 2026-10-10 Hero 门控与下注首位识别修复部署
 
-- 业务提交 `c50ad37` 经 CR LGTM 后部署。生产 `app/recognizer.py` SHA256 为 `eaa084af216082b8cab01c1a40ee4bff4d4c671ef5e53dcff9a46473c8028211`，`app/layouts/polerv2.py` SHA256 为 `9f1b4944e0d211c68da6460bdb94abd162eb4f97dbf0f35524c68ef4bee5fd9c`，与候选一致。
+- 识别业务提交 `c50ad37` 经 CR LGTM 后部署；部署事实记录提交为 `5ced119`，不改变运行时。生产 `app/recognizer.py` SHA256 为 `eaa084af216082b8cab01c1a40ee4bff4d4c671ef5e53dcff9a46473c8028211`，`app/layouts/polerv2.py` SHA256 为 `9f1b4944e0d211c68da6460bdb94abd162eb4f97dbf0f35524c68ef4bee5fd9c`，与业务提交候选一致。
 - 部署后 PID `2938328`、PPID `1`，SSH 重连后 `/health` 正常。5张问题图生产 HTTP 回放均恢复原图金额：3张102、2张264；启动页和历史面板继续拒绝，真实牌桌样本完整识别。
 - 完整验证为 Python 48/48、固定manifest 506/506逐字段、当天158张中仅5张预期修正。深色布局仍不在支持范围内。
 - 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261010-210905-before-c50ad37`，保存替换前两个运行时源码、SHA256和旧 PID。
