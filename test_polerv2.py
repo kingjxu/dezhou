@@ -113,6 +113,16 @@ class PolerV2Test(unittest.TestCase):
         self.assertTrue(recognizer._has_v2_empty_placeholder(image, 8))
         self.assertFalse(recognizer._has_v2_empty_placeholder(image, 2))
 
+    def test_middle_right_empty_placeholder_uses_inward_center(self):
+        recognizer = self._normalizer()
+        hsv = np.zeros((2400, 1080, 3), dtype=np.uint8)
+        cx, cy = int(.92 * 1080), int(.47 * 2400)
+        cv2.line(hsv, (cx - 18, cy), (cx + 18, cy), (85, 200, 180), 12)
+        cv2.line(hsv, (cx, cy - 18), (cx, cy + 18), (85, 200, 180), 12)
+        image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+        self.assertTrue(recognizer._has_v2_empty_placeholder(image, 7))
+
     def test_nine_seat_detection_accepts_two_top_balances_only(self):
         recognizer = self._normalizer()
         image = np.zeros((2400, 1080, 3), dtype=np.uint8)

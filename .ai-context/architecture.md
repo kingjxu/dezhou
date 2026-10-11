@@ -1,6 +1,6 @@
 ---
-version: "1.2"
-last_updated: "2026-10-10"
+version: "1.3"
+last_updated: "2026-10-11"
 ---
 # 架构
 `app/main.py` 提供 /health、/recognize。Pydantic schema 在 app/schemas.py。
@@ -17,6 +17,8 @@ OCR 使用 RapidOCR/Paddle 适配；牌点/花色通过 ONNX Runtime。polerv2 �
 V2归一化后检查顶部两个空座十字，或“左右两条顶部余额且中央余额缺失”的占座形态；命中时浅拷贝识别器并绑定九人桌布局，仅供该请求使用，不修改缓存实例的 layout。顶部两座的动作标签 ROI 隔离后合成一次 OCR detector 调用，再映射回各自状态锚点，避免相邻标签互相覆盖并减少九人桌 CPU；八人桌不进入该分支。未匹配九人桌特征时维持八人桌布局。
 
 polerv2 的Hero turn先验证中央绿色牌桌表面，再组合左侧fold动作面和右侧操作控件；左侧支持普通红色fold与all-in option的灰色白X。该门控拒绝启动页、历史面板和结束页。对手下注先按marker颜色/牌形定位，再根据窄裁剪的左边界和数字组件决定是否向左扩展；RapidOCR逐候选独立识别，避免宽三位数行改变同批单数字行。该策略只修复绿桌布局，深色布局继续返回不可决策结果。
+
+polerv2 八人桌空座使用专用“+”中心坐标，不复用在座玩家头像中心；右侧中间空座在当前2400高画布位于约`y=0.47`，而在座头像中心为约`y=0.50`。空座命中后输出`status=empty, stack=null, current_bet=null`；该规则只作用于八人桌显式绿色“+”占位，不据`stack=0`删除玩家。
 
 ## 2026-10-02 下注识别修复部署
 

@@ -63,7 +63,10 @@ class LayoutPolerV2(LayoutPoler):
     # generic avatar colour heuristic for real players.
     empty_seat_positions: dict = field(default_factory=lambda: {
         2: (.08, .61), 3: (.08, .50), 4: (.08, .38), 5: (.50, .18),
-        6: (.92, .38), 7: (.92, .50), 8: (.92, .61),
+        # The middle-right empty placeholder is drawn inward and above the
+        # occupied-player avatar center.  Using the avatar coordinate misses
+        # its explicit "+" and leaves the seat incorrectly active.
+        6: (.92, .38), 7: (.92, .47), 8: (.92, .61),
     })
     button_positions: dict = field(default_factory=lambda: {
         **LayoutPoler().button_positions,

@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "label_notes": [
     "Compared directly with original pixels; #3/#4 board Q is hearts, not diamonds.",
     "#4 has no current wager; 24 was an invalid inference from stack delta.",
@@ -15,7 +15,8 @@
     "Full-frame replay corrected six nine-seat top-right players whose visible folded pill had been transcribed as active; folded current_bet remains null by contract.",
     "Final full-corpus review corrected additional visible stack transpositions and rejected sparse card-back strokes that resemble isolated blind digits.",
     "2026-10-10 full-frame re-review corrected #238/#239 visible wager from 85 to 185; the marker card does not occlude the leading 1.",
-    "2026-10-10 full-frame re-review corrected #269 is_hero_turn to false: it is the YOU WIN hand-end screen with paid card-peek controls, not poker action buttons."
+    "2026-10-10 full-frame re-review corrected #269 is_hero_turn to false: it is the YOU WIN hand-end screen with paid card-peek controls, not poker action buttons.",
+    "2026-10-11 full-frame re-review corrected #501 seat 7 from active/0 to empty/null: the original visibly contains the middle-right green plus placeholder; the previous label repeated the recognizer defect."
   ],
   "cases": [
     {
@@ -37290,8 +37291,8 @@
           },
           "7": {
             "seat": 7,
-            "status": "active",
-            "stack": 0,
+            "status": "empty",
+            "stack": null,
             "current_bet": null
           },
           "8": {
