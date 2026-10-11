@@ -290,6 +290,49 @@ class PolerV2Test(unittest.TestCase):
             self.assertEqual(r._detect_bet_chip_digit(
                 image, r._layout.seat_bet_fallback_rois[6], ("red",)), 102)
 
+    def test_real_right_wager_keeps_255_leading_digit(self):
+        r = get_recognizer("polerv2")
+        image = cv2.imread(str(
+            Path(__file__).parent / "fixtures/field-regression/wager-255-crop.jpg"))
+
+        self.assertEqual(r._detect_bet_chip_digit(
+            image, (0, 0, 1, 1), ("red", "blue")), 255)
+
+    def test_wider_wager_row_does_not_absorb_nearby_status_text(self):
+        r = get_recognizer("polerv2")
+        image = cv2.imread(str(
+            Path(__file__).parent
+            / "fixtures/field-regression/wager-20-nearby-text-crop.jpg"))
+
+        self.assertEqual(r._detect_bet_chip_digit(
+            image, (0, 0, 1, 1), ("red", "blue")), 20)
+
+    def test_right_wager_crop_is_not_limited_to_three_digits(self):
+        r = self._normalizer()
+        image = np.zeros((240, 172, 3), dtype=np.uint8)
+        cv2.rectangle(image, (88, 124), (153, 198), (40, 40, 150), -1)
+        cv2.putText(image, "1255", (18, 170), cv2.FONT_HERSHEY_SIMPLEX,
+                    .95, (255, 255, 255), 2, cv2.LINE_AA)
+
+        class FourDigitOCR:
+            def text_rec(self, images):
+                return [("1255", .999) for _ in images], 0.0
+
+        r._ocr = FourDigitOCR()
+        with patch.dict(recognizer_module._OCR_ENGINE_BACKENDS,
+                        {id(r._ocr): "rapid"}):
+            self.assertEqual(r._detect_bet_chip_digit(
+                image, (0, 0, 1, 1), ("red",)), 1255)
+
+    def test_wager_validation_accepts_table_max_four_digits(self):
+        self.assertEqual(
+            self._normalizer()._valid_v2_digit_read("1255", .99, 4),
+            1255,
+        )
+        self.assertIsNone(
+            self._normalizer()._valid_v2_digit_read("12550", .99, 5),
+        )
+
     def test_stack_glyph_count_detects_truncated_high_confidence_read(self):
         r = self._normalizer()
         image = cv2.imread(str(Path(__file__).parent / "fixtures/field-regression/balance-191.jpg"))

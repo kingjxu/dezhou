@@ -2067,7 +2067,7 @@ class TableRecognizer:
             confidence = float(score)
         except (TypeError, ValueError):
             return None
-        if (confidence < min_score or not re.fullmatch(r"\d{1,3}", cleaned)
+        if (confidence < min_score or not re.fullmatch(r"\d{1,4}", cleaned)
                 or len(cleaned) < visible_digits):
             return None
         return int(cleaned)
@@ -2416,16 +2416,25 @@ class TableRecognizer:
             expanded_pad = max(pad, int(max(w, h) * 0.80))
             expanded = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
                             max(0, x-expanded_pad):min(crop.shape[1], x+w+pad)]
-            # White pixels at the left edge can mean either a clipped leading
-            # digit or a complete narrow digit such as the ``1`` in ``16``.
-            # Keep the wider crop only when it preserves at least as many
-            # digit-shaped components as the tight crop.  This restores the
-            # leading digit in 102/264 without turning a complete 16 into 11.
+            # A four-digit wager can begin beyond the marker-sized expansion
+            # while its final digit and marker stay fixed. The complete row is
+            # therefore a second, guarded candidate; the outer seat ROI keeps
+            # player names and neighbouring controls outside this search.
+            complete = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
+                            0:min(crop.shape[1], x+w+pad)]
+            # Prefer the narrowest crop that preserves all additional aligned
+            # digit components. This restores 255/1255 without sending unrelated
+            # text from the far side of the seat ROI into OCR.
             tight_digits = self._v2_marker_digit_components(tight)
             expanded_digits = self._v2_marker_digit_components(expanded)
-            use_expanded = (clipped_digit and tight_digits > 0
+            complete_digits = self._v2_marker_digit_components(complete)
+            use_complete = (tight_digits > 0
+                            and complete_digits
+                            > max(tight_digits, expanded_digits))
+            use_expanded = (tight_digits > 0
                             and expanded_digits > tight_digits)
-            if (clipped_digit and not use_expanded and tight_digits > 0
+            if (clipped_digit and not use_complete and not use_expanded
+                    and tight_digits > 0
                     and expanded_digits == tight_digits
                     and _OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid"):
                 text_rec = getattr(self._ocr, "text_rec", None)
@@ -2437,9 +2446,13 @@ class TableRecognizer:
                         use_expanded = len(cleaned) > tight_digits
                     except (TypeError, ValueError, AttributeError, IndexError):
                         pass
-            left_pad = expanded_pad if use_expanded else pad
-            chip = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
-                        max(0, x-left_pad):min(crop.shape[1], x+w+pad)]
+            if use_complete:
+                chip = complete
+            elif use_expanded:
+                chip = expanded
+            else:
+                chip = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
+                            max(0, x-pad):min(crop.shape[1], x+w+pad)]
             if chip.size:
                 return chip, True
         return None, False
