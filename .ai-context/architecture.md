@@ -72,3 +72,10 @@ polerv2 八人桌空座使用专用“+”中心坐标，不复用在座玩家�
 - 部署后 PID `2938328`、PPID `1`，SSH 重连后 `/health` 正常。5张问题图生产 HTTP 回放均恢复原图金额：3张102、2张264；启动页和历史面板继续拒绝，真实牌桌样本完整识别。
 - 完整验证为 Python 48/48、固定manifest 506/506逐字段、当天158张中仅5张预期修正。深色布局仍不在支持范围内。
 - 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261010-210905-before-c50ad37`，保存替换前两个运行时源码、SHA256和旧 PID。
+
+## 2026-10-11 polerv2 中右空座识别修复部署
+
+- 识别业务提交 `6ab7fcb` 经 CR LGTM 后部署到 `/home/ubuntu/poker/dezhou`；仅替换运行时 `app/layouts/polerv2.py`，SHA256 为 `fb2580c827fcf776dce2749cbd87a1fe827ec28d5aa1477d0b5cb74a13086f4f`，`app/recognizer.py` 保持 `eaa084af216082b8cab01c1a40ee4bff4d4c671ef5e53dcff9a46473c8028211`。
+- 部署后 PID `3206426`、PPID `1`，监听 5555；SSH 重连后 `/health` 正常。生产 HTTP 回放 14/14 张已确认问题图均输出 seat7=`empty/null/null`，A♥6♥ 样本与评审候选逐字段一致，参与人数恢复为 7，下游位置恢复为 `BB-Hero`。
+- 真实 all-in 防回归样本中 seat4/seat7 继续输出 `all_in`、`stack=0`，证明本次显式绿色“+”坐标修正没有泛化为 `stack=0 → empty`。部署前验证为 Python 49/49、固定 manifest v6 506/506、150 张窗口新增命中恰好 14 张且无额外命中。
+- 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261011-153929-before-6ab7fcb`，保存替换前 `app/layouts/polerv2.py`、源码 SHA256 和旧/新 PID。
