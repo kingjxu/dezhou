@@ -307,6 +307,48 @@ class PolerV2Test(unittest.TestCase):
         self.assertEqual(r._detect_bet_chip_digit(
             image, (0, 0, 1, 1), ("red", "blue")), 20)
 
+    def test_wager_digit_span_excludes_same_row_status_text(self):
+        image = np.zeros((120, 250, 3), dtype=np.uint8)
+        cv2.putText(image, "STR", (4, 70), cv2.FONT_HERSHEY_SIMPLEX,
+                    .75, (255, 255, 255), 2, cv2.LINE_8)
+        for x in (130, 150, 170):
+            cv2.rectangle(image, (x, 44), (x + 13, 69),
+                          (255, 255, 255), -1)
+
+        span = self._normalizer()._v2_marker_digit_span(
+            image, marker_x=175, marker_y=20,
+            marker_height=80)
+
+        self.assertIsNotNone(span)
+        self.assertEqual(span[1], 3)
+        self.assertGreater(span[0], 100)
+
+    def test_wager_digit_span_excludes_neighbouring_number_after_large_gap(self):
+        image = np.zeros((120, 250, 3), dtype=np.uint8)
+        for x in (50, 70, 130, 150, 170):
+            cv2.rectangle(image, (x, 44), (x + 13, 69),
+                          (255, 255, 255), -1)
+
+        span = self._normalizer()._v2_marker_digit_span(
+            image, marker_x=175, marker_y=20,
+            marker_height=80)
+
+        self.assertEqual(span[1], 3)
+        self.assertGreater(span[0], 100)
+
+    def test_wager_digit_span_keeps_components_with_digit_sized_gaps(self):
+        image = np.zeros((120, 250, 3), dtype=np.uint8)
+        for x in (108, 130, 150, 170):
+            cv2.rectangle(image, (x, 44), (x + 13, 69),
+                          (255, 255, 255), -1)
+
+        span = self._normalizer()._v2_marker_digit_span(
+            image, marker_x=175, marker_y=20,
+            marker_height=80)
+
+        self.assertEqual(span[1], 4)
+        self.assertLessEqual(span[0], 105)
+
     def test_right_wager_crop_is_not_limited_to_three_digits(self):
         r = self._normalizer()
         image = np.zeros((240, 172, 3), dtype=np.uint8)

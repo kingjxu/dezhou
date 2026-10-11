@@ -2407,55 +2407,94 @@ class TableRecognizer:
                 continue
             _, x, y, w, h = max(candidates)
             pad = max(3, int(max(w, h) * 0.25))
-            tight = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
-                         max(0, x-pad):min(crop.shape[1], x+w+pad)]
-            tight_hsv = cv2.cvtColor(tight, cv2.COLOR_BGR2HSV)
-            tight_white = cv2.inRange(tight_hsv, (0, 0, 175), (180, 110, 255))
-            edge_width = max(2, int(tight_white.shape[1] * 0.04))
-            clipped_digit = cv2.countNonZero(tight_white[:, :edge_width]) >= 4
-            expanded_pad = max(pad, int(max(w, h) * 0.80))
-            expanded = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
-                            max(0, x-expanded_pad):min(crop.shape[1], x+w+pad)]
-            # A four-digit wager can begin beyond the marker-sized expansion
-            # while its final digit and marker stay fixed. The complete row is
-            # therefore a second, guarded candidate; the outer seat ROI keeps
-            # player names and neighbouring controls outside this search.
-            complete = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
-                            0:min(crop.shape[1], x+w+pad)]
-            # Prefer the narrowest crop that preserves all additional aligned
-            # digit components. This restores 255/1255 without sending unrelated
-            # text from the far side of the seat ROI into OCR.
-            tight_digits = self._v2_marker_digit_components(tight)
-            expanded_digits = self._v2_marker_digit_components(expanded)
-            complete_digits = self._v2_marker_digit_components(complete)
-            use_complete = (tight_digits > 0
-                            and complete_digits
-                            > max(tight_digits, expanded_digits))
-            use_expanded = (tight_digits > 0
-                            and expanded_digits > tight_digits)
-            if (clipped_digit and not use_complete and not use_expanded
-                    and tight_digits > 0
-                    and expanded_digits == tight_digits
-                    and _OCR_ENGINE_BACKENDS.get(id(self._ocr)) == "rapid"):
-                text_rec = getattr(self._ocr, "text_rec", None)
-                if callable(text_rec):
-                    try:
-                        reads, _ = text_rec([tight])
-                        cleaned = re.sub(
-                            r"\D", "", str(reads[0][0] or "")) if reads else ""
-                        use_expanded = len(cleaned) > tight_digits
-                    except (TypeError, ValueError, AttributeError, IndexError):
-                        pass
-            if use_complete:
-                chip = complete
-            elif use_expanded:
-                chip = expanded
+            row_y0, row_y1 = max(0, y-pad), min(crop.shape[0], y+h+pad)
+            row_x1 = min(crop.shape[1], x+w+pad)
+            row = crop[row_y0:row_y1, :row_x1]
+            digit_span = self._v2_marker_digit_span(
+                row, marker_x=x, marker_y=y-row_y0,
+                marker_height=h)
+            # One visible component needs no wider crop. Preserve the original
+            # marker-sized framing for single-digit wagers because its extra
+            # context is part of the existing 1/2/4 geometry/OCR fallback.
+            if digit_span is None or digit_span[1] <= 1:
+                chip = crop[row_y0:row_y1,
+                            max(0, x-pad):row_x1]
             else:
-                chip = crop[max(0, y-pad):min(crop.shape[0], y+h+pad),
-                            max(0, x-pad):min(crop.shape[1], x+w+pad)]
+                left, _ = digit_span
+                chip = row[:, left:]
             if chip.size:
                 return chip, True
         return None, False
+
+    @staticmethod
+    def _v2_marker_digit_span(chip: np.ndarray, marker_x: int,
+                              marker_y: int, marker_height: int
+                              ) -> tuple[int, int] | None:
+        """Find the wager components continuously connected to a V2 marker.
+
+        A wager digit overlaps or sits immediately beside the coloured marker.
+        Starting there and walking across digit-sized gaps prevents same-row
+        status text or another number from widening the OCR crop merely because
+        it has more white components.
+        """
+        if chip.size == 0:
+            return None
+        hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
+        white = cv2.inRange(hsv, (0, 0, 175), (180, 110, 255))
+        white = cv2.morphologyEx(
+            white, cv2.MORPH_OPEN, np.ones((2, 2), np.uint8))
+        contours, _ = cv2.findContours(
+            white, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        boxes = []
+        for contour in contours:
+            x, y, width, height = cv2.boundingRect(contour)
+            area = cv2.contourArea(contour)
+            if (area >= 20 and area / (width * height) >= 0.12
+                    and chip.shape[0] * 0.15 <= height <= chip.shape[0] * 0.50):
+                boxes.append((x, y, width, height))
+        if not boxes:
+            return None
+
+        marker_center_y = marker_y + marker_height / 2
+        anchors = [
+            box for box in boxes
+            if box[0] <= marker_x + .55 * box[3]
+            and box[0] + box[2] >= marker_x - .35 * box[3]
+            and abs(box[1] + box[3] / 2 - marker_center_y)
+            <= .25 * marker_height
+        ]
+        if not anchors:
+            return None
+        anchor = max(anchors, key=lambda box: (box[3], box[0]))
+        anchor_x, anchor_y, _, row_height = anchor
+        row_boxes = sorted(
+            (box for box in boxes
+             if .85 * row_height <= box[3] <= 1.15 * row_height
+             and abs(box[1] - anchor_y) <= .2 * row_height),
+            key=lambda box: box[0])
+
+        chain = [anchor]
+        anchor_index = row_boxes.index(anchor)
+        current = anchor
+        for box in reversed(row_boxes[:anchor_index]):
+            gap = current[0] - (box[0] + box[2])
+            if gap < -.25 * row_height:
+                continue
+            if gap > .55 * row_height:
+                break
+            chain.append(box)
+            current = box
+        current = anchor
+        for box in row_boxes[anchor_index + 1:]:
+            gap = box[0] - (current[0] + current[2])
+            if gap < -.25 * row_height:
+                continue
+            if gap > .55 * row_height:
+                break
+            chain.append(box)
+            current = box
+        margin = max(2, int(round(row_height * .15)))
+        return max(0, min(box[0] for box in chain) - margin), len(chain)
 
     @staticmethod
     def _v2_marker_digit_components(chip: np.ndarray) -> int:
