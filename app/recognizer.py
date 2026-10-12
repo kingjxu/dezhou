@@ -2408,28 +2408,59 @@ class TableRecognizer:
             _, x, y, w, h = max(candidates)
             pad = max(3, int(max(w, h) * 0.25))
             row_y0, row_y1 = max(0, y-pad), min(crop.shape[0], y+h+pad)
-            row_x1 = min(crop.shape[1], x+w+pad)
-            row = crop[row_y0:row_y1, :row_x1]
+            original_crop = crop
+            original_row_x1 = min(original_crop.shape[1], x+w+pad)
+            initial_row = original_crop[row_y0:row_y1, :original_row_x1]
+            initial_span = self._v2_marker_digit_span(
+                initial_row, marker_x=x, marker_y=y-row_y0,
+                marker_height=h)
+            # Some left-side four-digit wagers extend beyond the configured
+            # ROI because the marker card itself reaches its right boundary.
+            # Extend only that clipped ROI; widening it unconditionally changes
+            # the OCR context for ordinary one-digit wagers.
+            needs_suffix = initial_span is not None and initial_span[2] >= 2
+            is_left_upper_wager = x0 <= .13 and .26 <= y0 <= .28
+            extended = False
+            if (is_left_upper_wager and needs_suffix
+                    and x + w + pad >= crop.shape[1] - 1
+                    and xb < W):
+                extended_xb = min(W, xb + int(round(W * .08)))
+                crop = img[ya:yb, xa:extended_xb]
+                extended = True
+            # The marker card may overlap the first wager digits while the
+            # remaining digits continue to its right (for example, 1425).
+            # Inspect the complete row so the marker boundary cannot truncate
+            # the suffix, then crop back to the connected digit chain below.
+            row = (crop[row_y0:row_y1, :] if extended else initial_row)
             digit_span = self._v2_marker_digit_span(
                 row, marker_x=x, marker_y=y-row_y0,
-                marker_height=h)
+                marker_height=h, allow_marker_occlusion=extended)
+            # A nearby label can also appear after the boundary. Only keep the
+            # extension when the connected chain contains a substantial
+            # suffix outside the original ROI (roughly one full digit).
+            if (extended and (digit_span is None
+                    or digit_span[1] - initial_row.shape[1] < .35 * h)):
+                row = initial_row
+                digit_span = initial_span
+                extended = False
             # One visible component needs no wider crop. Preserve the original
             # marker-sized framing for single-digit wagers because its extra
             # context is part of the existing 1/2/4 geometry/OCR fallback.
-            if digit_span is None or digit_span[1] <= 1:
-                chip = crop[row_y0:row_y1,
-                            max(0, x-pad):row_x1]
+            if digit_span is None or digit_span[2] <= 1:
+                chip = original_crop[row_y0:row_y1,
+                                     max(0, x-pad):original_row_x1]
             else:
-                left, _ = digit_span
-                chip = row[:, left:]
+                left, right, _ = digit_span
+                chip = row[:, left:right] if extended else row[:, left:]
             if chip.size:
                 return chip, True
         return None, False
 
     @staticmethod
     def _v2_marker_digit_span(chip: np.ndarray, marker_x: int,
-                              marker_y: int, marker_height: int
-                              ) -> tuple[int, int] | None:
+                              marker_y: int, marker_height: int,
+                              allow_marker_occlusion: bool = False,
+                              ) -> tuple[int, int, int] | None:
         """Find the wager components continuously connected to a V2 marker.
 
         A wager digit overlaps or sits immediately beside the coloured marker.
@@ -2467,11 +2498,33 @@ class TableRecognizer:
             return None
         anchor = max(anchors, key=lambda box: (box[3], box[0]))
         anchor_x, anchor_y, _, row_height = anchor
-        row_boxes = sorted(
-            (box for box in boxes
-             if .85 * row_height <= box[3] <= 1.15 * row_height
-             and abs(box[1] - anchor_y) <= .2 * row_height),
-            key=lambda box: box[0])
+        row_boxes = [
+            box for box in boxes
+            if .85 * row_height <= box[3] <= 1.15 * row_height
+            and abs(box[1] - anchor_y) <= .2 * row_height
+        ]
+        # A coloured marker can hide part of the adjacent leading digits and
+        # leave their merged white component slightly shorter. Admit that one
+        # component only when it is fully visible inside the row and lies
+        # across the marker from the anchor. Clipped text at the ROI edge must
+        # not turn a genuine single-digit wager into a multi-digit candidate.
+        if allow_marker_occlusion:
+            for box in boxes:
+                if (box in row_boxes or box[0] <= 0
+                        or box[0] + box[2] >= chip.shape[1]):
+                    continue
+                same_baseline = (
+                    .65 * row_height <= box[3] <= 1.20 * row_height
+                    and abs((box[1] + box[3] / 2)
+                            - (anchor_y + row_height / 2)) <= .25 * row_height
+                )
+                across_marker = (
+                    box[0] + box[2] <= marker_x <= anchor[0]
+                    or anchor[0] + anchor[2] <= marker_x <= box[0]
+                )
+                if same_baseline and across_marker:
+                    row_boxes.append(box)
+        row_boxes.sort(key=lambda box: box[0])
 
         chain = [anchor]
         anchor_index = row_boxes.index(anchor)
@@ -2480,7 +2533,11 @@ class TableRecognizer:
             gap = current[0] - (box[0] + box[2])
             if gap < -.25 * row_height:
                 continue
-            if gap > .55 * row_height:
+            crosses_marker = box[0] + box[2] <= marker_x <= current[0]
+            max_gap = (1.10 * row_height
+                       if allow_marker_occlusion and crosses_marker
+                       else .55 * row_height)
+            if gap > max_gap:
                 break
             chain.append(box)
             current = box
@@ -2489,12 +2546,21 @@ class TableRecognizer:
             gap = box[0] - (current[0] + current[2])
             if gap < -.25 * row_height:
                 continue
-            if gap > .55 * row_height:
+            crosses_marker = current[0] + current[2] <= marker_x <= box[0]
+            max_gap = (1.10 * row_height
+                       if allow_marker_occlusion and crosses_marker
+                       else .55 * row_height)
+            if gap > max_gap:
                 break
             chain.append(box)
             current = box
         margin = max(2, int(round(row_height * .15)))
-        return max(0, min(box[0] for box in chain) - margin), len(chain)
+        left = max(0, min(box[0] for box in chain) - margin)
+        right = min(
+            chip.shape[1],
+            max(box[0] + box[2] for box in chain) + margin,
+        )
+        return left, right, len(chain)
 
     @staticmethod
     def _v2_marker_digit_components(chip: np.ndarray) -> int:

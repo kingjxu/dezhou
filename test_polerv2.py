@@ -298,6 +298,26 @@ class PolerV2Test(unittest.TestCase):
         self.assertEqual(r._detect_bet_chip_digit(
             image, (0, 0, 1, 1), ("red", "blue")), 255)
 
+    def test_real_left_wager_keeps_1425_suffix_past_marker(self):
+        r = get_recognizer("polerv2")
+        image = cv2.imread(str(
+            Path(__file__).parent
+            / "fixtures/field-regression/wager-1425-right-extension-crop.jpg"))
+
+        self.assertEqual(r._detect_bet_chip_digit(
+            image, r._layout.seat_bet_fallback_rois[4],
+            ("red", "blue")), 1425)
+
+    def test_boundary_extension_does_not_absorb_nearby_digit(self):
+        r = get_recognizer("polerv2")
+        image = cv2.imread(str(
+            Path(__file__).parent
+            / "fixtures/field-regression/wager-20-boundary-extension-crop.jpg"))
+
+        self.assertEqual(r._detect_bet_chip_digit(
+            image, r._layout.seat_bet_fallback_rois[4],
+            ("red", "blue")), 20)
+
     def test_wider_wager_row_does_not_absorb_nearby_status_text(self):
         r = get_recognizer("polerv2")
         image = cv2.imread(str(
@@ -320,7 +340,7 @@ class PolerV2Test(unittest.TestCase):
             marker_height=80)
 
         self.assertIsNotNone(span)
-        self.assertEqual(span[1], 3)
+        self.assertEqual(span[2], 3)
         self.assertGreater(span[0], 100)
 
     def test_wager_digit_span_excludes_neighbouring_number_after_large_gap(self):
@@ -333,7 +353,7 @@ class PolerV2Test(unittest.TestCase):
             image, marker_x=175, marker_y=20,
             marker_height=80)
 
-        self.assertEqual(span[1], 3)
+        self.assertEqual(span[2], 3)
         self.assertGreater(span[0], 100)
 
     def test_wager_digit_span_keeps_components_with_digit_sized_gaps(self):
@@ -346,8 +366,23 @@ class PolerV2Test(unittest.TestCase):
             image, marker_x=175, marker_y=20,
             marker_height=80)
 
-        self.assertEqual(span[1], 4)
+        self.assertEqual(span[2], 4)
         self.assertLessEqual(span[0], 105)
+
+    def test_wager_digit_span_returns_minimal_right_boundary(self):
+        image = np.zeros((120, 250, 3), dtype=np.uint8)
+        for x in (108, 130, 150, 170):
+            cv2.rectangle(image, (x, 44), (x + 13, 69),
+                          (255, 255, 255), -1)
+        cv2.putText(image, "STR", (210, 70), cv2.FONT_HERSHEY_SIMPLEX,
+                    .75, (255, 255, 255), 2, cv2.LINE_8)
+
+        span = self._normalizer()._v2_marker_digit_span(
+            image, marker_x=105, marker_y=20,
+            marker_height=80)
+
+        self.assertEqual(span[2], 4)
+        self.assertLess(span[1], 205)
 
     def test_right_wager_crop_is_not_limited_to_three_digits(self):
         r = self._normalizer()
