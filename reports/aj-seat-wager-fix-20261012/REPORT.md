@@ -55,4 +55,6 @@
 - 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261013-003535-before-aj-seat-wager` 保存替换前源码、旧进程及新旧 SHA。
 - 生产 HTTP 回验第432张为 table/seat4 `current_bet=4`；22:17:03 A♥J♦ 原图为 table `current_bet=4`、seat2=`active/550/1`、seat3=`waiting/null/null`、seat6=`active/45/4`。
 - 部署后服务器根盘一度仅余25MB，`/recognize` 日志出现 `No space left on device`，端上无决策。服务进程未退出；清理长期累计的 systemd journal 后释放约1.5GB，健康检查与两张生产HTTP识别均恢复200。本轮服务器隔离回归已按用户要求停止，完整图集复制到本地后继续验证。
-- 完整图集复制到本地后只在本地回归，服务器不执行全量回放。CR 补改后，正常图片验收集从506张剔除两张外部遮挡帧为504张，最终504/504、0字段差异通过；最终提交、复审及生产同步在闭环后补录。
+- 完整图集复制到本地后只在本地回归，服务器不执行全量回放。CR 补改后，正常图片验收集从506张剔除两张外部遮挡帧为504张，最终504/504、0字段差异通过。
+- 最终提交 `1e15a6c` 经 CR 明确 LGTM 后，于 02:24 原子替换生产 `app/recognizer.py`。最终运行时 SHA256 为 `b36435da03b41c511cf1617935c2613986c43833b9ba805de15f15cb94752b03`；进程由 `3715181` 更新为 `3743084`、PPID 1，`/health` 返回200。
+- 最终回滚目录 `/home/ubuntu/poker/dezhou-backups/20261013-022427-before-wager-baseline-final` 保存上一版源码、PID及新旧 SHA。生产仅做两张真实图定点 HTTP 回放：18:21:35 全字段匹配 manifest（STR=4、table current_bet=4）；22:17:03 恢复 seat2=`active/550/1`、seat3=`waiting/null/null`、seat6=`active/45/4`，两次均返回200。回验后日志无 traceback/error/no-space，根盘可用约1.5GB。

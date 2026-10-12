@@ -28,6 +28,7 @@ polerv2 八人桌空座使用专用“+”中心坐标，不复用在座玩家�
 - 部署前 Python 61/61、8张真实下注边界8/8通过；部署后第432张单数字4和22:17:03相邻等待状态/下注4均经本机HTTP逐字段回验。
 - 回滚目录 `/home/ubuntu/poker/dezhou-backups/20261013-003535-before-aj-seat-wager`；初始部署候选曾以v6的506/506、0字段差异通过。CR补改后，本地 Python 3.12 单测67/67通过；两张外部遮挡帧已从本地、服务器及标注删除，v7正常图片集仅在本地逐字段回归并以504/504、0字段差异通过。
 - 部署后根盘被历史 systemd journal 占满，`/recognize` 日志报 `No space left on device`；仅清理 `/var/log/journal` 的归档系统日志约1.5GB后，健康检查和真实HTTP识别恢复。业务日志、识别记录、数据库和项目文件未删除；用户随后明确要求删除的两张外部遮挡Hero图除外。完整回归迁到本地执行，未再占用生产服务器CPU。
+- 最终提交 `1e15a6c` 经 CR LGTM 后同步生产：`app/recognizer.py` SHA256=`b36435da03b41c511cf1617935c2613986c43833b9ba805de15f15cb94752b03`，PID=`3743084`、PPID=1，`/health` 为200。生产仅定点回放18:21:35与22:17:03两张真实图，输出分别匹配manifest及相邻状态/下注4修正预期；未在服务器执行全量回归。最终回滚目录为 `/home/ubuntu/poker/dezhou-backups/20261013-022427-before-wager-baseline-final`。
 
 ## 2026-10-02 下注识别修复部署
 
