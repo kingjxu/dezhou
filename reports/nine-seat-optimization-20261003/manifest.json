@@ -1,5 +1,5 @@
 {
-  "version": "5-nine-seat-63",
+  "version": "7-nine-seat-62",
   "label_notes": [
     "Compared directly with original pixels; #3/#4 board Q is hearts, not diamonds.",
     "#4 has no current wager; 24 was an invalid inference from stack delta.",
@@ -13,7 +13,8 @@
     "Baseline OCR output was used only as an annotation draft. Visible stack/status misses were manually corrected and are regression expectations, not accepted model output.",
     "Full-corpus replay disagreements were re-opened against original pixels on 2026-10-03; obvious draft transpositions (486/156/217/2255) and visible maximum wager targets were corrected before final acceptance.",
     "Full-frame replay corrected six nine-seat top-right players whose visible folded pill had been transcribed as active; folded current_bet remains null by contract.",
-    "Final full-corpus review corrected additional visible stack transpositions and rejected sparse card-back strokes that resemble isolated blind digits."
+    "Final full-corpus review corrected additional visible stack transpositions and rejected sparse card-back strokes that resemble isolated blind digits.",
+    "External phone-control overlay frame 2026-10-01 13:55:44 was removed from the normal-image corpus on 2026-10-13."
   ],
   "cases": [
     {
@@ -3167,84 +3168,6 @@
             "seat": 7,
             "status": "folded",
             "stack": 2605,
-            "current_bet": null
-          },
-          "8": {
-            "seat": 8,
-            "status": "active",
-            "stack": 3076,
-            "current_bet": 20
-          },
-          "9": {
-            "seat": 9,
-            "status": "active",
-            "stack": 8532,
-            "current_bet": 130
-          }
-        }
-      }
-    },
-    {
-      "index": 273,
-      "file": "2026-10-01 13:55:44-hero.jpg",
-      "sha256": "68a32b794a2770aeef89ece8942dc921128c8ea5a4b4471752ac0a4fc8bbe8bf",
-      "annotation_source": "manual-nine-seat-review",
-      "expected": {
-        "table_info": {
-          "stage": "preflop",
-          "community_cards": [],
-          "main_pot": 275,
-          "current_bet": 130,
-          "button_seat": 3,
-          "blind_size": "5/10/20(10)",
-          "mushroom_count": 200
-        },
-        "hero_info": {
-          "seat": 1,
-          "status": "active",
-          "stack": 1247,
-          "current_bet": null,
-          "is_hero_turn": true,
-          "hero_cards": [
-            "5 黑桃",
-            "5 梅花"
-          ]
-        },
-        "villains_info": {
-          "2": {
-            "seat": 2,
-            "status": "active",
-            "stack": 7541,
-            "current_bet": null
-          },
-          "3": {
-            "seat": 3,
-            "status": "active",
-            "stack": 4536,
-            "current_bet": null
-          },
-          "4": {
-            "seat": 4,
-            "status": "active",
-            "stack": 2965,
-            "current_bet": 5
-          },
-          "5": {
-            "seat": 5,
-            "status": "active",
-            "stack": 2211,
-            "current_bet": 10
-          },
-          "6": {
-            "seat": 6,
-            "status": "active",
-            "stack": 2739,
-            "current_bet": 20
-          },
-          "7": {
-            "seat": 7,
-            "status": "folded",
-            "stack": 0,
             "current_bet": null
           },
           "8": {

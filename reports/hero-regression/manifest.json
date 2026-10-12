@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "label_notes": [
     "Compared directly with original pixels; #3/#4 board Q is hearts, not diamonds.",
     "#4 has no current wager; 24 was an invalid inference from stack delta.",
@@ -16,7 +16,8 @@
     "Final full-corpus review corrected additional visible stack transpositions and rejected sparse card-back strokes that resemble isolated blind digits.",
     "2026-10-10 full-frame re-review corrected #238/#239 visible wager from 85 to 185; the marker card does not occlude the leading 1.",
     "2026-10-10 full-frame re-review corrected #269 is_hero_turn to false: it is the YOU WIN hand-end screen with paid card-peek controls, not poker action buttons.",
-    "2026-10-11 full-frame re-review corrected #501 seat 7 from active/0 to empty/null: the original visibly contains the middle-right green plus placeholder; the previous label repeated the recognizer defect."
+    "2026-10-11 full-frame re-review corrected #501 seat 7 from active/0 to empty/null: the original visibly contains the middle-right green plus placeholder; the previous label repeated the recognizer defect.",
+    "Manifest v7 excludes external modal/system-overlay frames from the normal-image acceptance corpus: 2026-10-01 13:55:44 phone controls and 2026-10-02 18:42:44 leave-table modal."
   ],
   "cases": [
     {
@@ -20388,84 +20389,6 @@
       }
     },
     {
-      "index": 273,
-      "file": "2026-10-01 13:55:44-hero.jpg",
-      "sha256": "68a32b794a2770aeef89ece8942dc921128c8ea5a4b4471752ac0a4fc8bbe8bf",
-      "annotation_source": "manual-nine-seat-review",
-      "expected": {
-        "table_info": {
-          "stage": "preflop",
-          "community_cards": [],
-          "main_pot": 275,
-          "current_bet": 130,
-          "button_seat": 3,
-          "blind_size": "5/10/20(10)",
-          "mushroom_count": 200
-        },
-        "hero_info": {
-          "seat": 1,
-          "status": "active",
-          "stack": 1247,
-          "current_bet": null,
-          "is_hero_turn": true,
-          "hero_cards": [
-            "5 黑桃",
-            "5 梅花"
-          ]
-        },
-        "villains_info": {
-          "2": {
-            "seat": 2,
-            "status": "active",
-            "stack": 7541,
-            "current_bet": null
-          },
-          "3": {
-            "seat": 3,
-            "status": "active",
-            "stack": 4536,
-            "current_bet": null
-          },
-          "4": {
-            "seat": 4,
-            "status": "active",
-            "stack": 2965,
-            "current_bet": 5
-          },
-          "5": {
-            "seat": 5,
-            "status": "active",
-            "stack": 2211,
-            "current_bet": 10
-          },
-          "6": {
-            "seat": 6,
-            "status": "active",
-            "stack": 2739,
-            "current_bet": 20
-          },
-          "7": {
-            "seat": 7,
-            "status": "folded",
-            "stack": 0,
-            "current_bet": null
-          },
-          "8": {
-            "seat": 8,
-            "status": "active",
-            "stack": 3076,
-            "current_bet": 20
-          },
-          "9": {
-            "seat": 9,
-            "status": "active",
-            "stack": 8532,
-            "current_bet": 130
-          }
-        }
-      }
-    },
-    {
       "index": 274,
       "file": "2026-10-01 13:55:48-hero.jpg",
       "sha256": "0254d642dfdfde239eb706f8dcd90e8a9969715f236ea3c37c254a325677b7d5",
@@ -33644,79 +33567,6 @@
           }
         }
       }
-    },
-    {
-      "index": 452,
-      "file": "2026-10-02 18:42:44-hero.jpg",
-      "sha256": "f8d112b31fe6e9e5641b9abdbde0b170127c41439a56c6ecbe3a242ddab27cfb",
-      "annotation_source": "manifest-v6-20261013-full-frame-correction",
-      "expected": {
-        "table_info": {
-          "stage": "preflop",
-          "community_cards": [],
-          "main_pot": 20,
-          "current_bet": 8,
-          "button_seat": 5,
-          "blind_size": "1/2/4(2)",
-          "mushroom_count": null
-        },
-        "hero_info": {
-          "seat": 1,
-          "status": "active",
-          "stack": 727,
-          "current_bet": null,
-          "is_hero_turn": true,
-          "hero_cards": [
-            "4 梅花",
-            "7 方块"
-          ]
-        },
-        "villains_info": {
-          "2": {
-            "seat": 2,
-            "status": "empty",
-            "stack": null,
-            "current_bet": null
-          },
-          "3": {
-            "seat": 3,
-            "status": "empty",
-            "stack": null,
-            "current_bet": null
-          },
-          "4": {
-            "seat": 4,
-            "status": "empty",
-            "stack": null,
-            "current_bet": null
-          },
-          "5": {
-            "seat": 5,
-            "status": "active",
-            "stack": 133,
-            "current_bet": null
-          },
-          "6": {
-            "seat": 6,
-            "status": "empty",
-            "stack": null,
-            "current_bet": null
-          },
-          "7": {
-            "seat": 7,
-            "status": "empty",
-            "stack": null,
-            "current_bet": null
-          },
-          "8": {
-            "seat": 8,
-            "status": "active",
-            "stack": 92,
-            "current_bet": 8
-          }
-        }
-      },
-      "annotation_note": "Original frame visibly shows seat 8 wager=8; the hero call button also shows 8. Previous null wager label was incorrect."
     },
     {
       "index": 453,

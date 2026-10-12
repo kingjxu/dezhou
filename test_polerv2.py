@@ -225,23 +225,65 @@ class PolerV2Test(unittest.TestCase):
     def test_real_wagers_ignore_off_row_marker_artwork(self):
         r = get_recognizer("polerv2")
         image = np.zeros((100, 100, 3), dtype=np.uint8)
-        for filename, expected in (
-            ("wager-4-off-row-marker-crop.jpg", 4),
-            ("wager-4-clipped-neighbor-crop.jpg", 4),
-            ("wager-570-tall-marker-border-crop.jpg", 570),
-            ("wager-60-overlapping-marker-crop.jpg", 60),
-        ):
-            with self.subTest(filename=filename):
-                chip = cv2.imread(str(
-                    Path(__file__).parent / "fixtures/field-regression" / filename))
-                with patch.object(
-                        r, "_v2_marker_card_crop", return_value=(chip, True)):
-                    bets, marker_seats = r._read_v2_chip_bets(
-                        image, [6], {6: (0, 0, 1, 1)},
-                        {6: ("red", "blue")})
+        # OCR isolation tests intentionally clear the module runtime metadata.
+        # Register this real cached engine explicitly so this test never
+        # depends on unittest method ordering.
+        with patch.dict(recognizer_module._OCR_ENGINE_BACKENDS,
+                        {id(r._ocr): "rapid"}):
+            for filename, expected in (
+                ("wager-4-off-row-marker-crop.jpg", 4),
+                ("wager-4-clipped-neighbor-crop.jpg", 4),
+                ("wager-4-tall-line-noise-crop.jpg", 4),
+                ("wager-570-tall-marker-border-crop.jpg", 570),
+                ("wager-60-overlapping-marker-crop.jpg", 60),
+            ):
+                with self.subTest(filename=filename):
+                    chip = cv2.imread(str(
+                        Path(__file__).parent / "fixtures/field-regression" / filename))
+                    with patch.object(
+                            r, "_v2_marker_card_crop", return_value=(chip, True)):
+                        bets, marker_seats = r._read_v2_chip_bets(
+                            image, [6], {6: (0, 0, 1, 1)},
+                            {6: ("red", "blue")})
 
-                self.assertEqual(bets, {6: expected})
-                self.assertEqual(marker_seats, {6})
+                    self.assertEqual(bets, {6: expected})
+                    self.assertEqual(marker_seats, {6})
+
+    def test_wager_retries_stay_on_selected_digit_baseline(self):
+        r = self._normalizer()
+        image = np.zeros((100, 100, 3), dtype=np.uint8)
+        chip = cv2.imread(str(
+            Path(__file__).parent
+            / "fixtures/field-regression/wager-60-overlapping-marker-crop.jpg"))
+        tile_shapes = []
+        fallback_shapes = []
+
+        class InvalidRapidRecognizer:
+            def text_rec(self, images):
+                return [("", 0.0) for _ in images], 0.0
+
+        def no_tile_read(tiles):
+            tile_shapes.extend(tile.shape for _, tile in tiles)
+            return {}
+
+        def fallback_read(_ocr, tile):
+            fallback_shapes.append(tile.shape)
+            return [(None, "60", .999)]
+
+        r._ocr = InvalidRapidRecognizer()
+        with patch.object(r, "_v2_marker_card_crop", return_value=(chip, True)), \
+                patch.object(r, "_ocr_v2_tiles", side_effect=no_tile_read), \
+                patch.object(recognizer_module, "_ocr_run", side_effect=fallback_read), \
+                patch.dict(recognizer_module._OCR_ENGINE_BACKENDS,
+                           {id(r._ocr): "rapid"}):
+            bets, _ = r._read_v2_chip_bets(
+                image, [6], {6: (0, 0, 1, 1)}, {6: ("red", "blue")})
+
+        self.assertEqual(bets, {6: 60})
+        self.assertEqual(len(tile_shapes), 2)
+        self.assertEqual(len(fallback_shapes), 1)
+        for shape in tile_shapes + fallback_shapes:
+            self.assertLess(shape[1], chip.shape[1] * 4)
 
     def test_v2_blue_wager_cards_and_hero_bet_roi(self):
         r = get_recognizer("polerv2")

@@ -2214,6 +2214,7 @@ class TableRecognizer:
                 x, y, width, height = cv2.boundingRect(contour)
                 area = cv2.contourArea(contour)
                 if (area >= 20 and area / (width * height) >= 0.12
+                        and width >= height * 0.10
                         and chip.shape[0] * 0.13 <= height <= chip.shape[0] * 0.50):
                     box = (x, y, width, height)
                     digit_fill_ratios[box] = area / (width * height)
@@ -2254,9 +2255,12 @@ class TableRecognizer:
             y0 = min(box[1] for box in row_boxes)
             x1 = max(box[0] + box[2] for box in row_boxes)
             y1 = max(box[1] + box[3] for box in row_boxes)
-            line = white[max(0, y0 - 2):y1 + 2, max(0, x0 - 2):x1 + 2]
+            line_bounds = (
+                slice(max(0, y0 - 2), y1 + 2),
+                slice(max(0, x0 - 2), x1 + 2),
+            )
+            line = white[line_bounds]
             candidates[seat] = {
-                "white": white,
                 # Keep every downstream path on the selected digit baseline.
                 # Marker/card artwork can also form a white component, but it
                 # must never widen the OCR line or enter geometry fallback.
@@ -2292,11 +2296,9 @@ class TableRecognizer:
         unresolved = [seat for seat in candidates if seat not in bets]
         partial_tiles = []
         for seat in unresolved:
-            white = candidates[seat]["white"]
-            partial = white[:, :max(1, int(white.shape[1] * 0.75))]
-            enlarged = cv2.resize(partial, None, fx=4, fy=4,
+            enlarged = cv2.resize(candidates[seat]["line"], None, fx=4, fy=4,
                                    interpolation=cv2.INTER_CUBIC)
-            partial_tiles.append((seat, cv2.cvtColor(enlarged, cv2.COLOR_GRAY2BGR)))
+            partial_tiles.append((seat, enlarged))
         partial_reads = self._ocr_v2_tiles(partial_tiles)
         for seat in unresolved:
             values = []
@@ -2349,21 +2351,16 @@ class TableRecognizer:
         for seat, candidate in candidates.items():
             if seat in bets or candidate["visible_digits"] <= 1:
                 continue
-            white = candidate["white"]
-            for region in (white[:, :max(1, int(white.shape[1] * .75))], white):
-                enlarged = cv2.resize(region, None, fx=4, fy=4,
-                                       interpolation=cv2.INTER_CUBIC)
-                values = []
-                for _, text, score in (_ocr_run(
-                        self._ocr,
-                        cv2.cvtColor(enlarged, cv2.COLOR_GRAY2BGR)) or []):
-                    value = self._valid_v2_digit_read(
-                        text, score, candidate["visible_digits"])
-                    if value is not None:
-                        values.append(value)
-                if len(values) == 1:
-                    bets[seat] = values[0]
-                    break
+            enlarged = cv2.resize(candidate["line"], None, fx=4, fy=4,
+                                   interpolation=cv2.INTER_CUBIC)
+            values = []
+            for _, text, score in (_ocr_run(self._ocr, enlarged) or []):
+                value = self._valid_v2_digit_read(
+                    text, score, candidate["visible_digits"])
+                if value is not None:
+                    values.append(value)
+            if len(values) == 1:
+                bets[seat] = values[0]
 
         for seat, candidate in candidates.items():
             if seat in bets or candidate["visible_digits"] != 1:
