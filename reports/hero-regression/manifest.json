@@ -22450,7 +22450,7 @@
       "index": 299,
       "file": "2026-10-02 17:11:52-hero.jpg",
       "sha256": "c8ad88846056f6b09e9eefa0fe4b2404b4c143b5c0e2b1a96a1330a5bbbab3db",
-      "annotation_source": "manual-full-frame-review",
+      "annotation_source": "manifest-v6-20261013-full-frame-correction",
       "expected": {
         "table_info": {
           "stage": "river",
@@ -22462,7 +22462,7 @@
             "8 方块"
           ],
           "main_pot": 120,
-          "current_bet": 600,
+          "current_bet": 60,
           "button_seat": 6,
           "blind_size": "1/2/4(2)",
           "mushroom_count": null
@@ -22507,7 +22507,7 @@
             "seat": 6,
             "status": "active",
             "stack": 1896,
-            "current_bet": 600
+            "current_bet": 60
           },
           "7": {
             "seat": 7,
@@ -22522,7 +22522,8 @@
             "current_bet": null
           }
         }
-      }
+      },
+      "annotation_note": "Original frame visibly shows 60; pot=120 and hero call button=60 corroborate it. Previous 600 label incorporated the adjacent circular marker as a false trailing zero."
     },
     {
       "index": 300,
@@ -33648,13 +33649,13 @@
       "index": 452,
       "file": "2026-10-02 18:42:44-hero.jpg",
       "sha256": "f8d112b31fe6e9e5641b9abdbde0b170127c41439a56c6ecbe3a242ddab27cfb",
-      "annotation_source": "manual-full-frame-review",
+      "annotation_source": "manifest-v6-20261013-full-frame-correction",
       "expected": {
         "table_info": {
           "stage": "preflop",
           "community_cards": [],
           "main_pot": 20,
-          "current_bet": null,
+          "current_bet": 8,
           "button_seat": 5,
           "blind_size": "1/2/4(2)",
           "mushroom_count": null
@@ -33711,10 +33712,11 @@
             "seat": 8,
             "status": "active",
             "stack": 92,
-            "current_bet": null
+            "current_bet": 8
           }
         }
-      }
+      },
+      "annotation_note": "Original frame visibly shows seat 8 wager=8; the hero call button also shows 8. Previous null wager label was incorrect."
     },
     {
       "index": 453,

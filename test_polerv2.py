@@ -222,6 +222,27 @@ class PolerV2Test(unittest.TestCase):
                 self.assertEqual(r._detect_bet_chip_digit(
                     image, r._layout.seat_bet_fallback_rois[seat], ("red",)), expected)
 
+    def test_real_wagers_ignore_off_row_marker_artwork(self):
+        r = get_recognizer("polerv2")
+        image = np.zeros((100, 100, 3), dtype=np.uint8)
+        for filename, expected in (
+            ("wager-4-off-row-marker-crop.jpg", 4),
+            ("wager-4-clipped-neighbor-crop.jpg", 4),
+            ("wager-570-tall-marker-border-crop.jpg", 570),
+            ("wager-60-overlapping-marker-crop.jpg", 60),
+        ):
+            with self.subTest(filename=filename):
+                chip = cv2.imread(str(
+                    Path(__file__).parent / "fixtures/field-regression" / filename))
+                with patch.object(
+                        r, "_v2_marker_card_crop", return_value=(chip, True)):
+                    bets, marker_seats = r._read_v2_chip_bets(
+                        image, [6], {6: (0, 0, 1, 1)},
+                        {6: ("red", "blue")})
+
+                self.assertEqual(bets, {6: expected})
+                self.assertEqual(marker_seats, {6})
+
     def test_v2_blue_wager_cards_and_hero_bet_roi(self):
         r = get_recognizer("polerv2")
         fixtures = Path(__file__).parent / "fixtures/field-regression"
@@ -472,6 +493,18 @@ class PolerV2Test(unittest.TestCase):
             self.assertEqual(r._seat_status(items, 5), "active")
         self.assertEqual(r._seat_status([
             OcrItem(text="留座174秒", cx=.5, cy=.18, score=.99)], 5), "waiting")
+
+    def test_adjacent_waiting_label_belongs_to_nearest_seat(self):
+        r = self._normalizer()
+        # Real 22:17:03 OCR geometry: seat 3 is waiting while seat 2 still
+        # shows a live stack and wager.  Their search radii overlap.
+        items = [
+            OcrItem(text="等待下一手", cx=.0859, cy=.5113, score=.99),
+            OcrItem(text="550", cx=.0883, cy=.6438, score=.99),
+        ]
+
+        self.assertEqual(r._seat_status(items, 2), "active")
+        self.assertEqual(r._seat_status(items, 3), "waiting")
 
     def test_nine_top_statuses_share_one_ocr_call_and_stay_isolated(self):
         r = self._normalizer()

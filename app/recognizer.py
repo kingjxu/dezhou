@@ -2214,7 +2214,7 @@ class TableRecognizer:
                 x, y, width, height = cv2.boundingRect(contour)
                 area = cv2.contourArea(contour)
                 if (area >= 20 and area / (width * height) >= 0.12
-                        and chip.shape[0] * 0.15 <= height <= chip.shape[0] * 0.50):
+                        and chip.shape[0] * 0.13 <= height <= chip.shape[0] * 0.50):
                     box = (x, y, width, height)
                     digit_fill_ratios[box] = area / (width * height)
                     if x + width <= chip.shape[1] * 0.85:
@@ -2229,19 +2229,38 @@ class TableRecognizer:
                     digit_boxes.append((x, y, width, height))
             if not digit_boxes:
                 continue
-            _, row_y, _, row_height = max(digit_boxes, key=lambda box: box[3])
-            visible_digits = sum(
-                .85 * row_height <= height <= 1.15 * row_height
-                and abs(y - row_y) <= .2 * row_height
-                for _, y, _, height in digit_boxes)
-            x0 = min(box[0] for box in digit_boxes)
-            y0 = min(box[1] for box in digit_boxes)
-            x1 = max(box[0] + box[2] for box in digit_boxes)
-            y1 = max(box[1] + box[3] for box in digit_boxes)
+            # Prefer the baseline with the most aligned components.  A marker
+            # border can be one or two pixels taller than the actual digits;
+            # choosing the tallest component alone would then discard values
+            # such as 570/238.  For a true single digit, height remains the
+            # tie-breaker and keeps the shorter marker artwork out.
+            row_candidates = [
+                (box, [candidate for candidate in digit_boxes
+                       if .85 * box[3] <= candidate[3] <= 1.15 * box[3]
+                       and abs(candidate[1] - box[1]) <= .2 * box[3]])
+                for box in digit_boxes
+            ]
+            _, row_boxes = max(row_candidates, key=lambda item: (
+                len(item[1]),
+                # A clipped edge glyph may legitimately be the first digit of
+                # a multi-digit chain (for example 102), but an isolated edge
+                # fragment must not outrank a complete interior wager glyph.
+                0 < item[0][0]
+                and item[0][0] + item[0][2] < chip.shape[1],
+                max(box[3] for box in item[1]),
+                sum(box[2] for box in item[1])))
+            visible_digits = len(row_boxes)
+            x0 = min(box[0] for box in row_boxes)
+            y0 = min(box[1] for box in row_boxes)
+            x1 = max(box[0] + box[2] for box in row_boxes)
+            y1 = max(box[1] + box[3] for box in row_boxes)
             line = white[max(0, y0 - 2):y1 + 2, max(0, x0 - 2):x1 + 2]
             candidates[seat] = {
                 "white": white,
-                "digit_boxes": digit_boxes,
+                # Keep every downstream path on the selected digit baseline.
+                # Marker/card artwork can also form a white component, but it
+                # must never widen the OCR line or enter geometry fallback.
+                "digit_boxes": row_boxes,
                 "digit_fill_ratios": digit_fill_ratios,
                 "visible_digits": visible_digits,
                 "line": cv2.cvtColor(line, cv2.COLOR_GRAY2BGR),
@@ -2292,9 +2311,9 @@ class TableRecognizer:
         unresolved = [seat for seat in candidates if seat not in bets]
         full_tiles = []
         for seat in unresolved:
-            enlarged = cv2.resize(candidates[seat]["white"], None, fx=4, fy=4,
+            enlarged = cv2.resize(candidates[seat]["line"], None, fx=4, fy=4,
                                    interpolation=cv2.INTER_CUBIC)
-            full_tiles.append((seat, cv2.cvtColor(enlarged, cv2.COLOR_GRAY2BGR)))
+            full_tiles.append((seat, enlarged))
         full_reads = self._ocr_v2_tiles(full_tiles)
         for seat in unresolved:
             values = []
@@ -2361,6 +2380,7 @@ class TableRecognizer:
                     width, height, fill_ratio)
                 if value is not None:
                     bets[seat] = value
+
         return bets, marker_seats
 
     def _v2_marker_card_crop(self, img: np.ndarray, roi: tuple,
@@ -4223,6 +4243,32 @@ class TableRecognizer:
         ("加注", "active"),
     )
 
+    def _v2_status_item_belongs_to_seat(self, item, seat):
+        """Return whether a V2 status label is closest to ``seat``.
+
+        Adjacent left/right seats have intentionally overlapping OCR search
+        radii.  Range membership alone therefore cannot establish ownership:
+        a label such as ``等待下一手`` can otherwise mark both neighbours as
+        waiting.  Compare against both the status and avatar anchors and give
+        the item to the single nearest seat.
+        """
+        if self._layout.app_name != "polerv2":
+            return True
+
+        seat_anchors = dict(self._layout.seat_anchors)
+        owners = []
+        for candidate_seat, status_anchor in self._layout.seat_status_anchors.items():
+            anchors = [status_anchor]
+            avatar_anchor = seat_anchors.get(candidate_seat)
+            if avatar_anchor is not None:
+                anchors.append(avatar_anchor)
+            distance = min(
+                ((item.cx - anchor.cx) ** 2 + (item.cy - anchor.cy) ** 2) ** .5
+                for anchor in anchors
+            )
+            owners.append((distance, candidate_seat))
+        return bool(owners) and min(owners)[1] == seat
+
     def _seat_status(self, items, seat):
         anchor = self._layout.seat_status_anchors.get(seat)
         if anchor is None: return "active"
@@ -4267,6 +4313,14 @@ class TableRecognizer:
                 continue
             all_texts.append(it.text)
             t = it.text
+            is_status_text = (
+                "确认买入" in t
+                or ("all" in t.lower() and "in" in t.lower())
+                or any(keyword in t for keyword, _ in self._STATUS_KEYWORDS)
+            )
+            if (is_status_text
+                    and not self._v2_status_item_belongs_to_seat(it, seat)):
+                continue
             if self._layout.app_name == "polerv2" and "确认买入" in t:
                 return "waiting"
             lower_t = t.lower()
