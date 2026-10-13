@@ -249,6 +249,47 @@ class PolerV2Test(unittest.TestCase):
                     self.assertEqual(bets, {6: expected})
                     self.assertEqual(marker_seats, {6})
 
+    def test_v2_wager_crop_restores_digit_clipped_by_roi_boundary(self):
+        r = get_recognizer("polerv2")
+        layout = nine_seat_layout()
+        region = cv2.imread(str(
+            Path(__file__).parent / "fixtures/field-regression"
+            / "wager-123-clipped-suffix-region.jpg"))
+        image = np.zeros((2400, 1080, 3), dtype=np.uint8)
+        x0, y0, _, _ = layout.seat_bet_fallback_rois[4]
+        xa, ya = int(x0 * image.shape[1]), int(y0 * image.shape[0])
+        image[ya:ya + region.shape[0], xa:xa + region.shape[1]] = region
+
+        with patch.object(r, "_layout", layout):
+            value = r._detect_bet_chip_digit(
+                image, layout.seat_bet_fallback_rois[4],
+                layout.seat_bet_fallback_chip_colors[4])
+
+        self.assertEqual(value, 123)
+
+    def test_v2_wager_reads_all_in_and_dimmed_eight_crops(self):
+        r = get_recognizer("polerv2")
+        image = np.zeros((100, 100, 3), dtype=np.uint8)
+        with patch.dict(recognizer_module._OCR_ENGINE_BACKENDS,
+                        {id(r._ocr): "rapid"}):
+            for filename, expected in (
+                ("wager-1221-all-in-crop.jpg", 1221),
+                ("wager-84-dimmed-eight-crop.jpg", 84),
+            ):
+                with self.subTest(filename=filename):
+                    chip = cv2.imread(str(
+                        Path(__file__).parent / "fixtures/field-regression"
+                        / filename))
+                    with patch.object(
+                            r, "_v2_marker_card_crop",
+                            return_value=(chip, True)):
+                        bets, marker_seats = r._read_v2_chip_bets(
+                            image, [8], {8: (0, 0, 1, 1)},
+                            {8: ("red", "blue")})
+
+                    self.assertEqual(bets, {8: expected})
+                    self.assertEqual(marker_seats, {8})
+
     def test_wager_retries_stay_on_selected_digit_baseline(self):
         r = self._normalizer()
         image = np.zeros((100, 100, 3), dtype=np.uint8)
@@ -371,15 +412,18 @@ class PolerV2Test(unittest.TestCase):
             image, r._layout.seat_bet_fallback_rois[4],
             ("red", "blue")), 1425)
 
-    def test_boundary_extension_does_not_absorb_nearby_digit(self):
+    def test_boundary_extension_keeps_connected_visible_digit(self):
         r = get_recognizer("polerv2")
         image = cv2.imread(str(
             Path(__file__).parent
             / "fixtures/field-regression/wager-20-boundary-extension-crop.jpg"))
 
+        # All three glyphs share the wager baseline and card strip. Treating
+        # the last visible digit as unrelated merely because it crosses the
+        # old ROI boundary reproduces the 123/340/315 truncation bug.
         self.assertEqual(r._detect_bet_chip_digit(
             image, r._layout.seat_bet_fallback_rois[4],
-            ("red", "blue")), 20)
+            ("red", "blue")), 205)
 
     def test_wider_wager_row_does_not_absorb_nearby_status_text(self):
         r = get_recognizer("polerv2")

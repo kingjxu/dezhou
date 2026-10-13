@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "label_notes": [
     "Compared directly with original pixels; #3/#4 board Q is hearts, not diamonds.",
     "#4 has no current wager; 24 was an invalid inference from stack delta.",
@@ -17,7 +17,8 @@
     "2026-10-10 full-frame re-review corrected #238/#239 visible wager from 85 to 185; the marker card does not occlude the leading 1.",
     "2026-10-10 full-frame re-review corrected #269 is_hero_turn to false: it is the YOU WIN hand-end screen with paid card-peek controls, not poker action buttons.",
     "2026-10-11 full-frame re-review corrected #501 seat 7 from active/0 to empty/null: the original visibly contains the middle-right green plus placeholder; the previous label repeated the recognizer defect.",
-    "Manifest v7 excludes external modal/system-overlay frames from the normal-image acceptance corpus: 2026-10-01 13:55:44 phone controls and 2026-10-02 18:42:44 leave-table modal."
+    "Manifest v7 excludes external modal/system-overlay frames from the normal-image acceptance corpus: 2026-10-01 13:55:44 phone controls and 2026-10-02 18:42:44 leave-table modal.",
+    "2026-10-13 full-frame re-review corrected #278-#281 seat 4 wager from 20 to 205; the third digit is fully visible beside the red marker, while seat 3 independently shows 20 in the same frames."
   ],
   "cases": [
     {
@@ -20743,7 +20744,7 @@
             "seat": 4,
             "status": "active",
             "stack": 2640,
-            "current_bet": 20
+            "current_bet": 205
           },
           "5": {
             "seat": 5,
@@ -20821,7 +20822,7 @@
             "seat": 4,
             "status": "active",
             "stack": 2640,
-            "current_bet": 20
+            "current_bet": 205
           },
           "5": {
             "seat": 5,
@@ -20899,7 +20900,7 @@
             "seat": 4,
             "status": "active",
             "stack": 2640,
-            "current_bet": 20
+            "current_bet": 205
           },
           "5": {
             "seat": 5,
@@ -20977,7 +20978,7 @@
             "seat": 4,
             "status": "active",
             "stack": 2640,
-            "current_bet": 20
+            "current_bet": 205
           },
           "5": {
             "seat": 5,

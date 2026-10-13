@@ -1315,14 +1315,26 @@ class TableRecognizer:
                             current_bet = fb_bet
                     else:
                         current_bet = fb_bet
-                # Poler V2 has a separate chip-marker layout. Its compact
-                # single-digit marker is more reliable than full-image OCR,
-                # and is intentionally not enabled for legacy Poler.
+            # Poler V2 has a separate chip-marker layout. Apply it to every
+            # live seat, including all-in players; the generic all-in anchor
+            # can otherwise read only a suffix from a four-digit wager.
+            if (self._layout.app_name == "polerv2"
+                and status not in ("folded", "empty", "waiting")):
                 if seat in v2_chip_bets:
-                    current_bet = v2_chip_bets[seat]
-                elif seat in v2_marker_seats:
-                    # A red card with no readable wager is a face-down card,
-                    # not evidence for inheriting a nearby pot/button value.
+                    marker_bet = v2_chip_bets[seat]
+                    # Marker overlap can hide an all-in amount's leading
+                    # digit (272 -> 27).  Prefer the source that preserves
+                    # more digits; when both have the same width, the tightly
+                    # cropped marker row remains the more reliable source.
+                    if (status != "all_in" or current_bet is None
+                            or len(str(marker_bet)) >= len(str(current_bet))):
+                        current_bet = marker_bet
+                elif seat in v2_marker_seats and status != "all_in":
+                    # A marker card with no readable wager is a face-down
+                    # card, not evidence for inheriting nearby table text.
+                    # For all-in seats, keep the dedicated all-in anchor as a
+                    # fallback when marker OCR is unresolved; unlike a normal
+                    # active seat, stack=0 gives that anchor strong context.
                     current_bet = None
             villains.append({
                 "seat": seat, "status": status,
@@ -2260,6 +2272,10 @@ class TableRecognizer:
                 slice(max(0, x0 - 2), x1 + 2),
             )
             line = white[line_bounds]
+            color_line = chip[
+                max(0, y0 - 4):min(chip.shape[0], y1 + 4),
+                max(0, x0 - 4):min(chip.shape[1], x1 + 4),
+            ]
             candidates[seat] = {
                 # Keep every downstream path on the selected digit baseline.
                 # Marker/card artwork can also form a white component, but it
@@ -2268,6 +2284,7 @@ class TableRecognizer:
                 "digit_fill_ratios": digit_fill_ratios,
                 "visible_digits": visible_digits,
                 "line": cv2.cvtColor(line, cv2.COLOR_GRAY2BGR),
+                "color_line": color_line,
             }
 
         bets: dict[int, int] = {}
@@ -2289,6 +2306,31 @@ class TableRecognizer:
                     value = self._valid_v2_digit_read(
                         text, score, candidate["visible_digits"])
                     if value is not None:
+                        # A red marker may dim the left stroke of an ``8`` in
+                        # the binary mask and make it look like ``3``.  When
+                        # that first component is visibly incomplete, confirm
+                        # the same digit row against its colour pixels.  Keep
+                        # the correction narrow: the independent read must
+                        # preserve the remaining digits and only resolve 3/8.
+                        row_boxes = sorted(
+                            candidate["digit_boxes"], key=lambda box: box[0])
+                        first_width, first_height = (
+                            row_boxes[0][2], row_boxes[0][3])
+                        if (str(value).startswith("3")
+                                and len(str(value)) > 1
+                                and first_width < .50 * first_height):
+                            color_reads, _ = text_rec(
+                                [candidate["color_line"]])
+                            if len(color_reads) == 1:
+                                color_value = self._valid_v2_digit_read(
+                                    color_reads[0][0], color_reads[0][1],
+                                    candidate["visible_digits"],
+                                    min_score=.80)
+                                if (color_value is not None
+                                        and str(color_value).startswith("8")
+                                        and str(color_value)[1:]
+                                        == str(value)[1:]):
+                                    value = color_value
                         bets[seat] = value
                 except (TypeError, ValueError, AttributeError):
                     continue
@@ -2453,10 +2495,13 @@ class TableRecognizer:
                 row, marker_x=x, marker_y=y-row_y0,
                 marker_height=h, allow_marker_occlusion=extended)
             # A nearby label can also appear after the boundary. Only keep the
-            # extension when the connected chain contains a substantial
-            # suffix outside the original ROI (roughly one full digit).
+            # extension when the connected chain gains another component and
+            # reaches meaningfully beyond the old ROI. A clipped last digit
+            # may have most of its width inside the ROI, so requiring a whole
+            # digit outside loses values such as 123/340/315.
             if (extended and (digit_span is None
-                    or digit_span[1] - initial_row.shape[1] < .35 * h)):
+                    or digit_span[2] <= initial_span[2]
+                    or digit_span[1] - initial_row.shape[1] < .10 * h)):
                 row = initial_row
                 digit_span = initial_span
                 extended = False
