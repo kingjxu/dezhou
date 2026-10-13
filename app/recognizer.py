@@ -1383,7 +1383,8 @@ class TableRecognizer:
             # to the legacy hero bet anchor. Hero wagers must come from the
             # dedicated marker path, so do not treat action-button OCR as a bet.
             if self._layout.app_name == "polerv2":
-                hero_current_bet = self._read_v2_hero_bet(img)
+                hero_current_bet = self._read_v2_hero_bet(
+                    img, allow_chipless=bool(hero_cards) and not is_hero_turn)
             else:
                 hero_current_bet = self._pick_current_bet(
                     items, self._layout.hero_bet_anchor,
@@ -2651,7 +2652,9 @@ class TableRecognizer:
             for _, y, _, height in boxes
         )
 
-    def _read_v2_hero_bet(self, img: np.ndarray) -> int | None:
+    def _read_v2_hero_bet(
+        self, img: np.ndarray, allow_chipless: bool = False
+    ) -> int | None:
         """Read the already-placed wager below the action buttons, not call cost."""
         rois = (self._layout.hero_bet_fallback_roi,
                 *getattr(self._layout, "hero_bet_alternate_rois", ()))
@@ -2663,7 +2666,16 @@ class TableRecognizer:
             hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
             # A wager has a small colored chip to the left of its white number.
             chip = cv2.inRange(hsv, (15, 60, 90), (100, 255, 255))
-            if cv2.countNonZero(chip) < crop.shape[0] * crop.shape[1] * 0.005:
+            has_chip = (
+                cv2.countNonZero(chip)
+                >= crop.shape[0] * crop.shape[1] * 0.005
+            )
+            # Some V2 non-Hero frames render the committed Hero wager as a
+            # plain white number on the black rail, without a coloured marker.
+            # The primary ROI is above the hole cards and below the action
+            # controls. Only allow this narrow fallback after Hero's turn has
+            # ended, otherwise a call/raise button amount could become a bet.
+            if not has_chip and not (allow_chipless and index == 0):
                 continue
             white = cv2.inRange(hsv, (0, 0, 155), (180, 110, 255))
             white = cv2.morphologyEx(

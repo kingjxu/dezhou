@@ -364,6 +364,31 @@ class PolerV2Test(unittest.TestCase):
 
         self.assertEqual(r._read_v2_hero_bet(image), 33)
 
+    def test_v2_chipless_hero_bet_only_after_hero_turn(self):
+        import base64
+
+        r = get_recognizer("polerv2")
+        root = Path(__file__).parent / "fixtures/field-regression"
+        decided_path = root / "hero-bet-24-chipless.jpg"
+        action_path = root / "hero-bet-call-4-action.jpg"
+        image = r._normalize_canvas(cv2.imread(str(decided_path)))
+
+        self.assertIsNone(r._read_v2_hero_bet(image))
+        self.assertEqual(
+            r._read_v2_hero_bet(image, allow_chipless=True), 24)
+
+        # The pre-action frame contains a visible call-4 control. The complete
+        # recognizer must keep that button out of Hero's committed wager, while
+        # the decided frame must recover the chipless 24 on the table rail.
+        action = r.recognize(
+            base64.b64encode(action_path.read_bytes()).decode(), parse_all=True)
+        decided = r.recognize(
+            base64.b64encode(decided_path.read_bytes()).decode(), parse_all=True)
+        self.assertTrue(action["hero_info"]["is_hero_turn"])
+        self.assertIsNone(action["hero_info"]["current_bet"])
+        self.assertFalse(decided["hero_info"]["is_hero_turn"])
+        self.assertEqual(decided["hero_info"]["current_bet"], 24)
+
     def test_confident_ocr_cannot_drop_a_visible_wager_digit(self):
         r = self._normalizer()
         image = cv2.imread(str(Path(__file__).parent / "fixtures/field-regression/bet-21.jpg"))

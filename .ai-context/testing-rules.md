@@ -1,6 +1,6 @@
 ---
-version: "1.6"
-last_updated: "2026-10-13"
+version: "1.7"
+last_updated: "2026-10-14"
 ---
 # 测试与性能验证
 - Python 3.12 + `pip install -r requirements-test.txt`（OCR / ONNX / OpenCV 与 HTTP TestClient 依赖）执行 `python -m unittest discover`；原有 polerv2 用例包含 1080、1176、1179 宽截图与画布归一化，必须保留。
@@ -37,6 +37,7 @@ last_updated: "2026-10-13"
 - `hero-bet-33-decided.jpg` 是 2026-10-02 18:54:54 原始 decided 帧的脱敏 ROI 夹具；
   原图明确显示 Hero 已下注 33，必须由备选 Hero 下注 ROI 直接读取为 33。
   不能在上游通过筹码或底池差额补出该数值。
+- Hero 无 marker 下注回归必须成对保留真实帧：`hero-bet-call-4-action.jpg` 含操作按钮数字 4，必须保持 `is_hero_turn=true/current_bet=null`；`hero-bet-24-chipless.jpg` 是随后 decided 帧，必须输出 `is_hero_turn=false/current_bet=24`。这两帧共同验证无 marker 路径只恢复已投入金额，不吸收跟注按钮。
 
 ## 2026-10-03 全量 Hero 标注
 - 默认 manifest v6 共 506 张、SHA256 唯一 506 个。v4 的96张先原样导入，新增410张按103张四联全宽审阅页逐图核对；全量回放发现分歧时继续以原图修正两批标签，不能把“历史标签未变化”作为准确性的替代证据。v6 于2026-10-11按原图把第501张右侧中间绿色“+”座位从错误的`active/0`更正为`empty/null`，该旧标签重复了待修识别结果，不能继续作为真值。
