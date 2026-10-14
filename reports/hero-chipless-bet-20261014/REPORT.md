@@ -33,4 +33,4 @@ decided 帧的一次性保存/全量识别机制仍然存在：`1f56020` 恢复�
 - 运行进程由 PID 3743084 更新为 PID 4085210，PPID 为 1；`/health` 返回 200，启动日志无错误。
 - 回滚文件位于 `backups/deploy-20261014-002734-641e713/recognizer.py`。
 - 线上 HTTP 回放 23:03:27 行动帧返回 `is_hero_turn=true/hero.current_bet=null/table.current_bet=4`；23:03:29 decided 帧返回 `is_hero_turn=false/hero.current_bet=24/table.current_bet=24`。两次请求均返回 200。
-- 本地 `main` 已包含本次修复、回归证据和部署记录。推送 GitHub 远端因当前环境没有可用 HTTPS 凭据而失败，远端 `main` 仍为 `b850023`。
+- 2026-10-14 使用用户此前提供的 HTTPS Token，先将 GitHub 远端 `main` 从 `b850023` 推送至 `afcd358`，并通过 `git ls-remote origin refs/heads/main` 核对远端为 `afcd358`。本地随后新增本部署状态文档提交，待 CR 通过后再推送；代码、回归证据和线上部署内容均未变化。
